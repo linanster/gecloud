@@ -15,6 +15,7 @@ db = SQLAlchemy(use_native_unicode='utf8')
 
 def init_models(app):
     db.init_app(app)
+    db.reflect(app=app)
 
 
 # 2. model definition
@@ -171,23 +172,26 @@ class Testdata(db.Model):
     datetime = db.Column(db.DateTime, default=datetime.datetime.now())
     status_cmd_check1 = db.Column(db.Integer, nullable=True)
     status_cmd_check2 = db.Column(db.Integer, nullable=True)
-    def __init__(self, devicecode, factorycode, fw_version, rssi_ble1, rssi_wifi1, mac_ble, mac_wifi, is_qualified, is_sync, datetime=None):
+    def __init__(self, devicecode, factorycode, fw_version, rssi_ble1, rssi_ble2, rssi_wifi1, rssi_wifi2, mac_ble, mac_wifi, is_qualified, is_sync, datetime, status_cmd_check1, status_cmd_check2):
         self.devicecode = devicecode
         self.factorycode = factorycode
         self.fw_version = fw_version
         self.rssi_ble1 = rssi_ble1
+        self.rssi_ble2 = rssi_ble2
         self.rssi_wifi1 = rssi_wifi1
+        self.rssi_wifi2 = rssi_wifi2
         self.mac_ble = mac_ble
         self.mac_wifi = mac_wifi
         self.is_qualified = is_qualified
         self.is_sync = is_sync
         self.datetime = datetime
+        self.status_cmd_check1 = status_cmd_check1
+        self.status_cmd_check2 = status_cmd_check2
     @staticmethod
     def seed():
-        a1 = Testdata(13, 2, '3.1', -65, -33, 'd74d38dabcf1', '88:50:F6:04:62:31', True, False, datetime.datetime.now())
-        a2 = Testdata(13, 3, '3.2', -65, -33, 'd74d38dabcf5', '88:50:F6:04:62:35', True, False, datetime.datetime.now())
-        a3 = Testdata(13, 1, '3.40', -65, -33, 'd74d38dabcf7', '88:50:F6:04:62:37', False, False, datetime.datetime.now())
-        db.session.add_all([a1, a2, a3])
+        a1 = Testdata(13, 1, '3.1', -65, -65, -33, -33, 'd74d38dabcf1', '88:50:F6:04:62:31', True, False, datetime.datetime.now(), 10111, 10111)
+        a2 = Testdata(13, 1, '3.1', -65, -65, -33, -33, 'd74d38dabcf1', '88:50:F6:04:62:31', True, False, '2020-04-15 16:22:42', 10111, 10111)
+        db.session.add_all([a1, a2])
         db.session.commit()
 
 
@@ -227,7 +231,7 @@ class TestdataArchive(db.Model):
     @staticmethod
     def seed():
         a1 = TestdataArchive(13, 1, '3.1', -65, -65, -33, -33, 'd74d38dabcf1', '88:50:F6:04:62:31', True, False, datetime.datetime.now(), 10111, 10111)
-        a1 = TestdataArchive(13, 1, '3.1', -65, -65, -33, -33, 'd74d38dabcf1', '88:50:F6:04:62:31', True, False, '2020-04-15 16:22:42', 10111, 10111)
+        a2 = TestdataArchive(13, 1, '3.1', -65, -65, -33, -33, 'd74d38dabcf1', '88:50:F6:04:62:31', True, False, '2020-04-15 16:22:42', 10111, 10111)
         db.session.add_all([a1, a2])
         db.session.commit()
 

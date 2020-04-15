@@ -6,6 +6,6 @@ DEBUG = False
 
 SQLALCHEMY_BINDS = {
     'gecloud': 'mysql+pymysql://root:123456@localhost:3306/gecloud',
-    'sqlite': 'sqlite:///sqlite/system.sqlite3'
+    #'sqlite': 'sqlite:///sqlite/system.sqlite3'
 }
 

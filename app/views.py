@@ -5,6 +5,9 @@ import os
 
 blue_main = Blueprint('blue_main', __name__)
 
+def init_views(app):
+    app.register_blueprint(blue_main)
+
 
 @blue_main.route('/')
 @blue_main.route('/index')

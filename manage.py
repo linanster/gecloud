@@ -14,10 +14,11 @@ def hello():
 
 @manager.command
 def createdb():
-    from app.models import db, Factory, Device, TestdataArchive
+    from app.models import db, Factory, Device, Testdata, TestdataArchive
     db.create_all(bind='gecloud')
     Factory.seed()
     Device.seed()
+    Testdata.seed()
     # TestdataArchive.seed()
 
 @manager.command
