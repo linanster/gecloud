@@ -230,9 +230,11 @@ class TestdataArchive(db.Model):
         self.status_cmd_check2 = status_cmd_check2
     @staticmethod
     def seed():
-        a1 = TestdataArchive(13, 1, '3.1', -65, -65, -33, -33, 'd74d38dabcf1', '88:50:F6:04:62:31', True, False, datetime.datetime.now(), 10111, 10111)
-        a2 = TestdataArchive(13, 1, '3.1', -65, -65, -33, -33, 'd74d38dabcf1', '88:50:F6:04:62:31', True, False, '2020-04-15 16:22:42', 10111, 10111)
-        db.session.add_all([a1, a2])
+        a1 = TestdataArchive(13, 1, '3.1', -65, -65, -33, -33, 'd74d38dabcf1', '88:50:F6:04:62:31', True, False, '2020-04-13 16:22:42', 10111, 10111)
+        a2 = TestdataArchive(13, 1, '3.1', -65, -65, -33, -33, 'd74d38dabcf1', '88:50:F6:04:62:31', True, False, '2020-04-14 16:22:42', 10111, 10111)
+        a3 = TestdataArchive(13, 1, '3.1', -65, -65, -33, -33, 'd74d38dabcf1', '88:50:F6:04:62:31', True, False, '2020-04-15 16:22:42', 10111, 10111)
+        a4 = TestdataArchive(13, 1, '3.1', -65, -65, -33, -33, 'd74d38dabcf1', '88:50:F6:04:62:31', True, False, '2020-04-16 16:22:42', 10111, 10111)
+        db.session.add_all([a1, a2, a3, a4])
         db.session.commit()
 
 

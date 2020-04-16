@@ -36,7 +36,7 @@ def upload_to_cloud():
     # print(request_msg)
 
     # 3. send message via http post method
-    url = "http://10.30.30.101:5000/upload"
+    url = "http://10.30.30.101:6000/upload"
     headers = {'Content-Type': 'application/json', 'Accept': 'application/json'}
     payload = json.dumps(request_msg)
     
@@ -76,3 +76,23 @@ def save_to_database(datas):
     else:
         db.session.commit()
 
+
+def purge_local_archive():
+    items = TestdataArchive.query.all()
+    d_now = datetime.datetime.now()
+    try:
+        for item in items:
+            d_item = item.datetime
+            day_range = (d_now - d_item).days
+            if day_range >= 1:
+                db.session.delete(item)
+    except exception as e:
+        db.session.rollback()
+        print(str(e))
+        print('error')
+        return 1
+    else:
+        db.session.commit()
+        print('success')
+        return 0
+    

@@ -19,7 +19,7 @@ def createdb():
     Factory.seed()
     Device.seed()
     Testdata.seed()
-    # TestdataArchive.seed()
+    TestdataArchive.seed()
     # TestdataCloud.seed()
 
 @manager.command
