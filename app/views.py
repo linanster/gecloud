@@ -6,6 +6,7 @@ import os
 import json
 
 from app.mylib import save_to_database
+from app.mydecorator import viewfunclog
 
 blue_main = Blueprint('blue_main', __name__)
 
@@ -15,10 +16,12 @@ def init_views(app):
 
 @blue_main.route('/')
 @blue_main.route('/index')
+@viewfunclog
 def index():
     return render_template('index.html')
 
 @blue_main.route('/upload', methods=['POST'])
+@viewfunclog
 def api_handle_upload():
     try:
         # data =  json.loads(request.get_data())
