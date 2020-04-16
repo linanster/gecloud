@@ -1,7 +1,11 @@
 from flask import render_template, url_for, request, redirect, send_from_directory
 from flask import Blueprint
+import datetime
 
 import os
+import json
+
+from app.mylib import save_to_database
 
 blue_main = Blueprint('blue_main', __name__)
 
@@ -14,8 +18,20 @@ def init_views(app):
 def index():
     return render_template('index.html')
 
-@blue_main.route('/uploaddata', methods=['POST'])
-def vf_uploaddata():
-    datas = request.form.get('testdatas')
-    pass
+@blue_main.route('/upload', methods=['POST'])
+def api_handle_upload():
+    try:
+        # data =  json.loads(request.get_data())
+        # data =  json.loads(request.get_data().decode('utf-8'))
+        data = json.loads(request.get_data(as_text=True))
+        pin = data.get('pin')
+        testdatas = data.get('testdatas')
+        save_to_database(testdatas) 
+    except Exception as e:
+        print(str(e))
+        response_msg = {'errno': 1}
+    else:
+        response_msg = {'pin':pin, 'errno':0, 'testdatas': testdatas}
+    finally:
+        return response_msg
 
