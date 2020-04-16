@@ -6,6 +6,24 @@ import requests
 
 from app.models import db, Testdata, TestdataArchive, TestdataCloud
 
+def check_connection():
+    method = 'GET'
+    url = "http://10.30.30.101:8000/ping"
+    headers = {}
+    payload = {}
+    try:
+        response = requests.request(method=method, url=url, headers=headers, data=payload, timeout=20)
+        # msg = response.content
+        # msg = response.text
+    except Exception as e:
+        print(str(e))
+        return False
+    else:
+        if response.ok and response.text == 'pong':
+            return True
+        else:
+            return False
+    
 
 def upload_to_cloud():
     # 1. fetch data from database
@@ -35,6 +53,7 @@ def upload_to_cloud():
     request_msg.update(dict_data)
 
     # 3. send message via http post method
+    method = 'POST'
     ############################################
     url = "http://10.30.30.101:8000/upload"
     ############################################
@@ -42,7 +61,7 @@ def upload_to_cloud():
     payload = json.dumps(request_msg)
     
     # 4. send request
-    response = requests.request(method='POST', url=url, headers=headers, data=payload)
+    response = requests.request(method=method, url=url, headers=headers, data=payload)
     
     # 5. take response
     response_msg = response.json()
@@ -80,6 +99,8 @@ def save_to_database(datas):
         db.session.rollback()
         raise(e)
         print('error')
+
+
         return 1
     else:
         db.session.commit()

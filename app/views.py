@@ -20,6 +20,11 @@ def init_views(app):
 def index():
     return render_template('index.html')
 
+@blue_main.route('/ping')
+@viewfunclog
+def ping():
+    return 'pong'
+
 @blue_main.route('/upload', methods=['POST'])
 @viewfunclog
 def api_handle_upload():
