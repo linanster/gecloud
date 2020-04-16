@@ -33,23 +33,29 @@ def upload_to_cloud():
     request_msg.update(dict_pin)
     request_msg.update(dict_timestamp)
     request_msg.update(dict_data)
-    # print(request_msg)
 
     # 3. send message via http post method
-    url = "http://10.30.30.101:6000/upload"
+    ############################################
+    url = "http://10.30.30.101:8000/upload"
+    ############################################
     headers = {'Content-Type': 'application/json', 'Accept': 'application/json'}
     payload = json.dumps(request_msg)
     
+    # 4. send request
     response = requests.request(method='POST', url=url, headers=headers, data=payload)
     
+    # 5. take response
     response_msg = response.json()
 
+    # 6. error handler
     if response_msg.get('errno') == 1:
         print('error errno')
         return 1
     if response_msg.get('pin') != pin:
         print('error pin')
         return 2
+
+    # 7. save data entries into database
     try:
         for item in datas_raw:
             item.is_sync = True
@@ -73,8 +79,12 @@ def save_to_database(datas):
     except Exception as e:
         db.session.rollback()
         raise(e)
+        print('error')
+        return 1
     else:
         db.session.commit()
+        print('success')
+        return 0
 
 
 def purge_local_archive():
