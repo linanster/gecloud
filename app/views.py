@@ -43,6 +43,6 @@ def api_handle_upload():
     else:
         response_msg = {'pin':pin, 'errno':0}
     finally:
-        logger.info(response_msg)
+        logger.info('response_msg: {}'.format(response_msg))
         return response_msg
 

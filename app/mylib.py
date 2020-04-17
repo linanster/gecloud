@@ -15,10 +15,8 @@ def save_to_database(datas):
     except Exception as e:
         db.session.rollback()
         raise(e)
-        print('save_to_database error')
         return 1
     else:
         db.session.commit()
-        print('save_to_database success')
         return 0
 
