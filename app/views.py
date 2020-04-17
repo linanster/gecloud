@@ -37,7 +37,7 @@ def api_handle_upload():
         testdatas = data.get('testdatas')
         save_to_database(testdatas) 
     except Exception as e:
-        print(str(e))
+        # print(str(e))
         logger.error(str(e))
         response_msg = {'errno': 1}
     else:
