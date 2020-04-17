@@ -1,5 +1,6 @@
 # Customize
 **/*.swp
+log/*
 
 
 # Byte-compiled / optimized / DLL files

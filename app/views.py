@@ -7,6 +7,7 @@ import json
 
 from app.mylib import save_to_database
 from app.mydecorator import viewfunclog
+from app.mylogger import logger
 
 blue_main = Blueprint('blue_main', __name__)
 
@@ -37,9 +38,11 @@ def api_handle_upload():
         save_to_database(testdatas) 
     except Exception as e:
         print(str(e))
+        logger.error(str(e))
         response_msg = {'errno': 1}
     else:
         response_msg = {'pin':pin, 'errno':0, 'testdatas': testdatas}
     finally:
+        logger.info(response_msg)
         return response_msg
 
