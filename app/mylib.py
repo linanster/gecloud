@@ -4,7 +4,7 @@ import time
 import datetime
 import requests
 
-from app.models import db, Testdata, TestdataArchive, TestdataCloud
+from app.models import db, TestdataCloud
 
 
 def save_to_database(datas):

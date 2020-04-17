@@ -28,8 +28,7 @@ class Factory(db.Model):
     name = db.Column(db.String(100), unique=True, nullable=False)
     description = db.Column(db.Text)
     devices = db.relationship('Device', backref='factory')
-    testdatas = db.relationship('Testdata', backref='factory')
-    testdatasarchive = db.relationship('TestdataArchive', backref='factory')
+    testdatasarchive = db.relationship('TestdataCloud', backref='factory')
     def __init__(self, code, name, description=''):
         self.code = code
         self.name = name
@@ -55,8 +54,7 @@ class Device(db.Model):
     # factorycode = db.Column(db.Integer, db.ForeignKey('factories.code'), nullable=False) 
     factorycode = db.Column(db.Integer, db.ForeignKey(Factory.code), nullable=False) 
     description = db.Column(db.Text, nullable=True)
-    testdatas = db.relationship('Testdata', backref='device')
-    testdatasarchive = db.relationship('TestdataArchive', backref='device')
+    testdatasarchive = db.relationship('TestdataCloud', backref='device')
     def __init__(self, code, code_hex, factorycode, name, description=''):
         self.code = code
         self.code_hex = code_hex
@@ -149,94 +147,6 @@ class Device(db.Model):
         db.session.add_all(devices_all)
         db.session.add_all(devices_test)
         db.session.commit()
-
-
-
-class Testdata(db.Model):
-    __bind_key__ = 'gecloud'
-    __tablename__ = 'testdatas'
-    id = db.Column(db.Integer, nullable=False, autoincrement=True, primary_key = True)
-    # devicecode = db.Column(db.Integer, db.ForeignKey('devices.code'), nullable=False)
-    # factorycode = db.Column(db.Integer, db.ForeignKey('factories.code'), nullable=True, server_default=str(FCODE)) 
-    devicecode = db.Column(db.Integer, db.ForeignKey(Device.code), nullable=False)
-    factorycode = db.Column(db.Integer, db.ForeignKey(Factory.code), nullable=True) 
-    fw_version = db.Column(db.String(20))
-    rssi_ble1 = db.Column(db.Integer)
-    rssi_ble2 = db.Column(db.Integer)
-    rssi_wifi1 = db.Column(db.Integer)
-    rssi_wifi2 = db.Column(db.Integer)
-    mac_ble = db.Column(db.String(18))
-    mac_wifi = db.Column(db.String(18))
-    is_qualified = db.Column(db.Boolean)
-    is_sync = db.Column(db.Boolean)
-    datetime = db.Column(db.DateTime, default=datetime.datetime.now())
-    status_cmd_check1 = db.Column(db.Integer, nullable=True)
-    status_cmd_check2 = db.Column(db.Integer, nullable=True)
-    def __init__(self, devicecode, factorycode, fw_version, rssi_ble1, rssi_ble2, rssi_wifi1, rssi_wifi2, mac_ble, mac_wifi, is_qualified, is_sync, datetime, status_cmd_check1, status_cmd_check2):
-        self.devicecode = devicecode
-        self.factorycode = factorycode
-        self.fw_version = fw_version
-        self.rssi_ble1 = rssi_ble1
-        self.rssi_ble2 = rssi_ble2
-        self.rssi_wifi1 = rssi_wifi1
-        self.rssi_wifi2 = rssi_wifi2
-        self.mac_ble = mac_ble
-        self.mac_wifi = mac_wifi
-        self.is_qualified = is_qualified
-        self.is_sync = is_sync
-        self.datetime = datetime
-        self.status_cmd_check1 = status_cmd_check1
-        self.status_cmd_check2 = status_cmd_check2
-    @staticmethod
-    def seed():
-        a1 = Testdata(13, 1, '3.1', -65, -65, -33, -33, 'd74d38dabcf1', '88:50:F6:04:62:31', True, False, datetime.datetime.now(), 10111, 10111)
-        a2 = Testdata(13, 1, '3.1', -65, -65, -33, -33, 'd74d38dabcf1', '88:50:F6:04:62:31', True, False, '2020-04-15 16:22:42', 10111, 10111)
-        db.session.add_all([a1, a2])
-        db.session.commit()
-
-
-class TestdataArchive(db.Model):
-    __bind_key__ = 'gecloud'
-    __tablename__ = 'testdatasarchive'
-    id = db.Column(db.Integer, nullable=False, autoincrement=True, primary_key = True)
-    # devicecode = db.Column(db.Integer, db.ForeignKey('devices.code'), nullable=False)
-    # factorycode = db.Column(db.Integer, db.ForeignKey('factories.code'), nullable=True, server_default=str(FCODE)) 
-    devicecode = db.Column(db.Integer, db.ForeignKey(Device.code), nullable=False)
-    factorycode = db.Column(db.Integer, db.ForeignKey(Factory.code), nullable=True) 
-    fw_version = db.Column(db.String(20))
-    rssi_ble1 = db.Column(db.Integer)
-    rssi_wifi1 = db.Column(db.Integer)
-    mac_ble = db.Column(db.String(18))
-    mac_wifi = db.Column(db.String(18))
-    is_qualified = db.Column(db.Boolean)
-    is_sync = db.Column(db.Boolean)
-    datetime = db.Column(db.DateTime, default=datetime.datetime.now())
-    status_cmd_check1 = db.Column(db.Integer, nullable=True)
-    status_cmd_check2 = db.Column(db.Integer, nullable=True)
-    def __init__(self, devicecode, factorycode, fw_version, rssi_ble1, rssi_ble2, rssi_wifi1, rssi_wifi2, mac_ble, mac_wifi, is_qualified, is_sync, datetime, status_cmd_check1, status_cmd_check2):
-        self.devicecode = devicecode
-        self.factorycode = factorycode
-        self.fw_version = fw_version
-        self.rssi_ble1 = rssi_ble1
-        self.rssi_ble2 = rssi_ble2
-        self.rssi_wifi1 = rssi_wifi1
-        self.rssi_wifi2 = rssi_wifi2
-        self.mac_ble = mac_ble
-        self.mac_wifi = mac_wifi
-        self.is_qualified = is_qualified
-        self.is_sync = is_sync
-        self.datetime = datetime
-        self.status_cmd_check1 = status_cmd_check1
-        self.status_cmd_check2 = status_cmd_check2
-    @staticmethod
-    def seed():
-        a1 = TestdataArchive(13, 1, '3.1', -65, -65, -33, -33, 'd74d38dabcf1', '88:50:F6:04:62:31', True, False, '2020-04-13 16:22:42', 10111, 10111)
-        a2 = TestdataArchive(13, 1, '3.1', -65, -65, -33, -33, 'd74d38dabcf1', '88:50:F6:04:62:31', True, False, '2020-04-14 16:22:42', 10111, 10111)
-        a3 = TestdataArchive(13, 1, '3.1', -65, -65, -33, -33, 'd74d38dabcf1', '88:50:F6:04:62:31', True, False, '2020-04-15 16:22:42', 10111, 10111)
-        a4 = TestdataArchive(13, 1, '3.1', -65, -65, -33, -33, 'd74d38dabcf1', '88:50:F6:04:62:31', True, False, '2020-04-16 16:22:42', 10111, 10111)
-        db.session.add_all([a1, a2, a3, a4])
-        db.session.commit()
-
 
 
 class TestdataCloud(db.Model):
