@@ -1,6 +1,6 @@
 # Customize
 **/*.swp
-log/
+log/*
 
 !log/.gitkeep
 
