@@ -41,7 +41,7 @@ def api_handle_upload():
         logger.error(str(e))
         response_msg = {'errno': 1}
     else:
-        response_msg = {'pin':pin, 'errno':0}
+        response_msg = {'errno':0, 'pin':pin, 'count':len(testdatas)}
     finally:
         logger.info('response_msg: {}'.format(response_msg))
         return response_msg
