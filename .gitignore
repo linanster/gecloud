@@ -1,8 +1,10 @@
 # Customize
 **/*.swp
 log/*
+scripts/ignore/*
 
 !log/.gitkeep
+!scripts/ignore/.gitkeep
 
 
 # Byte-compiled / optimized / DLL files
