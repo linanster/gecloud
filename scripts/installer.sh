@@ -63,6 +63,15 @@ function install_pip3(){
   echo
 }
 
+function install_mariadb(){
+  yum install -y mariadb-server-5.5.64
+}
+
+function config_mariadb(){
+  echo
+  # todo
+}
+
 function init_db(){
   cd "${scriptdir}"
   read -p "Initialize ge database (Note that this will empty your data, Y/n)?" opt
@@ -81,18 +90,21 @@ function init_db(){
 }
 
 function install_service(){
+  cd "${scriptdir}"
+  cp gecloud.service /usr/lib/systemd/system
+  systemctl daemon-reload
+  systemctl enable gecloud.service
+  systemctl restart gecloud.service
+  systemctl status gecloud.service
   echo
 }
 
 function uninstall_service(){
-  echo
-}
-
-function install_background_service(){
-  echo
-}
-
-function uninstall_background_service(){
+  cd "${scriptdir}"
+  systemctl stop gecloud.service
+  systemctl disable gecloud.service
+  rm -f /usr/lib/systemd/system/gecloud.service
+  systemctl daemon-reload
   echo
 }
 
@@ -106,16 +118,20 @@ function option2(){
   green "option2 done!"
 }
 function option3(){
-  init_db
+  install_mariadb
+  config_mariadb
   green "option3 done!"
 }
 function option4(){
+  init_db
   green "option4 done!"
 }
 function option5(){
+  install_service
   green "option5 done!"
 }
 function option6(){
+  uninstall_service
   green "option6 done!"
 }
 function option7(){
@@ -142,7 +158,10 @@ cat << eof
 ====
 1) install python3
 2) install pip3
-3) init database
+3) install and config mariadb
+4) init database
+5) install service
+6) uninstall service
 q) quit 
 ====
 eof
@@ -159,6 +178,18 @@ while echo; read -p "Enter your option: " option; do
       ;;
     3)
       option3
+      break
+      ;;
+    4)
+      option4
+      break
+      ;;
+    5)
+      option5
+      break
+      ;;
+    6)
+      option6
       break
       ;;
     q|Q)

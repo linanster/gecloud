@@ -1,0 +1,14 @@
+[Unit]
+Description=GE Lighting Cloud Service
+
+[Service]
+Type=forking
+ExecStart=/git/gecloud/run.sh --start
+ExecReload=
+ExecStop=/git/gecloud/run.sh --stop
+Restart=on-failure
+RestartSec=42s
+
+[Install]
+WantedBy=multi-user.target
+WantedBy=graphical.target
