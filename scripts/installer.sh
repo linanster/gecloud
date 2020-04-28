@@ -68,8 +68,7 @@ function install_mariadb(){
 }
 
 function config_mariadb(){
-  echo
-  # todo
+  mysql_secure_installation
 }
 
 function init_db(){
