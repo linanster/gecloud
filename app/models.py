@@ -28,7 +28,7 @@ class Factory(db.Model):
     name = db.Column(db.String(100), unique=True, nullable=False)
     description = db.Column(db.Text)
     devices = db.relationship('Device', backref='factory')
-    testdatasarchive = db.relationship('TestdataCloud', backref='factory')
+    testdatascloud = db.relationship('TestdataCloud', backref='factory')
     def __init__(self, code, name, description=''):
         self.code = code
         self.name = name
@@ -39,7 +39,7 @@ class Factory(db.Model):
         f2 = Factory(2, 'Innotech', 'Smart LED Light Bulbs')
         f3 = Factory(3, 'Tonly', '通力')
         f4 = Factory(4, 'Changhong', '长虹')
-        f5 = Factory(5, 'Test', 'Test')
+        f5 = Factory(5, 'TestFactory', 'TestFactory')
         db.session.add_all([f1, f2, f3, f4, f5])
         db.session.commit()
 
@@ -54,7 +54,7 @@ class Device(db.Model):
     # factorycode = db.Column(db.Integer, db.ForeignKey('factories.code'), nullable=False) 
     factorycode = db.Column(db.Integer, db.ForeignKey(Factory.code), nullable=False) 
     description = db.Column(db.Text, nullable=True)
-    testdatasarchive = db.relationship('TestdataCloud', backref='device')
+    testdatascloud = db.relationship('TestdataCloud', backref='device')
     def __init__(self, code, code_hex, factorycode, name, description=''):
         self.code = code
         self.code_hex = code_hex
@@ -76,34 +76,33 @@ class Device(db.Model):
         d_leedarson_130 = Device(130, '0x82', 1, 'Dual mode Tunable White BR30(0x82)')
         d_leedarson_67 = Device(67, '0x43', 1, 'Out door Plug(0x43)')
 
-        d_innotech_30 = Device(30, '0x1E', 2, 'Gen2 TCO Full Color A19 ST')
-        d_innotech_31 = Device(31, '0x1F', 2, 'Gen2 TCO Full Color A19 MFG')
-        d_innotech_32 = Device(32, '0x20', 2, 'Gen2 TCO Full Color BR30 ST')
-        d_innotech_33 = Device(33, '0x21', 2, 'Gen2 TCO Full Color BR30 MFG')
-        d_innotech_34 = Device(34, '0x22', 2, 'Gen2 TCO Full Color Strip ST')
-        d_innotech_35 = Device(35, '0x23', 2, 'Gen2 TCO Full Color Strip MFG')
-        d_innotech_131 = Device(131, '0x83', 2, 'Dual mode Full Color A19')
-        d_innotech_132 = Device(132, '0x84', 2, 'Dual mode Full Color BR30')
-        d_innotech_133 = Device(133, '0x85', 2, 'Dual mode Full Color Strip')
-        d_innotech_49 = Device(49, '0x31', 2, 'Motion dimmer switch')
-        d_innotech_48 = Device(48, '0x30', 2, 'Dimmer switch')
-        d_innotech_61 = Device(61, '0x3D', 2, 'Paddle switch TCO')
-        d_innotech_62 = Device(62, '0x3E', 2, 'Toggle switch TCO')
-        d_innotech_63 = Device(63, '0x3F', 2, 'Button switch TCO')
-        d_innotech_65 = Device(65, '0x41', 2, 'GEN 1 Plug TCO')
+        d_innotech_30 = Device(30, '0x1E', 2, 'Gen2 TCO Full Color A19 ST(0x1E)')
+        d_innotech_31 = Device(31, '0x1F', 2, 'Gen2 TCO Full Color A19 MFG(0x1F)')
+        d_innotech_32 = Device(32, '0x20', 2, 'Gen2 TCO Full Color BR30 ST(0x20)')
+        d_innotech_33 = Device(33, '0x21', 2, 'Gen2 TCO Full Color BR30 MFG(0x21)')
+        d_innotech_34 = Device(34, '0x22', 2, 'Gen2 TCO Full Color Strip ST(0x22)')
+        d_innotech_35 = Device(35, '0x23', 2, 'Gen2 TCO Full Color Strip MFG(0x23)')
+        d_innotech_131 = Device(131, '0x83', 2, 'Dual mode Full Color A19(0x83)')
+        d_innotech_132 = Device(132, '0x84', 2, 'Dual mode Full Color BR30(0x84)')
+        d_innotech_133 = Device(133, '0x85', 2, 'Dual mode Full Color Strip(0x85)')
+        d_innotech_49 = Device(49, '0x31', 2, 'Motion dimmer switch(0x31)')
+        d_innotech_48 = Device(48, '0x30', 2, 'Dimmer switch(0x30)')
+        d_innotech_61 = Device(61, '0x3D', 2, 'Paddle switch TCO(0x3D)')
+        d_innotech_62 = Device(62, '0x3E', 2, 'Toggle switch TCO(0x3E)')
+        d_innotech_63 = Device(63, '0x3F', 2, 'Button switch TCO(0x3F)')
+        d_innotech_65 = Device(65, '0x41', 2, 'GEN 1 Plug TCO(0x41)')
     
         d_tonly_55 = Device(55, '0x37', 3, 'Dimmer Switch(0x37)')
         d_tonly_56 = Device(56, '0x38', 3, 'Dimmer Switch(Premium)(0x38)')
         d_tonly_57 = Device(57, '0x39', 3, 'Switch Toggle(0x3A)')
         d_tonly_58 = Device(58, '0x3A', 3, 'Switch Paddle(0x39)')
         d_tonly_59 = Device(59, '0x3B', 3, 'Switch Centre Button(0x3B)')
-        d_tonly_81 = Device(81, '0x51', 3, 'Fan Speed Switch')
+        d_tonly_81 = Device(81, '0x51', 3, 'Fan Speed Switch(0x51)')
 
-        d_changhong_66 = Device(66, '0x42', 4, 'Indoor Plug GEN2')
+        d_changhong_66 = Device(66, '0x42', 4, 'Indoor Plug GEN2(Ox42)')
 
         # todo
-        d_test_5 = Device(5, '0x05', 5, 'Test1')
-        d_test_6 = Device(6, '0x06', 5, 'Test2')
+        d_test_255 = Device(6, '0xFF', 5, 'TestDevice_255')
 
         devices_all = [
             d_leedarson_09,
@@ -142,7 +141,7 @@ class Device(db.Model):
             d_changhong_66
         ]
 
-        devices_test = [d_test_5, d_test_6]
+        devices_test = [d_test_255,]
 
         db.session.add_all(devices_all)
         db.session.add_all(devices_test)
@@ -153,8 +152,6 @@ class TestdataCloud(db.Model):
     __bind_key__ = 'gecloud'
     __tablename__ = 'testdatascloud'
     id = db.Column(db.Integer, nullable=False, autoincrement=True, primary_key = True)
-    # devicecode = db.Column(db.Integer, db.ForeignKey('devices.code'), nullable=False)
-    # factorycode = db.Column(db.Integer, db.ForeignKey('factories.code'), nullable=True, server_default=str(FCODE)) 
     devicecode = db.Column(db.Integer, db.ForeignKey(Device.code), nullable=False)
     factorycode = db.Column(db.Integer, db.ForeignKey(Factory.code), nullable=True) 
     fw_version = db.Column(db.String(20))
@@ -164,12 +161,18 @@ class TestdataCloud(db.Model):
     rssi_wifi2 = db.Column(db.Integer)
     mac_ble = db.Column(db.String(18))
     mac_wifi = db.Column(db.String(18))
-    is_qualified = db.Column(db.Boolean)
-    is_sync = db.Column(db.Boolean)
+    status_cmd_check1 = db.Column(db.Integer)
+    status_cmd_check2 = db.Column(db.Integer)
+    bool_uploaded = db.Column(db.Boolean)
+    bool_qualified_signal = db.Column(db.Boolean)
+    bool_qualified_check = db.Column(db.Boolean)
+    bool_qualified_scan = db.Column(db.Boolean)
+    bool_qualified_deviceid = db.Column(db.Boolean)
     datetime = db.Column(db.DateTime, default=datetime.datetime.now())
-    status_cmd_check1 = db.Column(db.Integer, nullable=True)
-    status_cmd_check2 = db.Column(db.Integer, nullable=True)
-    def __init__(self, devicecode, factorycode, fw_version, rssi_ble1, rssi_ble2, rssi_wifi1, rssi_wifi2, mac_ble, mac_wifi, is_qualified, is_sync, datetime, status_cmd_check1, status_cmd_check2):
+    reserve_int_1 = db.Column(db.Integer, nullable=True, server_default=str(0))
+    reserve_str_1 = db.Column(db.String(100), nullable=True, server_default=str(''))
+    reserve_bool_1 = db.Column(db.Boolean, nullable=True, server_default=str(0))
+    def __init__(self, devicecode, factorycode, fw_version, rssi_ble1, rssi_ble2, rssi_wifi1, rssi_wifi2, mac_ble, mac_wifi, status_cmd_check1, status_cmd_check2, bool_uploaded, bool_qualified_signal, bool_qualified_check, bool_qualified_scan, bool_qualified_deviceid, datetime, reserve_int_1, reserve_str_1, reserve_bool_1):
         self.devicecode = devicecode
         self.factorycode = factorycode
         self.fw_version = fw_version
@@ -179,15 +182,18 @@ class TestdataCloud(db.Model):
         self.rssi_wifi2 = rssi_wifi2
         self.mac_ble = mac_ble
         self.mac_wifi = mac_wifi
-        self.is_qualified = is_qualified
-        self.is_sync = is_sync
-        self.datetime = datetime
         self.status_cmd_check1 = status_cmd_check1
         self.status_cmd_check2 = status_cmd_check2
+        self.bool_uploaded = bool_uploaded
+        self.bool_qualified_signal = bool_qualified_signal
+        self.bool_qualified_check = bool_qualified_check
+        self.bool_qualified_scan = bool_qualified_scan
+        self.bool_qualified_deviceid = bool_qualified_deviceid
+        self.datetime = datetime
+        self.reserve_int_1 = reserve_int_1
+        self.reserve_str_1 = reserve_str_1
+        self.reserve_bool_1 = reserve_bool_1
     @staticmethod
     def seed():
-        a1 = TestdataCloud(13, 1, '3.1', -65, -65, -33, -33, 'd74d38dabcf1', '88:50:F6:04:62:31', True, datetime.datetime.now(), 10111, 10111)
-        a2 = TestdataCloud(13, 1, '3.1', -65, -65, -33, -33, 'd74d38dabcf1', '88:50:F6:04:62:31', True, '2020-04-15 16:22:42', 10111, 10111)
-        db.session.add_all([a1, a2])
-        db.session.commit()
+        pass
 
