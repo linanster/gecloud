@@ -4,20 +4,17 @@ from app.models import Factory, Device, TestdataCloud
 
 api_db = Api(prefix='/api/db/')
 
-class ResourceTest(Resource):
-    def get(self):
-        return {'msg':'hello api_db get'}
-    def post(self):
-        return {'msg':'hello api_db post'}
+#####################################################################
+### 1. fields definition, for marshal (custom object serializing) ###
+#####################################################################
 
-
-resource_fields_factory = {
+resource_fields_factory_db = {
     'code': fields.Integer,
     'name': fields.String,
     'description': fields.String
 }
 
-resource_fields_device = {
+resource_fields_device_db = {
     'code_dec': fields.Integer(attribute='code'),
     'name': fields.String,
     'code_hex': fields.String,
@@ -25,7 +22,7 @@ resource_fields_device = {
     'description': fields.String
 }
 
-resource_fields_testdatacloud = {
+resource_fields_testdatacloud_db = {
     'id': fields.Integer,
     'devicecode': fields.Integer,
     'factorycode': fields.Integer,
@@ -51,40 +48,136 @@ resource_fields_testdatacloud = {
     'reserve_bool_1': fields.Boolean
 }
 
-class ResourceDbFactory(Resource):
-    @marshal_with(resource_fields_factory)
+resource_fields_factory_response = {
+    'status': fields.Integer,
+    'msg': fields.String,
+    # 'data': fields.Nested(resource_fields_factory_db)
+    'data': fields.List(fields.Nested(resource_fields_factory_db))
+}
+
+resource_fields_device_response = {
+    'status': fields.Integer,
+    'msg': fields.String,
+    # 'data': fields.Nested(resource_fields_device_db)
+    'data': fields.List(fields.Nested(resource_fields_device_db))
+}
+
+resource_fields_testdatacloud_response = {
+    'status': fields.Integer,
+    'msg': fields.String,
+    # 'data': fields.Nested(resource_fields_testdatacloud_db)
+    'data': fields.List(fields.Nested(resource_fields_testdatacloud_db))
+}
+
+####################################
+### 2. resource class definition ###
+####################################
+
+class ResourceFactory_db(Resource):
+    @marshal_with(resource_fields_factory_db)
     def get(self, **kwargs):
         datas = Factory.query.all()
         return datas
 
-class ResourceDbDevice(Resource):
-    @marshal_with(resource_fields_device)
+class ResourceDevice_db(Resource):
+    @marshal_with(resource_fields_device_db)
     def get(self, **kwargs):
         datas = Device.query.all()
         return datas
 
-class ResourceDbTestdataCloud(Resource):
-    @marshal_with(resource_fields_testdatacloud)
+class ResourceTestdataCloud_db(Resource):
+    @marshal_with(resource_fields_testdatacloud_db)
     def get(self, **kwargs):
         datas = TestdataCloud.query.all()
         return datas
 
-class ResourceDbTestdataCloud_from_factorycode(Resource):
-    @marshal_with(resource_fields_testdatacloud)
+class ResourceFactory_response(Resource):
+    @marshal_with(resource_fields_factory_response)
+    def get(self, **kwargs):
+        response_status = 201
+        response_msg = 'all factory data'
+        response_db = Factory.query.all()
+        response_obj = {
+            'status': response_status,
+            'msg': response_msg,
+            'data': response_db
+        }
+        return response_obj
+
+class ResourceDevice_response(Resource):
+    @marshal_with(resource_fields_device_response)
+    def get(self, **kwargs):
+        response_status = 201
+        response_msg = 'all device data'
+        response_db = Device.query.all()
+        response_obj = {
+            'status': response_status,
+            'msg': response_msg,
+            'data': response_db
+        }
+        return response_obj
+
+class ResourceTestdataCloud_response(Resource):
+    @marshal_with(resource_fields_testdatacloud_response)
+    def get(self, **kwargs):
+        response_status = 201
+        response_msg = 'all test data'
+        response_db = TestdataCloud.query.all()
+        response_obj = {
+            'status': response_status,
+            'msg': response_msg,
+            'data': response_db
+        }
+        return response_obj
+
+class ResourceTestdataCloud_by_factorycode(Resource):
+    @marshal_with(resource_fields_testdatacloud_response)
     def get(self, factorycode):
-        # datas = TestdataCloud.query.all()
-        datas = TestdataCloud.query.filter_by(factorycode=factorycode).all()
-        return datas
+        response_status = 201
+        response_msg = 'al the test data with factorycode {}'.format(factorycode)
+        response_db = TestdataCloud.query.filter_by(factorycode=factorycode).all()
+        response_obj = {
+            'status': response_status,
+            'msg': response_msg,
+            'data': response_db
+        }
+        return response_obj
 
-class ResourceDbTestdataCloud_from_devicecode(Resource):
-    @marshal_with(resource_fields_testdatacloud)
+class ResourceTestdataCloud_by_devicecode(Resource):
+    @marshal_with(resource_fields_testdatacloud_response)
     def get(self, devicecode):
-        # datas = TestdataCloud.query.all()
-        datas = TestdataCloud.query.filter_by(devicecode=devicecode).all()
-        return datas
+        response_status = 201
+        response_msg = 'all the test data with devicecode {}'.format(devicecode)
+        response_db = TestdataCloud.query.filter_by(devicecode=devicecode).all()
+        response_obj = {
+            'status': response_status,
+            'msg': response_msg,
+            'data': response_db
+        }
+        return response_obj
 
 
-class ResourceDbTestdataCloud_legacy(Resource):
+##############################
+### 3. Resourceful Routing ###
+##############################
+
+# example
+# http://47.101.215.138:5001/api/db/factory
+# http://47.101.215.138:5001/api/db/testdatacloud
+# http://47.101.215.138:5001/api/db/testdatacloud_by_devicecode/13
+
+api_db.add_resource(ResourceFactory_response, '/factory', '/factory_all')
+api_db.add_resource(ResourceDevice_response, '/device', '/device_all')
+api_db.add_resource(ResourceTestdataCloud_response, '/testdatacloud', '/testdatacloud_all')
+api_db.add_resource(ResourceTestdataCloud_by_factorycode, '/testdatacloud_by_factorycode/<int:factorycode>')
+api_db.add_resource(ResourceTestdataCloud_by_devicecode, '/testdatacloud_by_devicecode/<int:devicecode>')
+
+
+#################
+### 4. legacy ###
+#################
+
+class ResourceTestdataCloud_legacy(Resource):
     def get(self):
         # 1. fetch data from database
         datas_raw = TestdataCloud.query.all()
@@ -110,12 +203,4 @@ class ResourceDbTestdataCloud_legacy(Resource):
         # 3. return response
         return response_msg
 
-
-
-api_db.add_resource(ResourceTest, '/test')
-api_db.add_resource(ResourceDbFactory, '/factory', '/factory_all')
-api_db.add_resource(ResourceDbDevice, '/device', '/device_all')
-api_db.add_resource(ResourceDbTestdataCloud, '/testdatacloud', '/testdatacloud_all')
-api_db.add_resource(ResourceDbTestdataCloud_from_factorycode, '/testdatacloud_from_factorycode/<factorycode>')
-api_db.add_resource(ResourceDbTestdataCloud_from_devicecode, '/testdatacloud_from_devicecode/<devicecode>')
 
