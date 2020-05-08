@@ -35,11 +35,11 @@ class Factory(db.Model):
         self.description = description
     @staticmethod
     def seed():
-        f1 = Factory(1, 'Leedarson', '立达信')
-        f2 = Factory(2, 'Innotech', 'Smart LED Light Bulbs')
-        f3 = Factory(3, 'Tonly', '通力')
-        f4 = Factory(4, 'Changhong', '长虹')
-        f5 = Factory(5, 'TestFactory', 'TestFactory')
+        f1 = Factory(1, 'Leedarson', '')
+        f2 = Factory(2, 'Innotech', '')
+        f3 = Factory(3, 'Tonly', '')
+        f4 = Factory(4, 'Changhong', '')
+        f5 = Factory(5, 'TestFactory', '')
         db.session.add_all([f1, f2, f3, f4, f5])
         db.session.commit()
 
@@ -102,7 +102,7 @@ class Device(db.Model):
         d_changhong_66 = Device(66, '0x42', 4, 'Indoor Plug GEN2(Ox42)')
 
         # todo
-        d_test_255 = Device(6, '0xFF', 5, 'TestDevice_255')
+        d_test_255 = Device(255, '0xFF', 5, 'TestDevice_255')
 
         devices_all = [
             d_leedarson_09,
