@@ -2,6 +2,7 @@
 **/*.swp
 log/*
 scripts/ignore/*
+sqlite/*
 
 !log/.gitkeep
 !scripts/ignore/.gitkeep

@@ -3,6 +3,7 @@ import json, copy, datetime
 
 from app.models.mysql import Factory, Device, TestdataCloud
 from app.myauth import http_basic_auth
+from app.mydecorator import viewfunclog
 
 api_db = Api(prefix='/api/db/')
 
@@ -89,6 +90,7 @@ parser.add_argument('devicecode', type=str, location=['args'])
 
 class ResourceFactory_response(Resource):
     @http_basic_auth.login_required
+    @viewfunclog
     @marshal_with(fields_factory_list_response)
     def get(self, **kwargs):
         response_status = 201
@@ -103,6 +105,7 @@ class ResourceFactory_response(Resource):
 
 class ResourceDevice_response(Resource):
     @http_basic_auth.login_required
+    @viewfunclog
     @marshal_with(fields_device_list_response)
     def get(self, **kwargs):
         response_status = 201
@@ -117,6 +120,7 @@ class ResourceDevice_response(Resource):
 
 class ResourceTestdataCloud_response(Resource):
     @http_basic_auth.login_required
+    @viewfunclog
     @marshal_with(fields_testdatacloud_response)
     def get(self, **kwargs):
         args = parser.parse_args()

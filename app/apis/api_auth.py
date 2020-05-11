@@ -3,6 +3,7 @@ from flask_restful import Api, Resource, fields, marshal_with, marshal, reqparse
 
 from app.models.sqlite import User
 from app.myauth import http_basic_auth
+from app.mydecorator import viewfunclog
 
 api_auth = Api(prefix='/api/auth/')
 
@@ -27,6 +28,8 @@ fields_user_list_response = {
 
 
 class ResourceUserSingle(Resource):
+    @http_basic_auth.login_required
+    @viewfunclog
     @marshal_with(fields_user_single_db)
     def get(self, id):
         return User.query.get(id)
@@ -34,6 +37,8 @@ class ResourceUserSingle(Resource):
 
 
 class ResourceUserList(Resource):
+    @http_basic_auth.login_required
+    @viewfunclog
     @marshal_with(fields_user_list_response)
     def get(self):
         users = User.query.all()
@@ -44,6 +49,8 @@ class ResourceUserList(Resource):
         }
         return response_obj
 
+    @http_basic_auth.login_required
+    @viewfunclog
     @marshal_with(fields_user_single_response)
     def post(self):
         # username = request.json.get('username')
@@ -71,6 +78,7 @@ class ResourceUserList(Resource):
 
 class ResourceToken(Resource):
     @http_basic_auth.login_required
+    @viewfunclog
     def get(self):
         token = g.user.generate_auth_token()
         return {
@@ -81,6 +89,7 @@ class ResourceToken(Resource):
     
 class ResourceLoginTest(Resource):
     @http_basic_auth.login_required
+    @viewfunclog
     def get(self):
         return "{} login success".format(g.user.username)
 
