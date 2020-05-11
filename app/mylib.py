@@ -4,19 +4,19 @@ import time
 import datetime
 import requests
 
-from app.models import db, TestdataCloud
+from app.models.mysql import db_mysql, TestdataCloud
 
 
 def save_to_database(datas):
     try:
         for data in datas:
             record = TestdataCloud(**data)
-            db.session.add(record) 
+            db_mysql.session.add(record) 
     except Exception as e:
-        db.session.rollback()
+        db_mysql.session.rollback()
         raise(e)
         return 1
     else:
-        db.session.commit()
+        db_mysql.session.commit()
         return 0
 

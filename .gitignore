@@ -5,6 +5,7 @@ scripts/ignore/*
 
 !log/.gitkeep
 !scripts/ignore/.gitkeep
+!sqlite/.gitkeep
 
 
 # Byte-compiled / optimized / DLL files

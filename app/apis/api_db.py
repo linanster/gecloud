@@ -1,6 +1,8 @@
-from flask_restful import Api, Resource, marshal_with, fields
+from flask_restful import Api, Resource, marshal_with, fields, reqparse
 import json, copy, datetime
-from app.models import Factory, Device, TestdataCloud
+
+from app.models.mysql import Factory, Device, TestdataCloud
+from app.myauth import http_basic_auth
 
 api_db = Api(prefix='/api/db/')
 
@@ -8,13 +10,13 @@ api_db = Api(prefix='/api/db/')
 ### 1. fields definition, for marshal (custom object serializing) ###
 #####################################################################
 
-resource_fields_factory_db = {
+fields_factory_db = {
     'code': fields.Integer,
     'name': fields.String,
     'description': fields.String
 }
 
-resource_fields_device_db = {
+fields_device_db = {
     'code_dec': fields.Integer(attribute='code'),
     'name': fields.String,
     'code_hex': fields.String,
@@ -22,7 +24,7 @@ resource_fields_device_db = {
     'description': fields.String
 }
 
-resource_fields_testdatacloud_db = {
+fields_testdatacloud_db = {
     'id': fields.Integer,
     'devicecode': fields.Integer,
     'factorycode': fields.Integer,
@@ -48,51 +50,46 @@ resource_fields_testdatacloud_db = {
     'reserve_bool_1': fields.Boolean
 }
 
-resource_fields_factory_response = {
+fields_factory_list_response = {
     'status': fields.Integer,
     'msg': fields.String,
-    # 'data': fields.Nested(resource_fields_factory_db)
-    'data': fields.List(fields.Nested(resource_fields_factory_db))
+    # 'data': fields.Nested(fields_factory_db)
+    'data': fields.List(fields.Nested(fields_factory_db))
 }
 
-resource_fields_device_response = {
+fields_device_list_response = {
     'status': fields.Integer,
     'msg': fields.String,
-    # 'data': fields.Nested(resource_fields_device_db)
-    'data': fields.List(fields.Nested(resource_fields_device_db))
+    # 'data': fields.Nested(fields_device_db)
+    'data': fields.List(fields.Nested(fields_device_db))
 }
 
-resource_fields_testdatacloud_response = {
+fields_testdatacloud_response = {
     'status': fields.Integer,
     'msg': fields.String,
-    # 'data': fields.Nested(resource_fields_testdatacloud_db)
-    'data': fields.List(fields.Nested(resource_fields_testdatacloud_db))
+    # 'data': fields.Nested(fields_testdatacloud_db)
+    'data': fields.List(fields.Nested(fields_testdatacloud_db))
 }
+
+
+########################################
+### 2. request parser initialization ###
+########################################
+
+parser = reqparse.RequestParser()
+parser.add_argument('factorycode', type=str, location=['args'])
+parser.add_argument('devicecode', type=str, location=['args'])
+
+
 
 ####################################
-### 2. resource class definition ###
+### 3. resource class definition ###
 ####################################
 
-class ResourceFactory_db(Resource):
-    @marshal_with(resource_fields_factory_db)
-    def get(self, **kwargs):
-        datas = Factory.query.all()
-        return datas
-
-class ResourceDevice_db(Resource):
-    @marshal_with(resource_fields_device_db)
-    def get(self, **kwargs):
-        datas = Device.query.all()
-        return datas
-
-class ResourceTestdataCloud_db(Resource):
-    @marshal_with(resource_fields_testdatacloud_db)
-    def get(self, **kwargs):
-        datas = TestdataCloud.query.all()
-        return datas
 
 class ResourceFactory_response(Resource):
-    @marshal_with(resource_fields_factory_response)
+    @http_basic_auth.login_required
+    @marshal_with(fields_factory_list_response)
     def get(self, **kwargs):
         response_status = 201
         response_msg = 'all factory data'
@@ -105,7 +102,8 @@ class ResourceFactory_response(Resource):
         return response_obj
 
 class ResourceDevice_response(Resource):
-    @marshal_with(resource_fields_device_response)
+    @http_basic_auth.login_required
+    @marshal_with(fields_device_list_response)
     def get(self, **kwargs):
         response_status = 201
         response_msg = 'all device data'
@@ -118,47 +116,37 @@ class ResourceDevice_response(Resource):
         return response_obj
 
 class ResourceTestdataCloud_response(Resource):
-    @marshal_with(resource_fields_testdatacloud_response)
+    @http_basic_auth.login_required
+    @marshal_with(fields_testdatacloud_response)
     def get(self, **kwargs):
-        response_status = 201
-        response_msg = 'all test data'
-        response_db = TestdataCloud.query.all()
+        args = parser.parse_args()
+        factorycode = args.get('factorycode')
+        devicecode = args.get('devicecode')
+        if factorycode is not None:
+            response_obj = {
+                'status': 201,
+                'msg': 'al the test data with factorycode {}'.format(factorycode),
+                'data': TestdataCloud.query.filter_by(factorycode=factorycode).all() 
+            }
+            return response_obj
+        if devicecode is not None:
+            response_obj = {
+                'status': 201,
+                'msg': 'all the test data with devicecode {}'.format(devicecode),
+                'data': TestdataCloud.query.filter_by(devicecode=devicecode).all() 
+            }
+            return response_obj
         response_obj = {
-            'status': response_status,
-            'msg': response_msg,
-            'data': response_db
+            'status': 201,
+            'msg': 'all the test data',
+            'data': TestdataCloud.query.all() 
         }
         return response_obj
 
-class ResourceTestdataCloud_by_factorycode(Resource):
-    @marshal_with(resource_fields_testdatacloud_response)
-    def get(self, factorycode):
-        response_status = 201
-        response_msg = 'al the test data with factorycode {}'.format(factorycode)
-        response_db = TestdataCloud.query.filter_by(factorycode=factorycode).all()
-        response_obj = {
-            'status': response_status,
-            'msg': response_msg,
-            'data': response_db
-        }
-        return response_obj
-
-class ResourceTestdataCloud_by_devicecode(Resource):
-    @marshal_with(resource_fields_testdatacloud_response)
-    def get(self, devicecode):
-        response_status = 201
-        response_msg = 'all the test data with devicecode {}'.format(devicecode)
-        response_db = TestdataCloud.query.filter_by(devicecode=devicecode).all()
-        response_obj = {
-            'status': response_status,
-            'msg': response_msg,
-            'data': response_db
-        }
-        return response_obj
 
 
 ##############################
-### 3. Resourceful Routing ###
+### 4. Resourceful Routing ###
 ##############################
 
 # example
@@ -166,15 +154,13 @@ class ResourceTestdataCloud_by_devicecode(Resource):
 # http://47.101.215.138:5001/api/db/testdatacloud
 # http://47.101.215.138:5001/api/db/testdatacloud_by_devicecode/13
 
-api_db.add_resource(ResourceFactory_response, '/factory', '/factory_all')
-api_db.add_resource(ResourceDevice_response, '/device', '/device_all')
-api_db.add_resource(ResourceTestdataCloud_response, '/testdatacloud', '/testdatacloud_all')
-api_db.add_resource(ResourceTestdataCloud_by_factorycode, '/testdatacloud_by_factorycode/<int:factorycode>')
-api_db.add_resource(ResourceTestdataCloud_by_devicecode, '/testdatacloud_by_devicecode/<int:devicecode>')
+api_db.add_resource(ResourceFactory_response, '/factory', '/factory/all')
+api_db.add_resource(ResourceDevice_response, '/device', '/device/all')
+api_db.add_resource(ResourceTestdataCloud_response, '/testdatacloud', '/testdatacloud/all')
 
 
 #################
-### 4. legacy ###
+### 5. legacy ###
 #################
 
 class ResourceTestdataCloud_legacy(Resource):

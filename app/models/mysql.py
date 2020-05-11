@@ -11,24 +11,20 @@ import datetime
 # from app.settings import FCODE
 
 # 1. lasy init
-db = SQLAlchemy(use_native_unicode='utf8')
-
-def init_models(app):
-    db.init_app(app)
-    db.reflect(app=app)
+db_mysql = SQLAlchemy(use_native_unicode='utf8')
 
 
 # 2. model definition
 
-class Factory(db.Model):
-    __bind_key__ = 'gecloud'
+class Factory(db_mysql.Model):
+    __bind_key__ = 'mysql_gecloud'
     __tablename__ = 'factories'
-    id = db.Column(db.Integer, nullable=False, autoincrement=True, primary_key = True)
-    code = db.Column(db.Integer, nullable=False, unique=True)
-    name = db.Column(db.String(100), unique=True, nullable=False)
-    description = db.Column(db.Text)
-    devices = db.relationship('Device', backref='factory')
-    testdatascloud = db.relationship('TestdataCloud', backref='factory')
+    id = db_mysql.Column(db_mysql.Integer, nullable=False, autoincrement=True, primary_key = True)
+    code = db_mysql.Column(db_mysql.Integer, nullable=False, unique=True)
+    name = db_mysql.Column(db_mysql.String(100), unique=True, nullable=False)
+    description = db_mysql.Column(db_mysql.Text)
+    devices = db_mysql.relationship('Device', backref='factory')
+    testdatascloud = db_mysql.relationship('TestdataCloud', backref='factory')
     def __init__(self, code, name, description=''):
         self.code = code
         self.name = name
@@ -40,21 +36,21 @@ class Factory(db.Model):
         f3 = Factory(3, 'Tonly', '')
         f4 = Factory(4, 'Changhong', '')
         f5 = Factory(5, 'TestFactory', '')
-        db.session.add_all([f1, f2, f3, f4, f5])
-        db.session.commit()
+        db_mysql.session.add_all([f1, f2, f3, f4, f5])
+        db_mysql.session.commit()
 
 
-class Device(db.Model):
-    __bind_key__ = 'gecloud'
+class Device(db_mysql.Model):
+    __bind_key__ = 'mysql_gecloud'
     __tablename__ = 'devices'
-    id = db.Column(db.Integer, nullable=False, autoincrement=True, primary_key = True)
-    code = db.Column(db.Integer, nullable=False, unique=True)
-    name = db.Column('name', db.String(100), nullable=False)
-    code_hex = db.Column(db.String(10), nullable=False, unique=True)
-    # factorycode = db.Column(db.Integer, db.ForeignKey('factories.code'), nullable=False) 
-    factorycode = db.Column(db.Integer, db.ForeignKey(Factory.code), nullable=False) 
-    description = db.Column(db.Text, nullable=True)
-    testdatascloud = db.relationship('TestdataCloud', backref='device')
+    id = db_mysql.Column(db_mysql.Integer, nullable=False, autoincrement=True, primary_key = True)
+    code = db_mysql.Column(db_mysql.Integer, nullable=False, unique=True)
+    name = db_mysql.Column('name', db_mysql.String(100), nullable=False)
+    code_hex = db_mysql.Column(db_mysql.String(10), nullable=False, unique=True)
+    # factorycode = db_mysql.Column(db_mysql.Integer, db_mysql.ForeignKey('factories.code'), nullable=False) 
+    factorycode = db_mysql.Column(db_mysql.Integer, db_mysql.ForeignKey(Factory.code), nullable=False) 
+    description = db_mysql.Column(db_mysql.Text, nullable=True)
+    testdatascloud = db_mysql.relationship('TestdataCloud', backref='device')
     def __init__(self, code, code_hex, factorycode, name, description=''):
         self.code = code
         self.code_hex = code_hex
@@ -143,35 +139,35 @@ class Device(db.Model):
 
         devices_test = [d_test_255,]
 
-        db.session.add_all(devices_all)
-        db.session.add_all(devices_test)
-        db.session.commit()
+        db_mysql.session.add_all(devices_all)
+        db_mysql.session.add_all(devices_test)
+        db_mysql.session.commit()
 
 
-class TestdataCloud(db.Model):
-    __bind_key__ = 'gecloud'
+class TestdataCloud(db_mysql.Model):
+    __bind_key__ = 'mysql_gecloud'
     __tablename__ = 'testdatascloud'
-    id = db.Column(db.Integer, nullable=False, autoincrement=True, primary_key = True)
-    devicecode = db.Column(db.Integer, db.ForeignKey(Device.code), nullable=False)
-    factorycode = db.Column(db.Integer, db.ForeignKey(Factory.code), nullable=True) 
-    fw_version = db.Column(db.String(20))
-    rssi_ble1 = db.Column(db.Integer)
-    rssi_ble2 = db.Column(db.Integer)
-    rssi_wifi1 = db.Column(db.Integer)
-    rssi_wifi2 = db.Column(db.Integer)
-    mac_ble = db.Column(db.String(18))
-    mac_wifi = db.Column(db.String(18))
-    status_cmd_check1 = db.Column(db.Integer)
-    status_cmd_check2 = db.Column(db.Integer)
-    bool_uploaded = db.Column(db.Boolean)
-    bool_qualified_signal = db.Column(db.Boolean)
-    bool_qualified_check = db.Column(db.Boolean)
-    bool_qualified_scan = db.Column(db.Boolean)
-    bool_qualified_deviceid = db.Column(db.Boolean)
-    datetime = db.Column(db.DateTime, default=datetime.datetime.now())
-    reserve_int_1 = db.Column(db.Integer, nullable=True, server_default=str(0))
-    reserve_str_1 = db.Column(db.String(100), nullable=True, server_default=str(''))
-    reserve_bool_1 = db.Column(db.Boolean, nullable=True, server_default=str(0))
+    id = db_mysql.Column(db_mysql.Integer, nullable=False, autoincrement=True, primary_key = True)
+    devicecode = db_mysql.Column(db_mysql.Integer, db_mysql.ForeignKey(Device.code), nullable=False)
+    factorycode = db_mysql.Column(db_mysql.Integer, db_mysql.ForeignKey(Factory.code), nullable=True) 
+    fw_version = db_mysql.Column(db_mysql.String(20))
+    rssi_ble1 = db_mysql.Column(db_mysql.Integer)
+    rssi_ble2 = db_mysql.Column(db_mysql.Integer)
+    rssi_wifi1 = db_mysql.Column(db_mysql.Integer)
+    rssi_wifi2 = db_mysql.Column(db_mysql.Integer)
+    mac_ble = db_mysql.Column(db_mysql.String(18))
+    mac_wifi = db_mysql.Column(db_mysql.String(18))
+    status_cmd_check1 = db_mysql.Column(db_mysql.Integer)
+    status_cmd_check2 = db_mysql.Column(db_mysql.Integer)
+    bool_uploaded = db_mysql.Column(db_mysql.Boolean)
+    bool_qualified_signal = db_mysql.Column(db_mysql.Boolean)
+    bool_qualified_check = db_mysql.Column(db_mysql.Boolean)
+    bool_qualified_scan = db_mysql.Column(db_mysql.Boolean)
+    bool_qualified_deviceid = db_mysql.Column(db_mysql.Boolean)
+    datetime = db_mysql.Column(db_mysql.DateTime, default=datetime.datetime.now())
+    reserve_int_1 = db_mysql.Column(db_mysql.Integer, nullable=True, server_default=str(0))
+    reserve_str_1 = db_mysql.Column(db_mysql.String(100), nullable=True, server_default=str(''))
+    reserve_bool_1 = db_mysql.Column(db_mysql.Boolean, nullable=True, server_default=str(0))
     def __init__(self, devicecode, factorycode, fw_version, rssi_ble1, rssi_ble2, rssi_wifi1, rssi_wifi2, mac_ble, mac_wifi, status_cmd_check1, status_cmd_check2, bool_uploaded, bool_qualified_signal, bool_qualified_check, bool_qualified_scan, bool_qualified_deviceid, datetime, reserve_int_1, reserve_str_1, reserve_bool_1):
         self.devicecode = devicecode
         self.factorycode = factorycode
