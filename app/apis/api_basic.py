@@ -8,7 +8,7 @@ from app.mydecorator import viewfunclog
 from app.mylib import save_to_database
 from app.mylogger import logger
 
-api_rasp = Api(prefix='/api/rasp/')
+api_basic = Api(prefix='/api/basic/')
 
 #####################################################################
 ### 1. fields definition, for marshal (custom object serializing) ###
@@ -30,31 +30,15 @@ parser.add_argument('param2', type=str, location=['args'])
 ####################################
 
 
-class ResourceReceiveData(Resource):
-    @http_basic_auth.login_required
+class ResourceConnection(Resource):
     @viewfunclog
-    def post(self):
-        try:
-            # data =  json.loads(request.get_data())
-            # data =  json.loads(request.get_data().decode('utf-8'))
-            data = json.loads(request.get_data(as_text=True))
-            pin = data.get('pin')
-            testdatas = data.get('testdatas')
-            save_to_database(testdatas)
-        except Exception as e:
-            # print(str(e))
-            logger.error(str(e))
-            response_msg = {'errno': 1}
-        else:
-            response_msg = {'errno':0, 'pin':pin, 'count':len(testdatas)}
-        finally:
-            logger.info('response_msg: {}'.format(response_msg))
-            return response_msg
+    def get(self):
+        return {'msg':'pong'}
 
 
 ##############################
 ### 4. Resourceful Routing ###
 ##############################
 
-api_rasp.add_resource(ResourceReceiveData, '/upload')
+api_basic.add_resource(ResourceConnection, '/ping')
 
