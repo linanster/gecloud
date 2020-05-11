@@ -29,6 +29,10 @@ parser.add_argument('param2', type=str, location=['args'])
 ### 3. resource class definition ###
 ####################################
 
+class ResourceConnection(Resource):
+    @viewfunclog
+    def get(self):
+        return {'msg':'pong'}
 
 class ResourceReceiveData(Resource):
     @http_basic_auth.login_required
@@ -56,5 +60,6 @@ class ResourceReceiveData(Resource):
 ### 4. Resourceful Routing ###
 ##############################
 
+api_rasp.add_resource(ResourceConnection, '/ping')
 api_rasp.add_resource(ResourceReceiveData, '/upload')
 

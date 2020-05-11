@@ -30,7 +30,7 @@ parser.add_argument('param2', type=str, location=['args'])
 ####################################
 
 
-class ResourceConnection(Resource):
+class ResourceBasicConnection(Resource):
     @viewfunclog
     def get(self):
         return {'msg':'pong'}
@@ -40,5 +40,5 @@ class ResourceConnection(Resource):
 ### 4. Resourceful Routing ###
 ##############################
 
-api_basic.add_resource(ResourceConnection, '/ping')
+api_basic.add_resource(ResourceBasicConnection, '/ping')
 
