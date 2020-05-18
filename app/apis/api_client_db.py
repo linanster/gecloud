@@ -1,11 +1,11 @@
-from flask_restful import Api, Resource, marshal_with, fields, reqparse
+from flask_restful import Api, Resource, marshal_with, fields, reqparse, abort
 import json, copy, datetime
 
 from app.models.mysql import Factory, Device, TestdataCloud
-from app.myauth import http_basic_auth
+from app.myauth import http_basic_auth, my_login_required
 from app.mydecorator import viewfunclog
 
-api_db = Api(prefix='/api/db/')
+api_client_db = Api(prefix='/api/db/')
 
 #####################################################################
 ### 1. fields definition, for marshal (custom object serializing) ###
@@ -89,7 +89,8 @@ parser.add_argument('devicecode', type=str, location=['args'])
 
 
 class ResourceFactory_response(Resource):
-    @http_basic_auth.login_required
+    # @http_basic_auth.login_required
+    @my_login_required
     @viewfunclog
     @marshal_with(fields_factory_list_response)
     def get(self, **kwargs):
@@ -104,7 +105,8 @@ class ResourceFactory_response(Resource):
         return response_obj
 
 class ResourceDevice_response(Resource):
-    @http_basic_auth.login_required
+    # @http_basic_auth.login_required
+    @my_login_required
     @viewfunclog
     @marshal_with(fields_device_list_response)
     def get(self, **kwargs):
@@ -119,7 +121,8 @@ class ResourceDevice_response(Resource):
         return response_obj
 
 class ResourceTestdataCloud_response(Resource):
-    @http_basic_auth.login_required
+    # @http_basic_auth.login_required
+    @my_login_required
     @viewfunclog
     @marshal_with(fields_testdatacloud_response)
     def get(self, **kwargs):
@@ -158,9 +161,9 @@ class ResourceTestdataCloud_response(Resource):
 # http://47.101.215.138:5001/api/db/testdatacloud
 # http://47.101.215.138:5001/api/db/testdatacloud_by_devicecode/13
 
-api_db.add_resource(ResourceFactory_response, '/factory', '/factory/all')
-api_db.add_resource(ResourceDevice_response, '/device', '/device/all')
-api_db.add_resource(ResourceTestdataCloud_response, '/testdatacloud', '/testdatacloud/all')
+api_client_db.add_resource(ResourceFactory_response, '/factory', '/factory/all')
+api_client_db.add_resource(ResourceDevice_response, '/device', '/device/all')
+api_client_db.add_resource(ResourceTestdataCloud_response, '/testdatacloud', '/testdatacloud/all')
 
 
 #################

@@ -5,6 +5,9 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer, SignatureExpired, BadSignature
 from flask import current_app
 from flask_login import UserMixin
+import uuid
+
+from app.ext.cache import cache
 
 db_sqlite = SQLAlchemy(use_native_unicode='utf8')
 
@@ -55,12 +58,12 @@ class User(UserMixin, MyBaseModel):
     def verify_password(self, password):
         return check_password_hash(self._password, password)
 
-    def generate_auth_token(self, expires=600):
+    def generate_auth_token_legacy1(self, expires=600):
         s = Serializer(current_app.config.get('SECRET_KEY'), expires_in = expires)
         return s.dumps({'id': self.id})
 
     @staticmethod
-    def verify_auth_token(token):
+    def verify_auth_token_legacy1(token):
         s = Serializer(current_app.config.get('SECRET_KEY'))
         try:
             data = s.loads(token)
@@ -70,6 +73,20 @@ class User(UserMixin, MyBaseModel):
             return None # invalid token
         user = User.query.get(data['id'])
         return user
+
+    def generate_auth_token(self, expire=600): 
+        token = uuid.uuid4().hex
+        cache.set(token, self.id, timeout=expire)
+        return token
+
+    @staticmethod
+    def verify_auth_token(token):
+        try:
+            userid = cache.get(token)
+        except:
+            return None
+        return User.query.get(userid)
+
 
     @staticmethod
     def seed():

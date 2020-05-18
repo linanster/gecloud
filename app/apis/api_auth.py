@@ -2,56 +2,60 @@ from flask import request, abort, jsonify, url_for, g
 from flask_restful import Api, Resource, fields, marshal_with, marshal, reqparse
 
 from app.models.sqlite import User
-from app.myauth import http_basic_auth
+from app.myauth import http_basic_auth, my_login_required
 from app.mydecorator import viewfunclog
 
 api_auth = Api(prefix='/api/auth/')
 
 
-fields_user_single_db = {
+fields_user_db = {
+    'id': fields.Integer,
     'username': fields.String,
     'desc': fields.String,
 }
 
-fields_user_single_response = {
+fields_user_response = {
     'status': fields.Integer,
     'msg': fields.String,
-    'data': fields.Nested(fields_user_single_db)
+    'data': fields.Nested(fields_user_db)
 }
 
-fields_user_list_response = {
+fields_users_response = {
     'status': fields.Integer,
     'msg': fields.String,
-    'data': fields.List(fields.Nested(fields_user_single_db))
+    'data': fields.List(fields.Nested(fields_user_db))
 }
 
 
 
-class ResourceUserSingle(Resource):
-    @http_basic_auth.login_required
+class ResourceUser(Resource):
+    # @http_basic_auth.login_required
+    @my_login_required
     @viewfunclog
-    @marshal_with(fields_user_single_db)
+    @marshal_with(fields_user_db)
     def get(self, id):
         return User.query.get(id)
 
 
 
-class ResourceUserList(Resource):
-    @http_basic_auth.login_required
+class ResourceUsers(Resource):
+    # @http_basic_auth.login_required
+    @my_login_required
     @viewfunclog
-    @marshal_with(fields_user_list_response)
+    @marshal_with(fields_users_response)
     def get(self):
         users = User.query.all()
         response_obj = {
-            'status': 201,
+            'status': 200,
             'msg': 'all users data',
             'data': users
         }
         return response_obj
 
-    @http_basic_auth.login_required
+    # @http_basic_auth.login_required
+    @my_login_required
     @viewfunclog
-    @marshal_with(fields_user_single_response)
+    @marshal_with(fields_user_response)
     def post(self):
         # username = request.json.get('username')
         # password = request.json.get('password')
@@ -68,34 +72,45 @@ class ResourceUserList(Resource):
         user.password = password
         if not user.save():
             abort(400)
-        # return jsonify({ 'username': user.username }), 201, {'Location': url_for('get_user', id = user.id, _external = True)}        
+        # return jsonify({ 'username': user.username }), 200, {'Location': url_for('get_user', id = user.id, _external = True)}        
         response_obj = {
-            'status': 201,
+            'status': 200,
             'msg': 'user {} register success'.format(user.username),
             'data': user
         }
-        return response_obj, 201, {'Location': url_for('get_user', id = user.id, _external = True)}        
+        return response_obj, 200, {'Location': url_for('get_user', id = user.id, _external = True)}        
 
+    
 class ResourceToken(Resource):
-    @http_basic_auth.login_required
+    # @http_basic_auth.login_required
+    @my_login_required
     @viewfunclog
-    def get(self):
+    def post(self):
         token = g.user.generate_auth_token()
         return {
+            'status': 200,
+            'msg': 'login success',
             'username':g.user.username,
-            'token': token.decode('ascii'),
+            # 'token': token.decode('ascii'),
+            'token': token if type(token) is str else token.decode('ascii'),
             'duration': 600
         }
     
 class ResourceLoginTest(Resource):
-    @http_basic_auth.login_required
+    # @http_basic_auth.login_required
+    @my_login_required
     @viewfunclog
     def get(self):
-        return "{} login success".format(g.user.username)
+        return {
+            'status': 200,
+            'username': g.user.username,
+            'msg': "login success",
+        }
 
-api_auth.add_resource(ResourceUserSingle, '/user/<int:id>', endpoint='get_user')
-api_auth.add_resource(ResourceUserList, '/users', '/register', endpoint='get_users')
-api_auth.add_resource(ResourceToken, '/token')
+
+api_auth.add_resource(ResourceUser, '/user/<int:id>', endpoint='get_user')
+api_auth.add_resource(ResourceUsers, '/users', '/register', endpoint='get_users')
+api_auth.add_resource(ResourceToken, '/token', '/login')
 api_auth.add_resource(ResourceLoginTest, '/logintest')
 
 # api verification example by crul

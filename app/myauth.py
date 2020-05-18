@@ -1,4 +1,4 @@
-from flask import g
+from flask import g, request, abort
 from flask_httpauth import HTTPBasicAuth
 
 from app.models.sqlite import User
@@ -16,3 +16,23 @@ def verify_password(username_or_token, password):
             return False
     g.user = user
     return True
+
+
+# this is decorator
+def my_login_required(func):
+    def inner(*args, **kwargs):
+        token = request.form.get('token') or request.args.get('token')
+        username = request.form.get('username') or request.args.get('username')
+        password = request.form.get('password') or request.args.get('password')
+
+        # 1. first try to authenticate by token
+        user = User.verify_auth_token(token)
+        if not user:
+            # 2. try to authenticate with username/password
+            user = User.query.filter_by(username = username).first()
+            if not user or not user.verify_password(password):
+                abort(401, status='401', msg='authentication failed')
+        g.user = user
+        return func(*args, **kwargs)
+    return inner
+

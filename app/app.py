@@ -6,6 +6,7 @@ import os
 from app.views import init_views
 from app.apis import init_apis
 from app.models import init_models
+from app.ext import init_ext
 
 from app.myglobals import appdir
 
@@ -17,6 +18,7 @@ def create_app():
     init_views(app)
     init_apis(app)
     init_models(app)
+    init_ext(app)
     
     return app
 
