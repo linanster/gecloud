@@ -37,7 +37,7 @@ class ResourceConnection(Resource):
 class ResourceReceiveData(Resource):
     @http_basic_auth.login_required
     @viewfunclog
-    def post(self):
+    def put(self):
         try:
             # data =  json.loads(request.get_data())
             # data =  json.loads(request.get_data().decode('utf-8'))
