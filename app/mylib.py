@@ -3,8 +3,11 @@ import json
 import time
 import datetime
 import requests
+import os
 
 from app.models.mysql import db_mysql, TestdataCloud
+
+from app.myglobals import upgradefolder
 
 
 def save_to_database(datas):
@@ -20,3 +23,9 @@ def save_to_database(datas):
         db_mysql.session.commit()
         return 0
 
+
+def load_upgrade_pin():
+    pinfile = os.path.join(upgradefolder, 'pin.txt')
+    pin = open(pinfile).readline()
+    pin = pin.replace('\r', '').replace('\n','')
+    return pin

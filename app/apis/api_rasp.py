@@ -5,7 +5,7 @@ from flask import request
 from app.models.mysql import Factory, Device, TestdataCloud
 from app.myauth import http_basic_auth
 from app.mydecorator import viewfunclog
-from app.mylib import save_to_database
+from app.mylib import save_to_database, load_upgrade_pin
 from app.mylogger import logger
 
 api_rasp = Api(prefix='/api/rasp/')
@@ -20,8 +20,7 @@ api_rasp = Api(prefix='/api/rasp/')
 ########################################
 
 parser = reqparse.RequestParser()
-parser.add_argument('param1', type=str, location=['args'])
-parser.add_argument('param2', type=str, location=['args'])
+parser.add_argument('pin', type=str, location=['args', 'form'])
 
 
 
@@ -33,6 +32,23 @@ class ResourceConnection(Resource):
     @viewfunclog
     def get(self):
         return {'msg':'pong'}
+
+class ResourceVerifyPin(Resource):
+    @viewfunclog
+    def post(self):
+        args = parser.parse_args()
+        pin_client = args.get('pin')
+        pin_server = load_upgrade_pin()
+        if pin_client == pin_server:
+            return {
+                'pin': pin_client,
+                'verified': True,
+            }
+        else:
+            return {
+                'pin': pin_client,
+                'verified': False,
+            }
 
 class ResourceReceiveData(Resource):
     @http_basic_auth.login_required
@@ -61,5 +77,6 @@ class ResourceReceiveData(Resource):
 ##############################
 
 api_rasp.add_resource(ResourceConnection, '/ping')
+api_rasp.add_resource(ResourceVerifyPin, '/verifypin')
 api_rasp.add_resource(ResourceReceiveData, '/upload')
 
