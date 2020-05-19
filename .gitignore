@@ -20,4 +20,4 @@ cache/*
 !cache/.gitkeep
 
 # 4. ignore specified files
-
+files/upgrade/pin.txt.rc
