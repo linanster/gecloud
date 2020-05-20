@@ -43,10 +43,11 @@ class ResourceUsers(Resource):
     @my_login_required
     @viewfunclog
     @marshal_with(fields_users_response)
+    # 获取所有账号信息
     def get(self):
         users = User.query.all()
         response_obj = {
-            'status': 200,
+            'status': 202,
             'msg': 'all users data',
             'data': users
         }
@@ -56,13 +57,15 @@ class ResourceUsers(Resource):
     @my_login_required
     @viewfunclog
     @marshal_with(fields_user_response)
+    # 注册新用户
     def post(self):
         # username = request.json.get('username')
         # password = request.json.get('password')
         username = request.form.get('username')
         password = request.form.get('password')
         if username is None or password is None:
-            abort(400)
+            # 406    NOT Acceptable    用户请求不被服务器接收（比如服务器期望客户端发送某个字段，但是没有发送）
+            abort(406)
         if User.query.filter_by(username = username).first() is not None:
             abort(400)
         # user = User(username = username)
@@ -74,18 +77,18 @@ class ResourceUsers(Resource):
             abort(400)
         # return jsonify({ 'username': user.username }), 200, {'Location': url_for('get_user', id = user.id, _external = True)}        
         response_obj = {
-            'status': 200,
+            'status': 201,
             'msg': 'user {} register success'.format(user.username),
             'data': user
         }
-        return response_obj, 200, {'Location': url_for('get_user', id = user.id, _external = True)}        
+        return response_obj, 201, {'Location': url_for('get_user', id = user.id, _external = True)}
 
     
 class ResourceToken(Resource):
     # @http_basic_auth.login_required
     @my_login_required
     @viewfunclog
-    def post(self):
+    def get(self):
         token = g.user.generate_auth_token()
         return {
             'status': 200,
@@ -102,7 +105,7 @@ class ResourceLoginTest(Resource):
     @viewfunclog
     def get(self):
         return {
-            'status': 200,
+            'status': 202,
             'username': g.user.username,
             'msg': "login success",
         }
