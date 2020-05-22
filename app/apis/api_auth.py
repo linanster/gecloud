@@ -1,5 +1,5 @@
-from flask import request, abort, jsonify, url_for, g
-from flask_restful import Api, Resource, fields, marshal_with, marshal, reqparse
+from flask import request, jsonify, url_for, g
+from flask_restful import Api, Resource, fields, marshal_with, marshal, reqparse, abort
 
 from app.models.sqlite import User
 from app.myauth import http_basic_auth, my_login_required
@@ -65,16 +65,16 @@ class ResourceUsers(Resource):
         password = request.form.get('password')
         if username is None or password is None:
             # 406    NOT Acceptable    用户请求不被服务器接收（比如服务器期望客户端发送某个字段，但是没有发送）
-            abort(406)
+            abort(406, msg='username and password are required')
         if User.query.filter_by(username = username).first() is not None:
-            abort(400)
+            abort(400, msg='username not found')
         # user = User(username = username)
         # user.hash_password(password)
         user = User()
         user.username = username
         user.password = password
         if not user.save():
-            abort(400)
+            abort(400, msg='failed to save database')
         # return jsonify({ 'username': user.username }), 200, {'Location': url_for('get_user', id = user.id, _external = True)}        
         response_obj = {
             'status': 201,

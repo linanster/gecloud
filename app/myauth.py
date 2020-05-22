@@ -1,4 +1,5 @@
-from flask import g, request, abort
+from flask import g, request
+from flask_restful import abort
 from flask_httpauth import HTTPBasicAuth
 
 from app.models.sqlite import User
@@ -31,7 +32,7 @@ def my_login_required(func):
             # 2. try to authenticate with username/password
             user = User.query.filter_by(username = username).first()
             if not user or not user.verify_password(password):
-                abort(401, status='401', msg='authentication failed')
+                abort(401, msg='authentication failed')
         g.user = user
         return func(*args, **kwargs)
     return inner
