@@ -39,13 +39,13 @@ fi
 # cd "$workdir/app"
 
 if [ "$1" == '--start' ]; then
-    echo "gunicorn --workers 1 --bind 0.0.0.0:5001 --timeout 300 --worker-class eventlet wsgi:application_ge_cloud"
+    echo "gunicorn --workers 1 --bind 0.0.0.0:6000 --timeout 300 --worker-class eventlet wsgi:application_ge_cloud"
     # todo --daemon
     # todo --user user1 --group user1
     if [ "$2" == '--nodaemon' ]; then
-        gunicorn --workers 1 --bind 0.0.0.0:5001 --timeout 300 --worker-class eventlet wsgi:application_ge_cloud
+        gunicorn --workers 1 --bind 0.0.0.0:6000 --timeout 300 --worker-class eventlet wsgi:application_ge_cloud
     else
-        gunicorn --daemon --workers 1 --bind 0.0.0.0:5001 --timeout 300 --worker-class eventlet wsgi:application_ge_cloud
+        gunicorn --daemon --workers 1 --bind 0.0.0.0:6000 --timeout 300 --worker-class eventlet wsgi:application_ge_cloud
     fi
     ps -ef | fgrep "gunicorn" | grep "application_ge_cloud" | awk '{if($3==1) print $2}'
     exit 0

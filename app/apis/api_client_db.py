@@ -157,9 +157,9 @@ class ResourceTestdataCloud_response(Resource):
 ##############################
 
 # example
-# http://47.101.215.138:5001/api/db/factory
-# http://47.101.215.138:5001/api/db/testdatacloud
-# http://47.101.215.138:5001/api/db/testdatacloud_by_devicecode/13
+# http://47.101.215.138:6000/api/db/factory
+# http://47.101.215.138:6000/api/db/testdatacloud
+# http://47.101.215.138:6000/api/db/testdatacloud_by_devicecode/13
 
 api_client_db.add_resource(ResourceFactory_response, '/factory', '/factory/all')
 api_client_db.add_resource(ResourceDevice_response, '/device', '/device/all')
