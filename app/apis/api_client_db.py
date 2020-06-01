@@ -156,11 +156,6 @@ class ResourceTestdataCloud_response(Resource):
 ### 4. Resourceful Routing ###
 ##############################
 
-# example
-# http://47.101.215.138:6000/api/db/factory
-# http://47.101.215.138:6000/api/db/testdatacloud
-# http://47.101.215.138:6000/api/db/testdatacloud_by_devicecode/13
-
 api_client_db.add_resource(ResourceFactory_response, '/factory', '/factory/all')
 api_client_db.add_resource(ResourceDevice_response, '/device', '/device/all')
 api_client_db.add_resource(ResourceTestdataCloud_response, '/testdatacloud', '/testdatacloud/all')
