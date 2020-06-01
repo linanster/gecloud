@@ -2,8 +2,8 @@ from flask_restful import Api, Resource, marshal_with, fields, reqparse, abort
 import json, copy, datetime
 
 from app.models.mysql import Factory, Device, TestdataCloud
-from app.myauth import http_basic_auth, my_login_required
-from app.mydecorator import viewfunclog
+from app.lib.myauth import http_basic_auth, my_login_required
+from app.lib.mydecorator import viewfunclog
 
 api_client_db = Api(prefix='/api/db/')
 

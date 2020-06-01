@@ -3,7 +3,7 @@ from threading import Thread, Lock
 from functools import wraps
 from flask import request
 
-from app.mylogger import logger
+from app.lib.mylogger import logger
 
 thread = None
 thread_lock = Lock()

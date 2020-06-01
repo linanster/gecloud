@@ -2,8 +2,8 @@ from flask import request, jsonify, url_for, g
 from flask_restful import Api, Resource, fields, marshal_with, marshal, reqparse, abort
 
 from app.models.sqlite import User
-from app.myauth import http_basic_auth, my_login_required
-from app.mydecorator import viewfunclog
+from app.lib.myauth import http_basic_auth, my_login_required
+from app.lib.mydecorator import viewfunclog
 
 api_auth = Api(prefix='/api/auth/')
 

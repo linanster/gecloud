@@ -3,10 +3,10 @@ import json, copy, datetime
 from flask import request
 
 from app.models.mysql import Factory, Device, TestdataCloud
-from app.myauth import http_basic_auth
-from app.mydecorator import viewfunclog
-from app.mylib import save_to_database, load_upgrade_pin
-from app.mylogger import logger
+from app.lib.myauth import http_basic_auth
+from app.lib.mydecorator import viewfunclog
+from app.lib.mylib import save_to_database, load_upgrade_pin
+from app.lib.mylogger import logger
 
 api_rasp = Api(prefix='/api/rasp/')
 
