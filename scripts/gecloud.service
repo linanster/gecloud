@@ -1,5 +1,6 @@
 [Unit]
 Description=GE Lighting Cloud Service
+After=mariadb.service
 
 [Service]
 Type=forking
