@@ -22,6 +22,11 @@ def create_app():
     
     return app
 
+def envinfo():
+    import sys
+    print('==sys.version==',sys.version)
+    print('==sys.executable==',sys.executable)
+
 
 if __name__ == '__main__':
     app = create_app()

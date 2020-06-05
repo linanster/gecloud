@@ -1,5 +1,6 @@
 from flask_restful import Api, Resource, marshal_with, fields, reqparse, abort
-import json, copy, datetime
+import json, copy
+from datetime import datetime, timedelta
 
 from app.models.mysql import Factory, Device, TestdataCloud
 from app.lib.myauth import http_basic_auth, my_login_required
@@ -68,6 +69,7 @@ fields_device_list_response = {
 fields_testdatacloud_response = {
     'status': fields.Integer,
     'msg': fields.String,
+    'count': fields.Integer,
     # 'data': fields.Nested(fields_testdatacloud_db)
     'data': fields.List(fields.Nested(fields_testdatacloud_db))
 }
@@ -78,8 +80,10 @@ fields_testdatacloud_response = {
 ########################################
 
 parser = reqparse.RequestParser()
-parser.add_argument('factorycode', type=str, location=['args'])
-parser.add_argument('devicecode', type=str, location=['args'])
+parser.add_argument('factorycode', type=str, location=['args', 'form'])
+parser.add_argument('devicecode', type=str, location=['args', 'form'])
+parser.add_argument('datestart', type=str, location=['args', 'form'])
+parser.add_argument('dateend', type=str, location=['args', 'form'])
 
 
 
@@ -88,7 +92,7 @@ parser.add_argument('devicecode', type=str, location=['args'])
 ####################################
 
 
-class ResourceFactory_response(Resource):
+class ResourceFactory(Resource):
     # @http_basic_auth.login_required
     @my_login_required
     @viewfunclog
@@ -104,7 +108,7 @@ class ResourceFactory_response(Resource):
         }
         return response_obj
 
-class ResourceDevice_response(Resource):
+class ResourceDevice(Resource):
     # @http_basic_auth.login_required
     @my_login_required
     @viewfunclog
@@ -120,7 +124,7 @@ class ResourceDevice_response(Resource):
         }
         return response_obj
 
-class ResourceTestdataCloud_response(Resource):
+class ResourceTestdataCloud(Resource):
     # @http_basic_auth.login_required
     @my_login_required
     @viewfunclog
@@ -129,24 +133,38 @@ class ResourceTestdataCloud_response(Resource):
         args = parser.parse_args()
         factorycode = args.get('factorycode')
         devicecode = args.get('devicecode')
-        if factorycode is not None:
-            response_obj = {
-                'status': 201,
-                'msg': 'al the test data with factorycode {}'.format(factorycode),
-                'data': TestdataCloud.query.filter_by(factorycode=factorycode).all() 
-            }
-            return response_obj
-        if devicecode is not None:
-            response_obj = {
-                'status': 201,
-                'msg': 'all the test data with devicecode {}'.format(devicecode),
-                'data': TestdataCloud.query.filter_by(devicecode=devicecode).all() 
-            }
-            return response_obj
+        datestart_str = args.get('datestart')
+        dateend_str = args.get('dateend')
+        myformat = '%Y-%m-%d'
+        datestart = datetime.strptime(datestart_str, myformat) if datestart_str is not None else None
+        dateend = datetime.strptime(dateend_str, myformat) + timedelta(days=1) if dateend_str is not None else None
+        if factorycode is None and devicecode is None:
+            if datestart_str is not None and dateend_str is not None:
+                data = TestdataCloud.query.filter(TestdataCloud.datetime.between(datestart, dateend)).all()
+            else:
+                data = TestdataCloud.query.all()
+        elif factorycode is not None and devicecode is not None:
+            if datestart_str is None or dateend_str is None:
+                data = TestdataCloud.query.filter_by(factorycode=factorycode, devicecode=devicecode).filter(TestdataCloud.datetime.between(datestart, dateend)).all()
+            else:
+                data = TestdataCloud.query.filter_by(factorycode=factorycode, devicecode=devicecode).all()
+        elif factorycode is not None and devicecode is None:
+            if datestart_str is not None and dateend_str is not None:
+                data = TestdataCloud.query.filter_by(factorycode=factorycode).filter(TestdataCloud.datetime.between(datestart, dateend)).all()
+            else:
+                data = TestdataCloud.query.filter_by(factorycode=factorycode).all()
+        elif  factorycode is None and devicecode is not None:
+            if datestart_str is not None and dateend_str is not None:
+                data = TestdataCloud.query.filter_by(devicecode=devicecode).filter(TestdataCloud.datetime.between(datestart, dateend)).all()
+            else:
+                data = TestdataCloud.query.filter_by(devicecode=devicecode).all()
+        else:
+            data = None
         response_obj = {
             'status': 201,
-            'msg': 'all the test data',
-            'data': TestdataCloud.query.all() 
+            'count': len(data),
+            'msg': 'al the test data with factorycode {} devicecode {} between date {} and {}'.format(factorycode, devicecode, datestart_str, dateend_str),
+            'data': data
         }
         return response_obj
 
@@ -156,39 +174,7 @@ class ResourceTestdataCloud_response(Resource):
 ### 4. Resourceful Routing ###
 ##############################
 
-api_client_db.add_resource(ResourceFactory_response, '/factory', '/factory/all')
-api_client_db.add_resource(ResourceDevice_response, '/device', '/device/all')
-api_client_db.add_resource(ResourceTestdataCloud_response, '/testdatacloud', '/testdatacloud/all')
-
-
-#################
-### 5. legacy ###
-#################
-
-class ResourceTestdataCloud_legacy(Resource):
-    def get(self):
-        # 1. fetch data from database
-        datas_raw = TestdataCloud.query.all()
-        datas_rdy = list()
-        for item in datas_raw:
-            entry = copy.deepcopy(item.__dict__)
-            entry.pop('_sa_instance_state')
-            entry.pop('id')
-            datetime_obj = entry.get('datetime')
-            datetime_str = datetime_obj.strftime('%Y-%m-%d %H:%M:%S')
-            datetime_dict = {'datetime': datetime_str}
-            entry.update(datetime_dict)
-            datas_rdy.append(entry)
-
-        # 2. assemble api response message
-        response_msg = dict()
-        timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        dict_timestamp = {'timestamp': timestamp}
-        dict_data = {'testdatas': datas_rdy}
-        response_msg.update(dict_timestamp)
-        response_msg.update(dict_data)
-
-        # 3. return response
-        return response_msg
-
+api_client_db.add_resource(ResourceFactory, '/factory', '/factory/all')
+api_client_db.add_resource(ResourceDevice, '/device', '/device/all')
+api_client_db.add_resource(ResourceTestdataCloud, '/testdatacloud', '/testdatacloud/all')
 
