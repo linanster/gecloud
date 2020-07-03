@@ -4,7 +4,8 @@ import sys
 
 version = sys.argv[1]
 
-timestr = datetime.now().strftime('%Y-%m-%d_%H:%M:%S')
+
+# timestr = datetime.now().strftime('%Y-%m-%d_%H:%M:%S')
 
 pin = uuid4().hex[0:4]
 
@@ -13,4 +14,4 @@ pin = uuid4().hex[0:4]
 
 
 
-print('{}-{}-{}'.format(version, timestr, pin))
+print('{}-{}'.format(version, pin))
