@@ -90,7 +90,10 @@ function init_db(){
 
 function install_service(){
   cd "${scriptdir}"
-  cp gecloud.service /usr/lib/systemd/system
+  # local centos
+  # cp gecloud.service /usr/lib/systemd/system
+  # aws ubuntu
+  cp gecloud.service /lib/systemd/system
   systemctl daemon-reload
   systemctl enable gecloud.service
   systemctl restart gecloud.service
@@ -102,7 +105,10 @@ function uninstall_service(){
   cd "${scriptdir}"
   systemctl stop gecloud.service
   systemctl disable gecloud.service
-  rm -f /usr/lib/systemd/system/gecloud.service
+  # local centos
+  # rm -f /usr/lib/systemd/system/gecloud.service
+  # aws ubuntu
+  rm -f /lib/systemd/system/gecloud.service
   systemctl daemon-reload
   echo
 }
