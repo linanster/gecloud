@@ -5,7 +5,7 @@ DEBUG = False
 # PORT = 5000
 
 SQLALCHEMY_BINDS = {
-    'mysql_gecloud': 'mysql+pymysql://root:123456@localhost:3306/gecloud',
+    'mysql_gecloud': 'mysql+pymysql://root1:123456@localhost:3306/gecloud',
     'sqlite_auth': 'sqlite:///../sqlite/auth.sqlite3'
 }
 

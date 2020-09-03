@@ -36,7 +36,8 @@ class Factory(db_mysql.Model):
         f3 = Factory(3, 'Tonly', '')
         f4 = Factory(4, 'Changhong', '')
         f5 = Factory(5, 'TestFactory', '')
-        db_mysql.session.add_all([f1, f2, f3, f4, f5])
+        f6 = Factory(6, 'Topstar', '')
+        db_mysql.session.add_all([f1, f2, f3, f4, f5, f6])
         db_mysql.session.commit()
 
 
