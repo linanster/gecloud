@@ -54,19 +54,26 @@ class ResourceReceiveData(Resource):
     @http_basic_auth.login_required
     @viewfunclog
     def put(self):
+        # data =  json.loads(request.get_data())
+        # data =  json.loads(request.get_data().decode('utf-8'))
+        data = json.loads(request.get_data(as_text=True))
+        pin = data.get('pin')
+        testdatas = data.get('testdatas')
+        num_recv_1 = data.get('count')
+        num_recv_2 = len(testdatas)
+        if not num_recv_1 == num_recv_2:
+            response_msg = {'errno': 1, 'msg':'count number is not equal to length of testdatas'}
+            logger.info('response_msg: {}'.format(response_msg))
+            return response_msg
+
+        num_recv = num_recv_1
+
         try:
-            # data =  json.loads(request.get_data())
-            # data =  json.loads(request.get_data().decode('utf-8'))
-            data = json.loads(request.get_data(as_text=True))
-            pin = data.get('pin')
-            testdatas = data.get('testdatas')
-            save_to_database(testdatas)
+            save_to_database(testdatas, num_recv)
         except Exception as e:
-            # print(str(e))
-            logger.error(str(e))
-            response_msg = {'errno': 1}
+            response_msg = {'errno': 2, 'msg':str(e)}
         else:
-            response_msg = {'errno':0, 'pin':pin, 'count':len(testdatas)}
+            response_msg = {'errno':0, 'msg':'success', 'pin':pin, 'count':num_recv}
         finally:
             logger.info('response_msg: {}'.format(response_msg))
             return response_msg

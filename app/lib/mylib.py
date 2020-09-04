@@ -10,18 +10,25 @@ from app.models.mysql import db_mysql, TestdataCloud
 from app.myglobals import upgradefolder
 
 
-def save_to_database(datas):
+def save_to_database(datas, count):
+    num_save = 0
     try:
         for data in datas:
             record = TestdataCloud(**data)
             db_mysql.session.add(record) 
+            num_save += 1
     except Exception as e:
         db_mysql.session.rollback()
         raise(e)
-        return 1
+        return -1
     else:
-        db_mysql.session.commit()
-        return 0
+        if num_save != count:
+            db_mysql.session.rollback()
+            raise Exception('save_to_database: number unmatched')
+            return -1
+        else:
+            db_mysql.session.commit()
+            return num_save
 
 
 def load_upgrade_pin():
