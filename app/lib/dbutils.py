@@ -106,11 +106,11 @@ def update_sqlite_stat():
     stat_f6 = Stat.query.filter_by(fcode=6).first()
 
     stat_f1.total = num_f1_total
-    stat_f1.total = num_f1_total
-    stat_f1.total = num_f1_total
-    stat_f1.total = num_f1_total
-    stat_f1.total = num_f1_total
-    stat_f1.total = num_f1_total
+    stat_f2.total = num_f2_total
+    stat_f3.total = num_f3_total
+    stat_f4.total = num_f4_total
+    stat_f5.total = num_f5_total
+    stat_f6.total = num_f6_total
     stat_f1.srate = srate_f1
     stat_f2.srate = srate_f2
     stat_f3.srate = srate_f3
