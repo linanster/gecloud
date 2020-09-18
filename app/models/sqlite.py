@@ -35,6 +35,32 @@ class MyBaseModel(db_sqlite.Model):
             print(e)
             return False    
 
+class Stat(MyBaseModel):
+    __bind_key__ = 'sqlite_stat'
+    __tablename__ = 'stats'
+    # id = db_sqlite.Column(db_sqlite.Integer, nullable=False, autoincrement=True, primary_key=True)
+    fname = db_sqlite.Column(db_sqlite.String(100), nullable=False)
+    fcode = db_sqlite.Column(db_sqlite.Integer, nullable=False)
+    total = db_sqlite.Column(db_sqlite.Integer)
+    srate = db_sqlite.Column(db_sqlite.Float)
+    def __init__(self, fname, fcode, total=0, srate=0):
+        self.fname = fname
+        self.fcode = fcode
+        self.total = total
+        self.srate = srate
+    @staticmethod
+    def seed():
+        s_f1 = Stat('Leedarson', 1)
+        s_f2 = Stat('Innotech', 2)
+        s_f3 = Stat('Tonly', 3)
+        s_f4 = Stat('Changhong', 4)
+        s_f5 = Stat('Test', 5)
+        s_f6 = Stat('Topstar', 6)
+        seeds = [s_f1, s_f2, s_f3, s_f4, s_f5, s_f6]
+        db_sqlite.session.add_all(seeds)
+        db_sqlite.session.commit()
+
+
 
 class User(UserMixin, MyBaseModel):
     __bind_key__ = 'sqlite_auth'

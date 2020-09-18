@@ -27,14 +27,17 @@ def deletedb_mysql():
 
 @manager.command
 def createdb_sqlite():
-    from app.models.sqlite import db_sqlite, User
+    from app.models.sqlite import db_sqlite, Stat, User
     db_sqlite.create_all(bind='sqlite_auth')
+    db_sqlite.create_all(bind='sqlite_stat')
     User.seed()
+    Stat.seed()
 
 @manager.command
 def deletedb_sqlite():
     from app.models.sqlite import db_sqlite
     db_sqlite.drop_all(bind='sqlite_auth')
+    db_sqlite.drop_all(bind='sqlite_stat')
 
 
 if __name__ == '__main__':
