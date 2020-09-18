@@ -91,12 +91,12 @@ def update_sqlite_stat():
             )
         ).all())
 
-    srate_f1 = 0 if num_f1_total == 0 else round(num_f1_failed/num_f1_total,4)
-    srate_f2 = 0 if num_f2_total == 0 else round(num_f2_failed/num_f2_total,4)
-    srate_f3 = 0 if num_f3_total == 0 else round(num_f3_failed/num_f3_total,4)
-    srate_f4 = 0 if num_f4_total == 0 else round(num_f4_failed/num_f4_total,4)
-    srate_f5 = 0 if num_f5_total == 0 else round(num_f5_failed/num_f5_total,4)
-    srate_f6 = 0 if num_f6_total == 0 else round(num_f6_failed/num_f6_total,4)
+    srate_f1 = 0 if num_f1_total == 0 else round((num_f1_total-num_f1_failed)/num_f1_total,4)
+    srate_f2 = 0 if num_f2_total == 0 else round((num_f2_total-num_f2_failed)/num_f2_total,4)
+    srate_f3 = 0 if num_f3_total == 0 else round((num_f3_total-num_f3_failed)/num_f3_total,4)
+    srate_f4 = 0 if num_f4_total == 0 else round((num_f4_total-num_f4_failed)/num_f4_total,4)
+    srate_f5 = 0 if num_f5_total == 0 else round((num_f5_total-num_f5_failed)/num_f5_total,4)
+    srate_f6 = 0 if num_f6_total == 0 else round((num_f6_total-num_f6_failed)/num_f6_total,4)
 
     stat_f1 = Stat.query.filter_by(fcode=1).first()
     stat_f2 = Stat.query.filter_by(fcode=2).first()
