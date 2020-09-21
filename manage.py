@@ -39,6 +39,10 @@ def deletedb_sqlite():
     db_sqlite.drop_all(bind='sqlite_auth')
     db_sqlite.drop_all(bind='sqlite_stat')
 
+@manager.command
+def fix_bool_overall():
+    from app.lib.dbutils import fix_testdatascloud_bool_qualified_overall
+    fix_testdatascloud_bool_qualified_overall()
 
 if __name__ == '__main__':
     manager.run()

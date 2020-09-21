@@ -9,6 +9,7 @@ from sqlalchemy import or_
 
 from app.models.mysql import db_mysql, TestdataCloud
 from app.models.sqlite import db_sqlite, Stat
+from app.lib.mylogger import logger
 
 def get_sqlite_stat_all():
     datas = Stat.query.all()
@@ -126,3 +127,18 @@ def update_sqlite_stat():
     stat_f6.srate = srate_f6
 
     db_sqlite.session.commit()
+
+def fix_testdatascloud_bool_qualified_overall():
+    try:
+        datas = TestdataCloud.query.filter(TestdataCloud.bool_qualified_overall==None).all()
+        for data in datas:
+            if data.bool_qualified_signal and data.bool_qualified_check and data.bool_qualified_scan and data.bool_qualified_deviceid and data.reserve_bool_1:
+                data.bool_qualified_overall = True
+            else:
+                data.bool_qualified_overall = False
+    except Exception as e:
+        db_mysql.session.rollback()
+        logger.error('update_testdatascloud_bool_qualified_overall:')
+        logger.error(str(e))
+    else:
+        db_mysql.session.commit()
