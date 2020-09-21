@@ -30,66 +30,73 @@ def update_sqlite_stat():
     num_f4_total = len(TestdataCloud.query.filter_by(factorycode=4).all())
     num_f5_total = len(TestdataCloud.query.filter_by(factorycode=5).all())
     num_f6_total = len(TestdataCloud.query.filter_by(factorycode=6).all())
-    num_f1_failed = len(TestdataCloud.query.filter(
-            TestdataCloud.factorycode == 1,
-            or_(
-                TestdataCloud.bool_qualified_signal == False,
-                TestdataCloud.bool_qualified_check == False,
-                TestdataCloud.bool_qualified_scan == False,
-                TestdataCloud.bool_qualified_deviceid == False,
-                TestdataCloud.reserve_bool_1 == False,
-            )
-        ).all())
-    num_f2_failed = len(TestdataCloud.query.filter(
-            TestdataCloud.factorycode == 2,
-            or_(
-                TestdataCloud.bool_qualified_signal == False,
-                TestdataCloud.bool_qualified_check == False,
-                TestdataCloud.bool_qualified_scan == False,
-                TestdataCloud.bool_qualified_deviceid == False,
-                TestdataCloud.reserve_bool_1 == False,
-            )
-        ).all())
-    num_f3_failed = len(TestdataCloud.query.filter(
-            TestdataCloud.factorycode == 3,
-            or_(
-                TestdataCloud.bool_qualified_signal == False,
-                TestdataCloud.bool_qualified_check == False,
-                TestdataCloud.bool_qualified_scan == False,
-                TestdataCloud.bool_qualified_deviceid == False,
-                TestdataCloud.reserve_bool_1 == False,
-            )
-        ).all())
-    num_f4_failed = len(TestdataCloud.query.filter(
-            TestdataCloud.factorycode == 4,
-            or_(
-                TestdataCloud.bool_qualified_signal == False,
-                TestdataCloud.bool_qualified_check == False,
-                TestdataCloud.bool_qualified_scan == False,
-                TestdataCloud.bool_qualified_deviceid == False,
-                TestdataCloud.reserve_bool_1 == False,
-            )
-        ).all())
-    num_f5_failed = len(TestdataCloud.query.filter(
-            TestdataCloud.factorycode == 5,
-            or_(
-                TestdataCloud.bool_qualified_signal == False,
-                TestdataCloud.bool_qualified_check == False,
-                TestdataCloud.bool_qualified_scan == False,
-                TestdataCloud.bool_qualified_deviceid == False,
-                TestdataCloud.reserve_bool_1 == False,
-            )
-        ).all())
-    num_f6_failed = len(TestdataCloud.query.filter(
-            TestdataCloud.factorycode == 6,
-            or_(
-                TestdataCloud.bool_qualified_signal == False,
-                TestdataCloud.bool_qualified_check == False,
-                TestdataCloud.bool_qualified_scan == False,
-                TestdataCloud.bool_qualified_deviceid == False,
-                TestdataCloud.reserve_bool_1 == False,
-            )
-        ).all())
+#    num_f1_failed = len(TestdataCloud.query.filter(
+#            TestdataCloud.factorycode == 1,
+#            or_(
+#                TestdataCloud.bool_qualified_signal == False,
+#                TestdataCloud.bool_qualified_check == False,
+#                TestdataCloud.bool_qualified_scan == False,
+#                TestdataCloud.bool_qualified_deviceid == False,
+#                TestdataCloud.reserve_bool_1 == False,
+#            )
+#        ).all())
+#    num_f2_failed = len(TestdataCloud.query.filter(
+#            TestdataCloud.factorycode == 2,
+#            or_(
+#                TestdataCloud.bool_qualified_signal == False,
+#                TestdataCloud.bool_qualified_check == False,
+#                TestdataCloud.bool_qualified_scan == False,
+#                TestdataCloud.bool_qualified_deviceid == False,
+#                TestdataCloud.reserve_bool_1 == False,
+#            )
+#        ).all())
+#    num_f3_failed = len(TestdataCloud.query.filter(
+#            TestdataCloud.factorycode == 3,
+#            or_(
+#                TestdataCloud.bool_qualified_signal == False,
+#                TestdataCloud.bool_qualified_check == False,
+#                TestdataCloud.bool_qualified_scan == False,
+#                TestdataCloud.bool_qualified_deviceid == False,
+#                TestdataCloud.reserve_bool_1 == False,
+#            )
+#        ).all())
+#    num_f4_failed = len(TestdataCloud.query.filter(
+#            TestdataCloud.factorycode == 4,
+#            or_(
+#                TestdataCloud.bool_qualified_signal == False,
+#                TestdataCloud.bool_qualified_check == False,
+#                TestdataCloud.bool_qualified_scan == False,
+#                TestdataCloud.bool_qualified_deviceid == False,
+#                TestdataCloud.reserve_bool_1 == False,
+#            )
+#        ).all())
+#    num_f5_failed = len(TestdataCloud.query.filter(
+#            TestdataCloud.factorycode == 5,
+#            or_(
+#                TestdataCloud.bool_qualified_signal == False,
+#                TestdataCloud.bool_qualified_check == False,
+#                TestdataCloud.bool_qualified_scan == False,
+#                TestdataCloud.bool_qualified_deviceid == False,
+#                TestdataCloud.reserve_bool_1 == False,
+#            )
+#        ).all())
+#    num_f6_failed = len(TestdataCloud.query.filter(
+#            TestdataCloud.factorycode == 6,
+#            or_(
+#                TestdataCloud.bool_qualified_signal == False,
+#                TestdataCloud.bool_qualified_check == False,
+#                TestdataCloud.bool_qualified_scan == False,
+#                TestdataCloud.bool_qualified_deviceid == False,
+#                TestdataCloud.reserve_bool_1 == False,
+#            )
+#        ).all())
+
+    num_f1_failed = len(TestdataCloud.query.filter(TestdataCloud.factorycode==1, TestdataCloud.bool_qualified_overall==False).all())
+    num_f2_failed = len(TestdataCloud.query.filter(TestdataCloud.factorycode==2, TestdataCloud.bool_qualified_overall==False).all())
+    num_f3_failed = len(TestdataCloud.query.filter(TestdataCloud.factorycode==3, TestdataCloud.bool_qualified_overall==False).all())
+    num_f4_failed = len(TestdataCloud.query.filter(TestdataCloud.factorycode==4, TestdataCloud.bool_qualified_overall==False).all())
+    num_f5_failed = len(TestdataCloud.query.filter(TestdataCloud.factorycode==5, TestdataCloud.bool_qualified_overall==False).all())
+    num_f6_failed = len(TestdataCloud.query.filter(TestdataCloud.factorycode==6, TestdataCloud.bool_qualified_overall==False).all())
 
     srate_f1 = 0 if num_f1_total == 0 else round((num_f1_total-num_f1_failed)/num_f1_total,4)
     srate_f2 = 0 if num_f2_total == 0 else round((num_f2_total-num_f2_failed)/num_f2_total,4)
