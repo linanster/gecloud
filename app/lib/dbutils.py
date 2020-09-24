@@ -31,66 +31,13 @@ def update_sqlite_stat():
     num_f4_total = len(TestdataCloud.query.filter_by(factorycode=4).all())
     num_f5_total = len(TestdataCloud.query.filter_by(factorycode=5).all())
     num_f6_total = len(TestdataCloud.query.filter_by(factorycode=6).all())
-#    num_f1_failed = len(TestdataCloud.query.filter(
-#            TestdataCloud.factorycode == 1,
-#            or_(
-#                TestdataCloud.bool_qualified_signal == False,
-#                TestdataCloud.bool_qualified_check == False,
-#                TestdataCloud.bool_qualified_scan == False,
-#                TestdataCloud.bool_qualified_deviceid == False,
-#                TestdataCloud.reserve_bool_1 == False,
-#            )
-#        ).all())
-#    num_f2_failed = len(TestdataCloud.query.filter(
-#            TestdataCloud.factorycode == 2,
-#            or_(
-#                TestdataCloud.bool_qualified_signal == False,
-#                TestdataCloud.bool_qualified_check == False,
-#                TestdataCloud.bool_qualified_scan == False,
-#                TestdataCloud.bool_qualified_deviceid == False,
-#                TestdataCloud.reserve_bool_1 == False,
-#            )
-#        ).all())
-#    num_f3_failed = len(TestdataCloud.query.filter(
-#            TestdataCloud.factorycode == 3,
-#            or_(
-#                TestdataCloud.bool_qualified_signal == False,
-#                TestdataCloud.bool_qualified_check == False,
-#                TestdataCloud.bool_qualified_scan == False,
-#                TestdataCloud.bool_qualified_deviceid == False,
-#                TestdataCloud.reserve_bool_1 == False,
-#            )
-#        ).all())
-#    num_f4_failed = len(TestdataCloud.query.filter(
-#            TestdataCloud.factorycode == 4,
-#            or_(
-#                TestdataCloud.bool_qualified_signal == False,
-#                TestdataCloud.bool_qualified_check == False,
-#                TestdataCloud.bool_qualified_scan == False,
-#                TestdataCloud.bool_qualified_deviceid == False,
-#                TestdataCloud.reserve_bool_1 == False,
-#            )
-#        ).all())
-#    num_f5_failed = len(TestdataCloud.query.filter(
-#            TestdataCloud.factorycode == 5,
-#            or_(
-#                TestdataCloud.bool_qualified_signal == False,
-#                TestdataCloud.bool_qualified_check == False,
-#                TestdataCloud.bool_qualified_scan == False,
-#                TestdataCloud.bool_qualified_deviceid == False,
-#                TestdataCloud.reserve_bool_1 == False,
-#            )
-#        ).all())
-#    num_f6_failed = len(TestdataCloud.query.filter(
-#            TestdataCloud.factorycode == 6,
-#            or_(
-#                TestdataCloud.bool_qualified_signal == False,
-#                TestdataCloud.bool_qualified_check == False,
-#                TestdataCloud.bool_qualified_scan == False,
-#                TestdataCloud.bool_qualified_deviceid == False,
-#                TestdataCloud.reserve_bool_1 == False,
-#            )
-#        ).all())
+
+    num_f1_success = len(TestdataCloud.query.filter(TestdataCloud.factorycode==1, TestdataCloud.bool_qualified_overall==True).all())
+    num_f2_success = len(TestdataCloud.query.filter(TestdataCloud.factorycode==2, TestdataCloud.bool_qualified_overall==True).all())
+    num_f3_success = len(TestdataCloud.query.filter(TestdataCloud.factorycode==3, TestdataCloud.bool_qualified_overall==True).all())
+    num_f4_success = len(TestdataCloud.query.filter(TestdataCloud.factorycode==4, TestdataCloud.bool_qualified_overall==True).all())
+    num_f5_success = len(TestdataCloud.query.filter(TestdataCloud.factorycode==5, TestdataCloud.bool_qualified_overall==True).all())
+    num_f6_success = len(TestdataCloud.query.filter(TestdataCloud.factorycode==6, TestdataCloud.bool_qualified_overall==True).all())
 
     num_f1_failed = len(TestdataCloud.query.filter(TestdataCloud.factorycode==1, TestdataCloud.bool_qualified_overall==False).all())
     num_f2_failed = len(TestdataCloud.query.filter(TestdataCloud.factorycode==2, TestdataCloud.bool_qualified_overall==False).all())
@@ -119,6 +66,21 @@ def update_sqlite_stat():
     stat_f4.total = num_f4_total
     stat_f5.total = num_f5_total
     stat_f6.total = num_f6_total
+
+    stat_f1.success = num_f1_success
+    stat_f2.success = num_f2_success
+    stat_f3.success = num_f3_success
+    stat_f4.success = num_f4_success
+    stat_f5.success = num_f5_success
+    stat_f6.success = num_f6_success
+
+    stat_f1.failed = num_f1_failed
+    stat_f2.failed = num_f2_failed
+    stat_f3.failed = num_f3_failed
+    stat_f4.failed = num_f4_failed
+    stat_f5.failed = num_f5_failed
+    stat_f6.failed = num_f6_failed
+
     stat_f1.srate = srate_f1
     stat_f2.srate = srate_f2
     stat_f3.srate = srate_f3

@@ -42,11 +42,15 @@ class Stat(MyBaseModel):
     fname = db_sqlite.Column(db_sqlite.String(100), nullable=False)
     fcode = db_sqlite.Column(db_sqlite.Integer, nullable=False)
     total = db_sqlite.Column(db_sqlite.Integer)
+    success = db_sqlite.Column(db_sqlite.Integer)
+    failed = db_sqlite.Column(db_sqlite.Integer)
     srate = db_sqlite.Column(db_sqlite.Float)
-    def __init__(self, fname, fcode, total=0, srate=0):
+    def __init__(self, fname, fcode, total=0, success=0, failed=0, srate=0):
         self.fname = fname
         self.fcode = fcode
         self.total = total
+        self.success = success
+        self.failed = failed
         self.srate = srate
     @staticmethod
     def seed():
