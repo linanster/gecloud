@@ -14,6 +14,7 @@
     <th>成功数量</th>
     <th>失败数量</th>
     <th>成功率</th>
+    <th>操作</th>
   </tr>
 
 {% for data in datas %}
@@ -23,12 +24,13 @@
     <td>{{data.success}}</td>
     <td>{{data.failed}}</td>
     <td>{{data.srate}}</td>
+    <td><a href="{{ url_for('blue_rasp.cmd_update_stat', fcode=data.fcode) }}">更新</a></td>
   </tr>
 {% endfor %}
 </table>
 <br>
 
-<a href="{{ url_for('blue_rasp.cmd_update_stat') }}">最新数据</a> | 
+<a href="{{ url_for('blue_rasp.cmd_update_stat', fcode=0) }}">更新全部</a> |
 <a href="{{ url_for('blue_main.vf_index') }}">返回</a>
 
 

@@ -16,5 +16,6 @@ def vf_data():
 @blue_rasp.route('/stat/update')
 @viewfunclog
 def cmd_update_stat():
-    update_sqlite_stat()
+    fcode = request.args.get('fcode')
+    update_sqlite_stat(fcode)
     return redirect(url_for('blue_rasp.vf_data'))
