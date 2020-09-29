@@ -8,9 +8,9 @@ from app.apis import init_apis
 from app.models import init_models
 from app.ext import init_ext
 
-from app.myglobals import appdir
+from app.myglobals import appfolder
 
-settingfile = os.path.join(appdir, 'mysettings.py')
+settingfile = os.path.join(appfolder, 'mysettings.py')
 
 def create_app():
     app = Flask(__name__)

@@ -2,10 +2,10 @@ import logging
 from logging.handlers import RotatingFileHandler
 import os
 
-from  app.myglobals import logdir
+from  app.myglobals import logfolder
 
 
-logfile = os.path.abspath(os.path.join(logdir, "log.txt"))
+logfile = os.path.abspath(os.path.join(logfolder, "log.txt"))
 
 # logger init
 logger = logging.getLogger(__name__)
