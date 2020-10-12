@@ -1,0 +1,39 @@
+{% block doc %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+{% block head %}
+    <meta charset="UTF-8">
+    {# <link rel="shortcut icon" type="image/png" href="{{url_for('static', filename='pic/smile1.jpg')}}"> #}
+    <title>{% block title%}GE-Lighting Cloud{% endblock title %}</title>
+
+    {% block styles %}
+    {% endblock styles %}
+
+    {% block scripts %}
+    {% endblock scripts %}
+{% endblock head %}
+</head>
+
+<body>
+{% block body %}
+    <a href="{{ url_for('blue_main.vf_index') }}">Home</a> |
+    <a href="#">Contact</a> |
+    <a href="#">About</a>
+    {% block login %}
+        {% if current_user.is_authenticated %}
+            | Welcome, {{ current_user.username }} |
+            <a href="{{ url_for('blue_auth.logout') }}">Logout</a>
+        {% else %}
+            | <a href="{{ url_for('blue_auth.login') }}">Login</a>
+        {% endif %}
+    {% endblock login %}
+    <br>
+    <br>
+{% endblock body %}
+</body>
+
+
+</html>
+{% endblock %}
+

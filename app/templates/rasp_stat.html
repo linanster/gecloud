@@ -1,40 +1,33 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>GE-Lighting Cloud</title>
-</head>
-<body>
+{% extends '_mybase.html' %}
+
+{% block body %}
+    {{ super() }}
     <h3>Factory Test Statistics</h3>
 
-<table border="1">
-  <tr>
-    <th>工厂</th>
-    <th>测试总数</th>
-    <th>成功数量</th>
-    <th>失败数量</th>
-    <th>成功率</th>
-    <th>操作</th>
-  </tr>
+    <table border="1">
+        <tr>
+            <th>工厂</th>
+            <th>测试总数</th>
+            <th>成功数量</th>
+            <th>失败数量</th>
+            <th>成功率</th>
+            <th>操作</th>
+        </tr>
 
-{% for data in datas %}
-  <tr>
-    <td>{{data.fname}}</td>
-    <td>{{data.total}}</td>
-    <td>{{data.success}}</td>
-    <td>{{data.failed}}</td>
-    <td>{{data.srate}}</td>
-    <td><a href="{{ url_for('blue_rasp.cmd_update_stat', fcode=data.fcode) }}">更新</a></td>
-  </tr>
-{% endfor %}
-</table>
-<br>
+        {% for data in datas %}
+            <tr>
+                <td>{{ data.fname }}</td>
+                <td>{{ data.total }}</td>
+                <td>{{ data.success }}</td>
+                <td>{{ data.failed }}</td>
+                <td>{{ data.srate }}</td>
+                <td><a href="{{ url_for('blue_rasp.cmd_update_stat', fcode=data.fcode) }}">更新</a></td>
+            </tr>
+        {% endfor %}
+    </table>
+    <br>
 
-<a href="{{ url_for('blue_rasp.cmd_update_stat', fcode=0) }}">更新全部</a> |
-<a href="{{ url_for('blue_main.vf_index') }}">返回</a>
+    <a href="{{ url_for('blue_rasp.cmd_update_stat', fcode=0) }}">更新全部</a> |
+    <a href="{{ url_for('blue_main.vf_index') }}">返回</a>
+{% endblock body %}
 
-
-
-
-</body>
-</html>
