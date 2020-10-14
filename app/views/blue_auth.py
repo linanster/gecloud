@@ -15,15 +15,19 @@ blue_auth = Blueprint('blue_auth', __name__, url_prefix='/auth')
 def login():
     logger.warn('client login from {}'.format(request.remote_addr))
     if request.method == 'GET':
-        return render_template('auth_login.html')
+        next_page = request.args.get('next')
+        return render_template('auth_login.html', next_page=next_page)
     username = request.form.get('username')
     password = request.form.get('password')
+    next_page = request.form.get('next')
     # user = User.query.filter_by(username=username, password=password).first()
     user = User.query.filter_by(username=username).first()
     if not user or not user.verify_password(password):
         return render_template('auth_login.html', warning="login failed!")
+    login_user(user)
+    if next_page:
+        return redirect(next_page)
     else:
-        login_user(user)
         return redirect(url_for('blue_main.vf_index'))
 
 @blue_auth.route('/logout')
