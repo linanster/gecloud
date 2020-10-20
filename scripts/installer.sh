@@ -94,21 +94,28 @@ function install_service(){
   # cp gecloud.service /usr/lib/systemd/system
   # aws ubuntu
   cp gecloud.service /lib/systemd/system
+  cp gecloud-ssl.service /lib/systemd/system
   systemctl daemon-reload
   systemctl enable gecloud.service
+  systemctl enable gecloud-ssl.service
   systemctl restart gecloud.service
+  systemctl restart gecloud-ssl.service
   systemctl status gecloud.service
+  systemctl status gecloud-ssl.service
   echo
 }
 
 function uninstall_service(){
   cd "${scriptdir}"
   systemctl stop gecloud.service
+  systemctl stop gecloud-ssl.service
   systemctl disable gecloud.service
+  systemctl disable gecloud-ssl.service
   # local centos
   # rm -f /usr/lib/systemd/system/gecloud.service
   # aws ubuntu
   rm -f /lib/systemd/system/gecloud.service
+  rm -f /lib/systemd/system/gecloud-ssl.service
   systemctl daemon-reload
   echo
 }

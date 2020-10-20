@@ -1,12 +1,12 @@
 [Unit]
-Description=GE Lighting Cloud Service
+Description=GE Lighting Cloud(ssl) Service
 After=mariadb.service
 
 [Service]
 Type=forking
-ExecStart=/git/gecloud/run.sh --start
+ExecStart=/git/gecloud/run.sh --start --ssl
 ExecReload=
-ExecStop=/git/gecloud/run.sh --stop
+ExecStop=/git/gecloud/run.sh --stop --ssl
 Restart=on-failure
 RestartSec=42s
 

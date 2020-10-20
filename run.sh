@@ -3,11 +3,11 @@
 set -o errexit
 
 if [ $# -eq 0 ]; then
-    echo "run.sh [--start [--ssl --nodaemon]] [--stop] [--status] [--init]"
+    echo "run.sh [--start [--ssl --nodaemon]] [--stop [--ssl]] [--status] [--init]"
     exit 1
 fi
 if [ "$1" != "--start" -a "$1" != "--stop" -a "$1" != "--status" -a "$1" != "--init" ]; then
-    echo "run.sh [--start [--ssl --nodaemon]] [--stop] [--status] [--init]"
+    echo "run.sh [--start [--ssl --nodaemon]] [--stop [--ssl]] [--status] [--init]"
     exit 1
 fi
 
@@ -66,7 +66,11 @@ if [ "$1" == '--start' ]; then
 fi
 
 if [ "$1" == "--stop" ]; then
-    pid=$(ps -ef | fgrep "gunicorn" | grep "application_ge_cloud" | awk '{if($3==1) print $2}')
+    if [ "$2" == "--ssl" ]; then
+        pid=$(ps -ef | fgrep "gunicorn" | grep "application_ge_cloud" | grep 5101 | awk '{if($3==1) print $2}')
+    else
+        pid=$(ps -ef | fgrep "gunicorn" | grep "application_ge_cloud" | grep 5100 | awk '{if($3==1) print $2}')
+    fi
     if [ "$pid" == "" ]; then
         echo "not running" 
     else
@@ -75,6 +79,7 @@ if [ "$1" == "--stop" ]; then
     fi
     exit 0
 fi
+
 
 if [ "$1" == "--status" ]; then
     pid=$(ps -ef | fgrep "gunicorn" | grep "application_ge_cloud" | awk '{if($3==1) print $2}')
