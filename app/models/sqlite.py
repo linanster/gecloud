@@ -8,6 +8,7 @@ from flask_login import UserMixin
 import uuid
 
 from app.ext.cache import cache
+from app.myglobals import ROLES
 
 db_sqlite = SQLAlchemy(use_native_unicode='utf8')
 
@@ -71,10 +72,12 @@ class User(UserMixin, MyBaseModel):
     __tablename__ = 'users'
     username = db_sqlite.Column(db_sqlite.String(100), nullable=False, unique=True)
     _password = db_sqlite.Column(db_sqlite.String(256), nullable=False)
+    _permission = db_sqlite.Column(db_sqlite.Integer, nullable=False)
     desc = db_sqlite.Column(db_sqlite.String(100))
-    def __init__(self, username='nousername', password='nopassword'):
+    def __init__(self, username='nousername', password='nopassword', permission=0):
         self.username = username
         self._password = generate_password_hash(password)
+        self._permission = permission
 
     @property
     def password(self):
@@ -87,22 +90,6 @@ class User(UserMixin, MyBaseModel):
 
     def verify_password(self, password):
         return check_password_hash(self._password, password)
-
-    def generate_auth_token_legacy1(self, expires=600):
-        s = Serializer(current_app.config.get('SECRET_KEY'), expires_in = expires)
-        return s.dumps({'id': self.id})
-
-    @staticmethod
-    def verify_auth_token_legacy1(token):
-        s = Serializer(current_app.config.get('SECRET_KEY'))
-        try:
-            data = s.loads(token)
-        except SignatureExpired:
-            return None # valid token, but expired
-        except BadSignature:
-            return None # invalid token
-        user = User.query.get(data['id'])
-        return user
 
     def generate_auth_token(self, expire=600): 
         token = uuid.uuid4().hex
@@ -117,12 +104,17 @@ class User(UserMixin, MyBaseModel):
             return None
         return User.query.get(userid)
 
+    def check_permission(self, permission):
+        return permission & self._permission == permission
+
 
     @staticmethod
     def seed():
-        user1 = User('user1', '123456')
-        user2 = User('user2', '123456')
-        seeds = [user1, user2]
+        user1 = User('user1', '123456', ROLES.VIEW)
+        user2 = User('user2', '9e1i9htin9sh!', ROLES.ADMIN)
+        viewer = User('viewer', '123456', ROLES.VIEW)
+        admin = User('admin', '9e1i9htin9sh!', ROLES.ADMIN)
+        seeds = [user1, user2, viewer, admin]
         db_sqlite.session.add_all(seeds)
         db_sqlite.session.commit()
 

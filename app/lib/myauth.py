@@ -1,6 +1,9 @@
 from flask import g, request
 from flask_restful import abort
 from flask_httpauth import HTTPBasicAuth
+from flask_login import current_user
+
+from functools import wraps
 
 from app.models.sqlite import User
 
@@ -36,4 +39,25 @@ def my_login_required(func):
         g.user = user
         return func(*args, **kwargs)
     return inner
+
+
+# 1. this is decorator
+# 2. it should be called right after @login_required
+# 3. current_user is fulfilled by flask_login.login_user
+def my_page_permission_required(permission):
+    def inner1(func):
+        @wraps(func)
+        def inner2(*args, **kwargs):
+            # if not g.user.check_permission(permission):
+            #     abort(403, status=403, username=g.user.username, msg='authorization failed')
+            if not current_user.check_permission(permission):
+                from flask import abort
+                # resp = Response()
+                # resp.data = 'Permission Required!'
+                # resp.status_code = 403
+                # abort(resp)
+                abort(403)
+            return func(*args, **kwargs)
+        return inner2
+    return inner1
 

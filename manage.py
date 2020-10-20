@@ -29,21 +29,28 @@ def deletedb_mysql():
     print('==delete mysql tables==')
 
 @manager.command
-def createdb_sqlite():
+def createdb_sqlite(stat=False, auth=False):
+    "--stat --auth"
     from app.models.sqlite import db_sqlite, Stat, User
-    db_sqlite.create_all(bind='sqlite_auth')
-    db_sqlite.create_all(bind='sqlite_stat')
-    print('==create sqlite tables==')
-    User.seed()
-    Stat.seed()
-    print('==initialize sqlite datas==')
+    if stat:
+        db_sqlite.create_all(bind='sqlite_stat')
+        Stat.seed()
+        print('==create sqlite stats table==')
+    if auth:
+        db_sqlite.create_all(bind='sqlite_auth')
+        User.seed()
+        print('==create sqlite users table==')
 
 @manager.command
-def deletedb_sqlite():
+def deletedb_sqlite(stat=False, auth=False):
+    "--stat --auth"
     from app.models.sqlite import db_sqlite
-    db_sqlite.drop_all(bind='sqlite_auth')
-    db_sqlite.drop_all(bind='sqlite_stat')
-    print('==delete sqlite tables==')
+    if stat:
+        db_sqlite.drop_all(bind='sqlite_stat')
+        print('==delete sqlite stats table==')
+    if auth:
+        db_sqlite.drop_all(bind='sqlite_auth')
+        print('==delete sqlite users table==')
 
 @manager.command
 def fix_bool_overall():
@@ -53,6 +60,7 @@ def fix_bool_overall():
 
 @manager.command
 def cleanup(log=False, pycache=False, all=False):
+    "--log --pycache --all"
     from app.lib.myutils import cleanup_log, cleanup_pycache
     if all or log:
         print('==cleanup log==')
