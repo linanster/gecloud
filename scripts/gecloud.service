@@ -4,7 +4,7 @@ After=mariadb.service
 
 [Service]
 Type=forking
-ExecStart=/git/gecloud/run.sh --start
+ExecStart=/git/gecloud/run.sh --start --ssl
 ExecReload=
 ExecStop=/git/gecloud/run.sh --stop
 Restart=on-failure

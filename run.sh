@@ -3,11 +3,11 @@
 set -o errexit
 
 if [ $# -eq 0 ]; then
-    echo "run.sh [--start] [--stop] [--status] [--init]"
+    echo "run.sh [--start [--ssl --nodaemon]] [--stop] [--status] [--init]"
     exit 1
 fi
 if [ "$1" != "--start" -a "$1" != "--stop" -a "$1" != "--status" -a "$1" != "--init" ]; then
-    echo "run.sh [--start] [--stop] [--status] [--init]"
+    echo "run.sh [--start [--ssl --nodaemon]] [--stop] [--status] [--init]"
     exit 1
 fi
 
@@ -39,15 +39,29 @@ fi
 # cd "$workdir/app"
 
 if [ "$1" == '--start' ]; then
-    echo "gunicorn --workers 1 --bind 0.0.0.0:5100 --timeout 300 --worker-class eventlet wsgi:application_ge_cloud"
-    # todo --daemon
-    # todo --user user1 --group user1
-    if [ "$2" == '--nodaemon' ]; then
-        gunicorn --workers 1 --bind 0.0.0.0:5100 --timeout 300 --worker-class eventlet wsgi:application_ge_cloud
-    else
-        gunicorn --daemon --workers 1 --bind 0.0.0.0:5100 --timeout 300 --worker-class eventlet wsgi:application_ge_cloud
-    fi
-    ps -ef | fgrep "gunicorn" | grep "application_ge_cloud" | awk '{if($3==1) print $2}'
+    case "$2$3" in
+        "")
+            gunicorn --daemon --workers 1 --bind 0.0.0.0:5100 --timeout 300 --worker-class eventlet wsgi:application_ge_cloud
+            echo 'gunicorn --daemon --workers 1 --bind 0.0.0.0:5100 --timeout 300 --worker-class eventlet wsgi:application_ge_cloud'
+            ;;
+        "--nodaemon")
+            gunicorn --workers 1 --bind 0.0.0.0:5100 --timeout 300 --worker-class eventlet wsgi:application_ge_cloud
+            echo "gunicorn --workers 1 --bind 0.0.0.0:5100 --timeout 300 --worker-class eventlet wsgi:application_ge_cloud"
+            ;;
+        "--ssl")
+            gunicorn --daemon --workers 1 --bind 0.0.0.0:5101 --keyfile ./cert/server.key --certfile ./cert/server.cert --timeout 300 --worker-class eventlet wsgi:application_ge_cloud
+            echo 'gunicorn --daemon --workers 1 --bind 0.0.0.0:5101 --keyfile ./cert/server.key --certfile ./cert/server.cert --timeout 300 --worker-class eventlet wsgi:application_ge_cloud'
+            ;;
+        "--ssl--nodaemon")
+            gunicorn --workers 1 --bind 0.0.0.0:5101 --keyfile ./cert/server.key --certfile ./cert/server.cert --timeout 300 --worker-class eventlet wsgi:application_ge_cloud
+            echo 'gunicorn --workers 1 --bind 0.0.0.0:5101 --keyfile ./cert/server.key --certfile ./cert/server.cert --timeout 300 --worker-class eventlet wsgi:application_ge_cloud'
+            ;;
+        *)
+            echo 'wrong options!' 
+            exit 1
+    esac
+    pid=$(ps -ef | fgrep "gunicorn" | grep "application_ge_cloud" | awk '{if($3==1) print $2}')
+    echo "$pid"
     exit 0
 fi
 
