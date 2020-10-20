@@ -12,12 +12,15 @@ log/*
 scripts/ignore/*
 sqlite/*
 cache/*
+cert/*.key
+cert/*.cert
 
 # 3. exceptions that not ignore
 !log/.gitkeep
 !scripts/ignore/.gitkeep
 !sqlite/.gitkeep
 !cache/.gitkeep
+!cert/.gitkeep
 
 # 4. ignore specified files
 files/upgrade/pin.txt.rc
