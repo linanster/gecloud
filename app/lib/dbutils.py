@@ -25,8 +25,34 @@ def get_mysql_testdatacloud_by_factorycode(code):
     datas = TestdataCloud.query.filter_by(factorycode=code).all()
     return datas
 
-
 def update_sqlite_stat(fcode):
+    fcodes = list()
+    fcodes_all = list(map(lambda x:x[0], Stat.query.with_entities(Stat.fcode).all()))
+    if fcode == 0:
+        fcodes = fcodes_all
+    elif fcode != 0 and fcode in fcodes_all:
+        fcodes.append(fcode)
+    else:
+        pass
+    try:
+        for fcode in fcodes:
+            num_total = len(TestdataCloud.query.filter_by(factorycode=fcode).yield_per(PER_QUERY_COUNT).all())
+            num_success = len(TestdataCloud.query.filter(TestdataCloud.factorycode==fcode, TestdataCloud.bool_qualified_overall==True).yield_per(PER_QUERY_COUNT).all())
+            num_failed = len(TestdataCloud.query.filter(TestdataCloud.factorycode==fcode, TestdataCloud.bool_qualified_overall==False).yield_per(PER_QUERY_COUNT).all())
+            num_srate = 0 if num_total == 0 else round(num_success/num_total,4)
+            stat = Stat.query.filter_by(fcode=fcode).first()
+            stat.total = num_total
+            stat.success = num_success
+            stat.failed = num_failed
+            stat.srate = num_srate
+    except Exception as e:
+        db_sqlite.session.rollback()
+        logger.error('update_sqlite_stat:')
+        logger.error(str(e))
+    else:
+        db_sqlite.session.commit()
+
+def update_sqlite_stat_legacy(fcode):
 
     if fcode in [0, 1]:
         num_f1_total = len(TestdataCloud.query.filter_by(factorycode=1).yield_per(PER_QUERY_COUNT).all())
