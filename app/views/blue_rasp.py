@@ -18,7 +18,7 @@ def vf_data():
     datas = get_sqlite_stat_all()
     return render_template('rasp_stat.html', datas=datas)
 
-@blue_rasp.route('/stat/update')
+@blue_rasp.route('/stat/update', methods=['POST'])
 @login_required
 @my_page_permission_required(ROLES.ADMIN)
 @viewfunclog
