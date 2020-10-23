@@ -11,6 +11,8 @@ from app.models.mysql import db_mysql, TestdataCloud
 from app.models.sqlite import db_sqlite, Stat
 from app.lib.mylogger import logger
 
+from app.myglobals import PER_QUERY_COUNT
+
 def get_sqlite_stat_all():
     datas = Stat.query.all()
     return datas
@@ -27,9 +29,9 @@ def get_mysql_testdatacloud_by_factorycode(code):
 def update_sqlite_stat(fcode):
 
     if fcode in [0, 1]:
-        num_f1_total = len(TestdataCloud.query.filter_by(factorycode=1).all())
-        num_f1_success = len(TestdataCloud.query.filter(TestdataCloud.factorycode==1, TestdataCloud.bool_qualified_overall==True).all())
-        num_f1_failed = len(TestdataCloud.query.filter(TestdataCloud.factorycode==1, TestdataCloud.bool_qualified_overall==False).all())
+        num_f1_total = len(TestdataCloud.query.filter_by(factorycode=1).yield_per(PER_QUERY_COUNT).all())
+        num_f1_success = len(TestdataCloud.query.filter(TestdataCloud.factorycode==1, TestdataCloud.bool_qualified_overall==True).yield_per(PER_QUERY_COUNT).all())
+        num_f1_failed = len(TestdataCloud.query.filter(TestdataCloud.factorycode==1, TestdataCloud.bool_qualified_overall==False).yield_per(PER_QUERY_COUNT).all())
         num_f1_srate = 0 if num_f1_total == 0 else round(num_f1_success/num_f1_total,4)
         stat_f1 = Stat.query.filter_by(fcode=1).first()
         stat_f1.total = num_f1_total
@@ -38,9 +40,9 @@ def update_sqlite_stat(fcode):
         stat_f1.srate = num_f1_srate
 
     if fcode in [0, 2]:
-        num_f2_total = len(TestdataCloud.query.filter_by(factorycode=2).all())
-        num_f2_success = len(TestdataCloud.query.filter(TestdataCloud.factorycode==2, TestdataCloud.bool_qualified_overall==True).all())
-        num_f2_failed = len(TestdataCloud.query.filter(TestdataCloud.factorycode==2, TestdataCloud.bool_qualified_overall==False).all())
+        num_f2_total = len(TestdataCloud.query.filter_by(factorycode=2).yield_per(PER_QUERY_COUNT).all())
+        num_f2_success = len(TestdataCloud.query.filter(TestdataCloud.factorycode==2, TestdataCloud.bool_qualified_overall==True).yield_per(PER_QUERY_COUNT).all())
+        num_f2_failed = len(TestdataCloud.query.filter(TestdataCloud.factorycode==2, TestdataCloud.bool_qualified_overall==False).yield_per(PER_QUERY_COUNT).all())
         num_f2_srate = 0 if num_f2_total == 0 else round(num_f2_success/num_f2_total,4)
         stat_f2 = Stat.query.filter_by(fcode=2).first()
         stat_f2.total = num_f2_total
@@ -49,9 +51,9 @@ def update_sqlite_stat(fcode):
         stat_f2.srate = num_f2_srate
 
     if fcode in [0, 3]:
-        num_f3_total = len(TestdataCloud.query.filter_by(factorycode=3).all())
-        num_f3_success = len(TestdataCloud.query.filter(TestdataCloud.factorycode==3, TestdataCloud.bool_qualified_overall==True).all())
-        num_f3_failed = len(TestdataCloud.query.filter(TestdataCloud.factorycode==3, TestdataCloud.bool_qualified_overall==False).all())
+        num_f3_total = len(TestdataCloud.query.filter_by(factorycode=3).yield_per(PER_QUERY_COUNT).all())
+        num_f3_success = len(TestdataCloud.query.filter(TestdataCloud.factorycode==3, TestdataCloud.bool_qualified_overall==True).yield_per(PER_QUERY_COUNT).all())
+        num_f3_failed = len(TestdataCloud.query.filter(TestdataCloud.factorycode==3, TestdataCloud.bool_qualified_overall==False).yield_per(PER_QUERY_COUNT).all())
         num_f3_srate = 0 if num_f3_total == 0 else round(num_f3_success/num_f3_total,4)
         stat_f3 = Stat.query.filter_by(fcode=3).first()
         stat_f3.total = num_f3_total
@@ -60,9 +62,9 @@ def update_sqlite_stat(fcode):
         stat_f3.srate = num_f3_srate
 
     if fcode in [0, 4]:
-        num_f4_total = len(TestdataCloud.query.filter_by(factorycode=4).all())
-        num_f4_success = len(TestdataCloud.query.filter(TestdataCloud.factorycode==4, TestdataCloud.bool_qualified_overall==True).all())
-        num_f4_failed = len(TestdataCloud.query.filter(TestdataCloud.factorycode==4, TestdataCloud.bool_qualified_overall==False).all())
+        num_f4_total = len(TestdataCloud.query.filter_by(factorycode=4).yield_per(PER_QUERY_COUNT).all())
+        num_f4_success = len(TestdataCloud.query.filter(TestdataCloud.factorycode==4, TestdataCloud.bool_qualified_overall==True).yield_per(PER_QUERY_COUNT).all())
+        num_f4_failed = len(TestdataCloud.query.filter(TestdataCloud.factorycode==4, TestdataCloud.bool_qualified_overall==False).yield_per(PER_QUERY_COUNT).all())
         num_f4_srate = 0 if num_f4_total == 0 else round(num_f4_success/num_f4_total,4)
         stat_f4 = Stat.query.filter_by(fcode=4).first()
         stat_f4.total = num_f4_total
@@ -71,9 +73,9 @@ def update_sqlite_stat(fcode):
         stat_f4.srate = num_f4_srate
 
     if fcode in [0, 5]:
-        num_f5_total = len(TestdataCloud.query.filter_by(factorycode=5).all())
-        num_f5_success = len(TestdataCloud.query.filter(TestdataCloud.factorycode==5, TestdataCloud.bool_qualified_overall==True).all())
-        num_f5_failed = len(TestdataCloud.query.filter(TestdataCloud.factorycode==5, TestdataCloud.bool_qualified_overall==False).all())
+        num_f5_total = len(TestdataCloud.query.filter_by(factorycode=5).yield_per(PER_QUERY_COUNT).all())
+        num_f5_success = len(TestdataCloud.query.filter(TestdataCloud.factorycode==5, TestdataCloud.bool_qualified_overall==True).yield_per(PER_QUERY_COUNT).all())
+        num_f5_failed = len(TestdataCloud.query.filter(TestdataCloud.factorycode==5, TestdataCloud.bool_qualified_overall==False).yield_per(PER_QUERY_COUNT).all())
         num_f5_srate = 0 if num_f5_total == 0 else round(num_f5_success/num_f5_total,4)
         stat_f5 = Stat.query.filter_by(fcode=5).first()
         stat_f5.total = num_f5_total
@@ -82,9 +84,9 @@ def update_sqlite_stat(fcode):
         stat_f5.srate = num_f5_srate
 
     if fcode in [0, 6]:
-        num_f6_total = len(TestdataCloud.query.filter_by(factorycode=6).all())
-        num_f6_success = len(TestdataCloud.query.filter(TestdataCloud.factorycode==6, TestdataCloud.bool_qualified_overall==True).all())
-        num_f6_failed = len(TestdataCloud.query.filter(TestdataCloud.factorycode==6, TestdataCloud.bool_qualified_overall==False).all())
+        num_f6_total = len(TestdataCloud.query.filter_by(factorycode=6).yield_per(PER_QUERY_COUNT).all())
+        num_f6_success = len(TestdataCloud.query.filter(TestdataCloud.factorycode==6, TestdataCloud.bool_qualified_overall==True).yield_per(PER_QUERY_COUNT).all())
+        num_f6_failed = len(TestdataCloud.query.filter(TestdataCloud.factorycode==6, TestdataCloud.bool_qualified_overall==False).yield_per(PER_QUERY_COUNT).all())
         num_f6_srate = 0 if num_f6_total == 0 else round(num_f6_success/num_f6_total,4)
         stat_f6 = Stat.query.filter_by(fcode=6).first()
         stat_f6.total = num_f6_total

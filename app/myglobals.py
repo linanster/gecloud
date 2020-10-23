@@ -23,3 +23,6 @@ class PERMISSIONS(object):
 class ROLES(object):
     VIEW = PERMISSIONS.P1
     ADMIN = PERMISSIONS.P1+PERMISSIONS.P2
+
+# massive query per count
+PER_QUERY_COUNT = 10000
