@@ -26,4 +26,5 @@ def cmd_update_stat():
     # type of fcode default is str, not int
     fcode = request.args.get('fcode', type=int)
     update_sqlite_stat(fcode)
+    flash('数据已开始后台刷新，请稍后查看')
     return redirect(url_for('blue_rasp.vf_data'))

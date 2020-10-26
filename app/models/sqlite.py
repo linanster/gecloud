@@ -46,13 +46,17 @@ class Stat(MyBaseModel):
     success = db_sqlite.Column(db_sqlite.Integer)
     failed = db_sqlite.Column(db_sqlite.Integer)
     srate = db_sqlite.Column(db_sqlite.Float)
-    def __init__(self, fname, fcode, total=0, success=0, failed=0, srate=0):
+    last_upload_time = db_sqlite.Column(db_sqlite.DateTime)
+    last_update_time = db_sqlite.Column(db_sqlite.DateTime)
+    def __init__(self, fname, fcode, total=0, success=0, failed=0, srate=0, last_upload_time=None, last_update_time=None):
         self.fname = fname
         self.fcode = fcode
         self.total = total
         self.success = success
         self.failed = failed
         self.srate = srate
+        self.last_upload_time = last_upload_time
+        self.last_update_time = last_update_time
     @staticmethod
     def seed():
         s_f1 = Stat('Leedarson', 1)

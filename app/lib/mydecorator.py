@@ -9,11 +9,13 @@ thread = None
 thread_lock = Lock()
 
 def processmaker(func):
+    @wraps(func)
     def inner(*args, **kwargs):
         Process(target=func, args=args, kwargs=kwargs).start()
     return inner
 
 def threadmaker(func):
+    @wraps(func)
     def inner(*args, **kwargs):
         global thread
         with thread_lock:

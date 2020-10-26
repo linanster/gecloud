@@ -11,6 +11,8 @@
             <th>成功数量</th>
             <th>失败数量</th>
             <th>成功率</th>
+            <th>最近上传时间</th>
+            <th>最近更新时间</th>
             <th>操作</th>
         </tr>
 
@@ -21,6 +23,8 @@
                 <td>{{ data.success }}</td>
                 <td>{{ data.failed }}</td>
                 <td>{{ data.srate }}</td>
+                <td>{{ data.last_upload_time }}</td>
+                <td>{{ data.last_update_time }}</td>
                 {# <td><a href="{{ url_for('blue_rasp.cmd_update_stat', fcode=data.fcode) }}">更新</a></td> #}
                 <td><form style="display: inline" action="{{ url_for('blue_rasp.cmd_update_stat', fcode=data.fcode) }}" method="post"><button type="submit">更新</button></form></td>
             </tr>
@@ -30,6 +34,16 @@
 
     {# <a href="{{ url_for('blue_rasp.cmd_update_stat', fcode=0) }}">更新全部</a> | #}
     <form style="display: inline" action="{{ url_for('blue_rasp.cmd_update_stat', fcode=0) }}" method="post"><button type="submit">更新全部</button></form> |
+    <a href="{{ url_for('blue_rasp.vf_data') }}">刷新</a> |
     <a href="{{ url_for('blue_main.vf_index') }}">返回</a>
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <p style="color:red">{{ message }}</p>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
 {% endblock body %}
 

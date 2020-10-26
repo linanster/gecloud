@@ -10,6 +10,7 @@ from sqlalchemy import or_
 from app.models.mysql import db_mysql, TestdataCloud
 from app.models.sqlite import db_sqlite, Stat
 from app.lib.mylogger import logger
+from app.lib.mydecorator import processmaker, threadmaker
 
 from app.myglobals import PER_QUERY_COUNT
 
@@ -25,6 +26,18 @@ def get_mysql_testdatacloud_by_factorycode(code):
     datas = TestdataCloud.query.filter_by(factorycode=code).all()
     return datas
 
+def update_sqlite_lastuploadtime(fcode):
+    try:
+        stat = Stat.query.filter_by(fcode=fcode).first()
+        stat.last_upload_time = datetime.datetime.now().replace(microsecond=0)
+    except Exception as e:
+        db_sqlite.session.rollback()
+        logger.error('update_sqlite_lastuploadtime:')
+        logger.error(str(e))
+    else:
+        db_sqlite.session.commit()
+
+@processmaker
 def update_sqlite_stat(fcode):
     fcodes = list()
     fcodes_all = list(map(lambda x:x[0], Stat.query.with_entities(Stat.fcode).all()))
@@ -34,6 +47,10 @@ def update_sqlite_stat(fcode):
         fcodes.append(fcode)
     else:
         pass
+
+    # mimic time consuming
+    # time.sleep(5)
+
     try:
         for fcode in fcodes:
             num_total = len(TestdataCloud.query.filter_by(factorycode=fcode).yield_per(PER_QUERY_COUNT).all())
@@ -45,6 +62,7 @@ def update_sqlite_stat(fcode):
             stat.success = num_success
             stat.failed = num_failed
             stat.srate = num_srate
+            stat.last_update_time = datetime.datetime.now().replace(microsecond=0)
     except Exception as e:
         db_sqlite.session.rollback()
         logger.error('update_sqlite_stat:')
