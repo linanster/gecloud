@@ -6,6 +6,7 @@ import requests
 import os
 
 from sqlalchemy import or_
+from dateutil import tz
 
 from app.models.mysql import db_mysql, TestdataCloud
 from app.models.sqlite import db_sqlite, Stat
@@ -26,10 +27,20 @@ def get_mysql_testdatacloud_by_factorycode(code):
     datas = TestdataCloud.query.filter_by(factorycode=code).all()
     return datas
 
+def compare_datetime_upload_update(fcode):
+    try:
+        stat = Stat.query.filter_by(fcode=fcode).first()
+        if stat.last_upload_time is None or stat.last_update_time is None:
+            return False
+        return stat.last_upload_time > stat.last_update_time
+    except Exception as e:
+        print(e)
+        return False
+
 def update_sqlite_lastuploadtime(fcode):
     try:
         stat = Stat.query.filter_by(fcode=fcode).first()
-        stat.last_upload_time = datetime.datetime.now().replace(microsecond=0)
+        stat.last_upload_time = datetime.datetime.now(tz=tz.gettz('Asia/Shanghai')).replace(microsecond=0)
     except Exception as e:
         db_sqlite.session.rollback()
         logger.error('update_sqlite_lastuploadtime:')
@@ -49,7 +60,7 @@ def update_sqlite_stat(fcode):
         pass
 
     # mimic time consuming
-    # time.sleep(5)
+    # time.sleep(20)
 
     try:
         for fcode in fcodes:
@@ -62,7 +73,7 @@ def update_sqlite_stat(fcode):
             stat.success = num_success
             stat.failed = num_failed
             stat.srate = num_srate
-            stat.last_update_time = datetime.datetime.now().replace(microsecond=0)
+            stat.last_update_time = datetime.datetime.now(tz=tz.gettz('Asia/Shanghai')).replace(microsecond=0)
     except Exception as e:
         db_sqlite.session.rollback()
         logger.error('update_sqlite_stat:')

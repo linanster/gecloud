@@ -26,7 +26,11 @@
                 <td>{{ data.last_upload_time }}</td>
                 <td>{{ data.last_update_time }}</td>
                 {# <td><a href="{{ url_for('blue_rasp.cmd_update_stat', fcode=data.fcode) }}">更新</a></td> #}
-                <td><form style="display: inline" action="{{ url_for('blue_rasp.cmd_update_stat', fcode=data.fcode) }}" method="post"><button type="submit">更新</button></form></td>
+                {% if need_update(data.fcode) %}
+                    <td><form style="display: inline" action="{{ url_for('blue_rasp.cmd_update_stat', fcode=data.fcode) }}" method="post"><button type="submit" style="color:green">更新</button></form></td>
+                {% else %}
+                    <td><form style="display: inline" action="{{ url_for('blue_rasp.cmd_update_stat', fcode=data.fcode) }}" method="post"><button type="submit" style="color:red">更新</button></form></td>
+                {% endif %}
             </tr>
         {% endfor %}
     </table>

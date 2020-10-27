@@ -12,6 +12,8 @@ Usage: run.sh  --start [--ssl --nodaemon]
 "
 workdir=$(cd "$(dirname $0)" && pwd)
 
+workers=3
+
 # 2.functions definition
 
 function activate_venv() {
@@ -44,20 +46,20 @@ function run_start(){
     activate_venv
     case "$1$2" in
         "")
-            gunicorn --daemon --workers 1 --bind 0.0.0.0:5100 --timeout 300 --worker-class eventlet wsgi:application_ge_cloud
-            echo 'gunicorn --daemon --workers 1 --bind 0.0.0.0:5100 --timeout 300 --worker-class eventlet wsgi:application_ge_cloud'
+            gunicorn --daemon --workers ${workers} --bind 0.0.0.0:5100 --timeout 300 --worker-class eventlet wsgi:application_ge_cloud
+            echo 'gunicorn --daemon --workers ${workers} --bind 0.0.0.0:5100 --timeout 300 --worker-class eventlet wsgi:application_ge_cloud'
             ;;
         "--nodaemon")
-            gunicorn --workers 1 --bind 0.0.0.0:5100 --timeout 300 --worker-class eventlet wsgi:application_ge_cloud
-            echo "gunicorn --workers 1 --bind 0.0.0.0:5100 --timeout 300 --worker-class eventlet wsgi:application_ge_cloud"
+            gunicorn --workers ${workers} --bind 0.0.0.0:5100 --timeout 300 --worker-class eventlet wsgi:application_ge_cloud
+            echo "gunicorn --workers ${workers} --bind 0.0.0.0:5100 --timeout 300 --worker-class eventlet wsgi:application_ge_cloud"
             ;;
         "--ssl")
-            gunicorn --daemon --workers 1 --bind 0.0.0.0:5101 --keyfile ./cert/server.key --certfile ./cert/server.cert --timeout 300 --worker-class eventlet wsgi:application_ge_cloud
-            echo 'gunicorn --daemon --workers 1 --bind 0.0.0.0:5101 --keyfile ./cert/server.key --certfile ./cert/server.cert --timeout 300 --worker-class eventlet wsgi:application_ge_cloud'
+            gunicorn --daemon --workers ${workers} --bind 0.0.0.0:5101 --keyfile ./cert/server.key --certfile ./cert/server.cert --timeout 300 --worker-class eventlet wsgi:application_ge_cloud
+            echo 'gunicorn --daemon --workers ${workers} --bind 0.0.0.0:5101 --keyfile ./cert/server.key --certfile ./cert/server.cert --timeout 300 --worker-class eventlet wsgi:application_ge_cloud'
             ;;
         "--ssl--nodaemon"|"--nodaemon--ssl")
-            gunicorn --workers 1 --bind 0.0.0.0:5101 --keyfile ./cert/server.key --certfile ./cert/server.cert --timeout 300 --worker-class eventlet wsgi:application_ge_cloud
-            echo 'gunicorn --workers 1 --bind 0.0.0.0:5101 --keyfile ./cert/server.key --certfile ./cert/server.cert --timeout 300 --worker-class eventlet wsgi:application_ge_cloud'
+            gunicorn --workers ${workers} --bind 0.0.0.0:5101 --keyfile ./cert/server.key --certfile ./cert/server.cert --timeout 300 --worker-class eventlet wsgi:application_ge_cloud
+            echo 'gunicorn --workers ${workers} --bind 0.0.0.0:5101 --keyfile ./cert/server.key --certfile ./cert/server.cert --timeout 300 --worker-class eventlet wsgi:application_ge_cloud'
             ;;
         *)
             echo '${usage}'
