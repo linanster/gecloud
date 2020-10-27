@@ -1,6 +1,7 @@
 from flask import Flask, request, flash, url_for, redirect, render_template
 from flask_sqlalchemy import SQLAlchemy
 import datetime
+from dateutil import tz
 
 
 # 1 -- Leedarson
@@ -15,6 +16,23 @@ db_mysql = SQLAlchemy(use_native_unicode='utf8')
 
 
 # 2. model definition
+
+class Oplog(db_mysql.Model):
+    __bind_key__ = 'mysql_gecloud'
+    __tablename__ = 'oplogs'
+    id = db_mysql.Column(db_mysql.Integer, nullable=False, autoincrement=True, primary_key = True)
+    fcode = db_mysql.Column(db_mysql.Integer, nullable=False)
+    opcode = db_mysql.Column(db_mysql.Integer, nullable=False)
+    opcount = db_mysql.Column(db_mysql.Integer)
+    opmsg = db_mysql.Column(db_mysql.String(256))
+    timestamp = db_mysql.Column(db_mysql.DateTime)
+    def __init__(self, fcode, opcode, opcount=0, opmsg='', timestamp=datetime.datetime.now(tz=tz.gettz('Asia/Shanghai')).replace(microsecond=0)):
+        self.fcode = fcode
+        self.opcode = opcode
+        self.opcount = opcount
+        self.opmsg = opmsg
+        self.timestamp = timestamp
+
 
 class Factory(db_mysql.Model):
     __bind_key__ = 'mysql_gecloud'

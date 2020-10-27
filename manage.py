@@ -13,20 +13,31 @@ def hello():
     print('Hello, Manager Command!')
 
 @manager.command
-def createdb_mysql():
+def createdb_mysql(table=False, data=False):
+    "--table --data"
     from app.models.mysql import db_mysql, Factory, Device, TestdataCloud
-    db_mysql.create_all(bind='mysql_gecloud')
-    print('==create mysql tables==')
-    Factory.seed()
-    Device.seed()
-    # TestdataCloud.seed()
-    print('==initialize mysql datas==')
+    if table:
+        db_mysql.create_all(bind='mysql_gecloud')
+        print('==create mysql tables==')
+    if data:
+        Factory.seed()
+        Device.seed()
+        # TestdataCloud.seed()
+        print('==initialize mysql datas==')
 
 @manager.command
 def deletedb_mysql():
-    from app.models.mysql import db_mysql
-    db_mysql.drop_all(bind='mysql_gecloud')
-    print('==delete mysql tables==')
+    "--table --data"
+    from app.models.mysql import db_mysql, Factory, Device, TestdataCloud, Oplog
+    if data:
+        TestdataCloud.query.delete()
+        DeviceCloud.query.delete()
+        Factory.query.delete()
+        Oplog.query.delete()
+        print('==delete mysql datas==')
+    if table:
+        db_mysql.drop_all(bind='mysql_gecloud')
+        print('==delete mysql tables==')
 
 @manager.command
 def createdb_sqlite(stat=False, auth=False):

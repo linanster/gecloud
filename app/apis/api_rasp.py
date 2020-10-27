@@ -7,7 +7,7 @@ from app.lib.myauth import http_basic_auth
 from app.lib.mydecorator import viewfunclog
 from app.lib.mylib import save_to_database, load_upgrade_pin
 from app.lib.mylogger import logger
-from app.lib.dbutils import update_sqlite_lastuploadtime
+from app.lib.dbutils import get_datetime_now, update_sqlite_lastuploadtime, insert_operation_log
 
 api_rasp = Api(prefix='/api/rasp/')
 
@@ -59,13 +59,13 @@ class ResourceReceiveData(Resource):
         # data =  json.loads(request.get_data().decode('utf-8'))
         data = json.loads(request.get_data(as_text=True))
         # todo
-        # fcode = data.get('fcode')
-        fcode = data.get('fcode') or data.get('testdatas')[0].get('factorycode')
+        fcode = data.get('fcode')
+        # fcode = data.get('fcode') or data.get('testdatas')[0].get('factorycode')
         if fcode is None:
             try:
                 fcode = data.get('testdatas')[0].get('factorycode')
             except IndexError as e:
-                # fcode == None
+                fcode = -1
                 logger.warn('no fcode get from uploaded data')
         pin = data.get('pin')
         testdatas = data.get('testdatas')
@@ -82,13 +82,27 @@ class ResourceReceiveData(Resource):
         # 1. exception
         except Exception as e:
             response_msg = {'errno': 2, 'fcode': fcode, 'msg':str(e)}
+            logger.error(response_msg)
         # 2. success
         else:
+            # 2.0 get current datetime
+            cur_datetime = get_datetime_now()
+
+            # 2.1 update upload time
             if fcode != None and num_recv > 0:
-                update_sqlite_lastuploadtime(fcode)
+                update_sqlite_lastuploadtime(fcode, cur_datetime)
+
+            # 2.2 record log database
+            opcode = 1
+            opcount = num_recv
+            opmsg = 'upload success'
+            timestamp = cur_datetime
+            insert_operation_log(fcode, opcode, opcount, opmsg, timestamp)
+
+            # 2.3 record log file
             response_msg = {'errno':0, 'fcode':fcode, 'msg':'success', 'pin':pin, 'count':num_recv}
-        finally:
             logger.info('response_msg: {}'.format(response_msg))
+        finally:
             return response_msg
 
 

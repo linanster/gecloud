@@ -8,7 +8,7 @@ import os
 from sqlalchemy import or_
 from dateutil import tz
 
-from app.models.mysql import db_mysql, TestdataCloud
+from app.models.mysql import db_mysql, TestdataCloud, Factory, Device, Oplog
 from app.models.sqlite import db_sqlite, Stat
 from app.lib.mylogger import logger
 from app.lib.mydecorator import processmaker, threadmaker
@@ -37,16 +37,30 @@ def compare_datetime_upload_update(fcode):
         print(e)
         return False
 
-def update_sqlite_lastuploadtime(fcode):
+def get_datetime_now():
+    return datetime.datetime.now(tz=tz.gettz('Asia/Shanghai')).replace(microsecond=0)
+
+def update_sqlite_lastuploadtime(fcode, p_datetime):
     try:
         stat = Stat.query.filter_by(fcode=fcode).first()
-        stat.last_upload_time = datetime.datetime.now(tz=tz.gettz('Asia/Shanghai')).replace(microsecond=0)
+        stat.last_upload_time = p_datetime
     except Exception as e:
         db_sqlite.session.rollback()
         logger.error('update_sqlite_lastuploadtime:')
         logger.error(str(e))
     else:
         db_sqlite.session.commit()
+
+def insert_operation_log(fcode, opcode, opcount, opmsg, timestamp):
+    try:
+        record = Oplog(fcode, opcode, opcount, opmsg, timestamp)
+        db_mysql.session.add(record)
+    except Exception as e:
+        db_mysql.session.rollback()
+        logger.error('insert_operation_log:')
+        logger.error(str(e))
+    else:
+        db_mysql.session.commit()
 
 @processmaker
 def update_sqlite_stat(fcode):
@@ -73,7 +87,8 @@ def update_sqlite_stat(fcode):
             stat.success = num_success
             stat.failed = num_failed
             stat.srate = num_srate
-            stat.last_update_time = datetime.datetime.now(tz=tz.gettz('Asia/Shanghai')).replace(microsecond=0)
+            # stat.last_update_time = datetime.datetime.now(tz=tz.gettz('Asia/Shanghai')).replace(microsecond=0)
+            stat.last_update_time = get_datetime_now()
     except Exception as e:
         db_sqlite.session.rollback()
         logger.error('update_sqlite_stat:')
