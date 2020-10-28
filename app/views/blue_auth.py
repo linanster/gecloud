@@ -13,7 +13,6 @@ blue_auth = Blueprint('blue_auth', __name__, url_prefix='/auth')
 @blue_auth.route('/login', methods=['GET', 'POST'])
 @viewfunclog
 def login():
-    logger.warn('client login from {}'.format(request.remote_addr))
     if request.method == 'GET':
         next_page = request.args.get('next')
         return render_template('auth_login.html', next_page=next_page)
@@ -23,8 +22,10 @@ def login():
     # user = User.query.filter_by(username=username, password=password).first()
     user = User.query.filter_by(username=username).first()
     if not user or not user.verify_password(password):
+        logger.warn('[login] {} login failed'.format(username))
         return render_template('auth_login.html', warning="login failed!")
     login_user(user)
+    logger.info('[login] {} login success'.format(username))
     if next_page:
         return redirect(next_page)
     else:
