@@ -6,6 +6,7 @@ from flask_login import current_user
 from functools import wraps
 
 from app.models.sqlite import User
+from app.lib.mylib import get_datas_by_userid
 
 http_basic_auth = HTTPBasicAuth()
 
@@ -61,3 +62,16 @@ def my_page_permission_required(permission):
         return inner2
     return inner1
 
+
+# 1. this is decorator
+# 2. query sqlite.stat datas by current_user.id, and assign result to g.datas
+# 3. call this decorator after flask_login.login_required
+# 4. g.datas is available in decorated func body
+def load_datas(func):
+    @wraps(func)
+    def inner(*args, **kwargs):
+        userid = current_user.id
+        datas = get_datas_by_userid(userid)
+        g.datas = datas
+        return func(*args, **kwargs)
+    return inner

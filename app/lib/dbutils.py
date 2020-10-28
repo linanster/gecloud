@@ -20,8 +20,12 @@ def get_sqlite_stat_all():
     return datas
 
 def get_sqlite_stat_by_fcode(code):
-    data = Stat.query.filter_by(fcode=code).first()
-    return data
+    # data = Stat.query.filter_by(fcode=code).first()
+    if code == 0:
+        datas = Stat.query.all()
+    else:
+        datas = Stat.query.filter_by(fcode=code).all()
+    return datas
 
 def get_mysql_testdatacloud_by_factorycode(code):
     datas = TestdataCloud.query.filter_by(factorycode=code).all()

@@ -1,7 +1,7 @@
 from multiprocessing import Process
 from threading import Thread, Lock
 from functools import wraps
-from flask import request
+from flask import request, g
 
 from app.lib.mylogger import logger
 

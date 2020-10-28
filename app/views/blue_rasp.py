@@ -1,10 +1,11 @@
-from flask import Blueprint, request, render_template, flash, redirect, url_for
+from flask import Blueprint, request, render_template, flash, redirect, url_for, g
 import os
-from flask_login import login_required
+from flask_login import login_required, current_user
 
 from app.lib.mydecorator import viewfunclog
-from app.lib.dbutils import get_sqlite_stat_all, update_sqlite_stat
-from app.lib.myauth import my_page_permission_required
+from app.lib.dbutils import get_sqlite_stat_by_fcode, update_sqlite_stat
+from app.lib.myauth import my_page_permission_required, load_datas
+from app.lib.mylib import get_datas_by_userid
 from app.myglobals import ROLES
 
 blue_rasp = Blueprint('blue_rasp', __name__, url_prefix='/rasp')
@@ -13,10 +14,13 @@ blue_rasp = Blueprint('blue_rasp', __name__, url_prefix='/rasp')
 @blue_rasp.route('/stat')
 @login_required
 @my_page_permission_required(ROLES.VIEW)
+@load_datas
 @viewfunclog
 def vf_data():
-    datas = get_sqlite_stat_all()
-    return render_template('rasp_stat.html', datas=datas)
+    # userid = current_user.id
+    # datas = get_datas_by_userid(userid)
+    # return render_template('rasp_stat.html', datas=datas)
+    return render_template('rasp_stat.html', datas=g.datas)
 
 @blue_rasp.route('/stat/update', methods=['POST'])
 @login_required

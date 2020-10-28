@@ -6,6 +6,7 @@ import requests
 import os
 
 from app.models.mysql import db_mysql, TestdataCloud
+from app.lib.dbutils import get_sqlite_stat_by_fcode
 
 from app.myglobals import upgradefolder
 
@@ -36,3 +37,12 @@ def load_upgrade_pin():
     pin = open(pinfile).readline()
     pin = pin.replace('\r', '').replace('\n','')
     return pin
+
+def get_datas_by_userid(userid):
+    # common userid is smaller than 100, and equal to fcode
+    fcode = userid
+    # admin userid is bigger than 100
+    if userid > 100:
+        fcode = 0
+    datas = get_sqlite_stat_by_fcode(fcode)
+    return datas

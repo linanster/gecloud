@@ -78,7 +78,8 @@ class User(UserMixin, MyBaseModel):
     _password = db_sqlite.Column(db_sqlite.String(256), nullable=False)
     _permission = db_sqlite.Column(db_sqlite.Integer, nullable=False)
     desc = db_sqlite.Column(db_sqlite.String(100))
-    def __init__(self, username='nousername', password='nopassword', permission=0):
+    def __init__(self, id, username, password, permission=0):
+        self.id = id
         self.username = username
         self._password = generate_password_hash(password)
         self._permission = permission
@@ -114,11 +115,15 @@ class User(UserMixin, MyBaseModel):
 
     @staticmethod
     def seed():
-        user1 = User('user1', '123456', ROLES.VIEW)
-        user2 = User('user2', '9e1i9htin9sh!', ROLES.ADMIN)
-        viewer = User('viewer', '123456', ROLES.VIEW)
-        admin = User('admin', '9e1i9htin9sh!', ROLES.ADMIN)
-        seeds = [user1, user2, viewer, admin]
+        user1_leedarson = User(1, 'leedarson', '123456', ROLES.VIEW)
+        user2_innotech = User(2, 'innotech', '123456', ROLES.VIEW)
+        user3_tonly = User(3, 'tonly', '123456', ROLES.VIEW)
+        user4_changhong = User(4, 'changhong', '123456', ROLES.VIEW)
+        user5_test = User(5, 'test', '123456', ROLES.VIEW)
+        user6_topstar = User(6, 'topstar', '123456', ROLES.VIEW)
+        user101_ge = User(101, 'ge', '123456', ROLES.VIEW)
+        user102_admin = User(102, 'admin', '9e1i9htin9sh!', ROLES.ADMIN)
+        seeds = [user1_leedarson, user2_innotech, user3_tonly, user4_changhong, user5_test, user6_topstar, user101_ge, user102_admin]
         db_sqlite.session.add_all(seeds)
         db_sqlite.session.commit()
 
