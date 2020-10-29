@@ -125,9 +125,10 @@ class User(UserMixin, MyBaseModel):
         user4_changhong = User(4, 'changhong', '123456', ROLES.VIEW)
         user5_test = User(5, 'test', '123456', ROLES.VIEW)
         user6_topstar = User(6, 'topstar', '123456', ROLES.VIEW)
+        user100_user1 = User(100, 'user1', '123456', ROLES.VIEW)
         user101_ge = User(101, 'ge', '123456', ROLES.VIEW)
         user102_admin = User(102, 'admin', '9e1i9htin9sh!', ROLES.ADMIN)
-        seeds = [user1_leedarson, user2_innotech, user3_tonly, user4_changhong, user5_test, user6_topstar, user101_ge, user102_admin]
+        seeds = [user1_leedarson, user2_innotech, user3_tonly, user4_changhong, user5_test, user6_topstar, user100_user1, user101_ge, user102_admin]
         db_sqlite.session.add_all(seeds)
         db_sqlite.session.commit()
 
