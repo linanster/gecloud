@@ -41,6 +41,19 @@ def my_login_required(func):
         return func(*args, **kwargs)
     return inner
 
+# this is decorator
+def my_permission_required(permission):
+    def inner1(func):
+        @wraps(func)
+        def inner2(*args, **kwargs):
+            if not g.user.check_permission(permission):
+                # abort(403)
+                abort(403, status=403, username=g.user.username, msg='permission required!')
+            return func(*args, **kwargs)
+        return inner2
+    return inner1
+
+
 
 # 1. this is decorator
 # 2. it should be called right after @login_required

@@ -1,6 +1,6 @@
 from flask import Blueprint, request, render_template, flash, redirect, url_for
 import os
-from flask_login import login_user, logout_user
+from flask_login import login_user, logout_user, login_required, current_user
 
 from app.models.sqlite import User
 from app.lib.mydecorator import viewfunclog
@@ -36,3 +36,4 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for('blue_auth.login'))
+

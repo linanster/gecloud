@@ -1,0 +1,17 @@
+{% extends '_mybase.html' %}
+
+{% block body %}
+    {{ super() }}
+    <form action="{{ url_for('blue_account.reset') }}" method="post">
+        旧密码:<input type="password" name="password_old" placeholder="">
+        <br>
+        新密码:<input type="password" name="password_new_1" placeholder="">
+        <br>
+        新密码:<input type="password" name="password_new_2" placeholder="">
+        <input type="submit">
+        <br>
+    </form>
+    <p style="color:red">{{ warning }}</p>
+    <a href="{{ url_for('blue_account.vf_index') }}">返回</a>
+
+{% endblock body %}

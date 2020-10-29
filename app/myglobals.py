@@ -21,8 +21,10 @@ class PERMISSIONS(object):
     P8 = 0b10000000 or 128
 
 class ROLES(object):
-    VIEW = PERMISSIONS.P1
-    ADMIN = PERMISSIONS.P1+PERMISSIONS.P2
+    # view permission sum is 1+4=5
+    VIEW = PERMISSIONS.P1 + PERMISSIONS.P3 
+    # admin permission sum is 1+2+4+8=15
+    ADMIN = PERMISSIONS.P1 + PERMISSIONS.P2 + PERMISSIONS.P3 + PERMISSIONS.P4
 
 # massive query per count
 PER_QUERY_COUNT = 10000

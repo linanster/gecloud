@@ -1,0 +1,10 @@
+{% extends '_mybase.html' %}
+
+{% block body %}
+    {{ super() }}
+    <p>1. username: {{ current_user.username }} <p>
+    <p>2. permission code: {{ get_permission(current_user.id) }} <p>
+    <br>
+    <a href="{{ url_for('blue_account.vf_index') }}">返回</a>
+
+{% endblock body %}

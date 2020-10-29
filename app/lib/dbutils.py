@@ -9,11 +9,15 @@ from sqlalchemy import or_
 from dateutil import tz
 
 from app.models.mysql import db_mysql, TestdataCloud, Factory, Device, Oplog
-from app.models.sqlite import db_sqlite, Stat
+from app.models.sqlite import db_sqlite, Stat, User
 from app.lib.mylogger import logger
 from app.lib.mydecorator import processmaker, threadmaker
 
 from app.myglobals import PER_QUERY_COUNT
+
+def get_user_permission(id):
+    user = User.query.get(id)
+    return bin(user.permission)
 
 def get_sqlite_stat_all():
     datas = Stat.query.all()

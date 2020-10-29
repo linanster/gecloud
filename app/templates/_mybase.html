@@ -22,7 +22,8 @@
     <a href="#">About</a>
     {% block login %}
         {% if current_user.is_authenticated %}
-            | Welcome, {{ current_user.username }} |
+            {# | Welcome, {{ current_user.username }} | #}
+            | Welcome, <a href="{{ url_for('blue_account.vf_index') }}">{{ current_user.username }}</a> |
             <a href="{{ url_for('blue_auth.logout') }}">Logout</a>
         {% else %}
             | <a href="{{ url_for('blue_auth.login') }}">Login</a>
