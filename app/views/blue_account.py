@@ -9,8 +9,6 @@ blue_account = Blueprint('blue_account', __name__, url_prefix='/account')
 @blue_account.route('/')
 @blue_account.route('/index')
 @login_required
-# @my_page_permission_required(ROLES.VIEW)
-# @load_datas
 @viewfunclog
 def vf_index():
     msg = request.args.get('msg')
@@ -18,8 +16,6 @@ def vf_index():
 
 @blue_account.route('/reset', methods=['GET', 'POST'])
 @login_required
-# @my_page_permission_required(ROLES.VIEW)
-# @load_datas
 @viewfunclog
 def reset():
     if request.method == 'GET':
@@ -43,8 +39,6 @@ def reset():
 
 @blue_account.route('/permission', methods=['GET'])
 @login_required
-# @my_page_permission_required(ROLES.VIEW)
-# @load_datas
 @viewfunclog
 def permission():
     return render_template('account_permission.html')

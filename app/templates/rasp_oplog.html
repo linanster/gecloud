@@ -1,0 +1,45 @@
+{% extends '_mybase.html' %}
+
+{% block body %}
+    {{ super() }}
+    <h3>树莓派数据上传记录</h3>
+
+    <table border="1">
+        <tr>
+            <th>&nbsp;index&nbsp;</th>
+            <th>&nbsp;fcode&nbsp;</th>
+            <th>&nbsp;opcode&nbsp;</th>
+            <th>&nbsp;opcount&nbsp;</th>
+            <th>&nbsp;opmsg&nbsp;</th>
+            <th>&nbsp;timestamp&nbsp;</th>
+        </tr>
+
+        {% for data in datas %}
+            <tr>
+                <td>&nbsp;{{ loop.index }}&nbsp;</td>
+                <td>&nbsp;{{ data.fcode }}&nbsp;</td>
+                <td>&nbsp;{{ data.opcode }}&nbsp;</td>
+                <td>&nbsp;{{ data.opcount }}&nbsp;</td>
+                <td>&nbsp;{{ data.opmsg }}&nbsp;</td>
+                <td>&nbsp;{{ data.timestamp }}&nbsp;</td>
+            </tr>
+        {% endfor %}
+    </table>
+    <br>
+
+    <form style="display: inline" action="{{ url_for('blue_rasp.vf_oplog') }}" method="post">
+        <input type="hidden" name="fcode" value={{fcode}}>
+        <button type="submit">刷新</button>
+    </form> | 
+    <a href="{{ url_for('blue_rasp.vf_data') }}">返回</a>
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <p style="color:red">{{ message }}</p>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+{% endblock body %}
+

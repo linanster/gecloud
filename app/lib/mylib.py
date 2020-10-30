@@ -6,7 +6,8 @@ import requests
 import os
 
 from app.models.mysql import db_mysql, TestdataCloud
-from app.lib.dbutils import get_sqlite_stat_by_fcode
+from app.lib.dbutils import get_sqlite_stat_by_fcode, get_mysql_oplogs_by_fcode
+from flask_login import current_user
 
 from app.myglobals import upgradefolder
 
@@ -38,11 +39,22 @@ def load_upgrade_pin():
     pin = pin.replace('\r', '').replace('\n','')
     return pin
 
-def get_datas_by_userid(userid):
-    # common userid is smaller than 100, and equal to fcode
-    fcode = userid
+def get_fcode_from_login():
+    userid = current_user.id
     # admin userid is bigger than 100
     if userid >= 100:
         fcode = 0
+    # common userid is smaller than 100, and equal to fcode
+    else:
+        fcode = userid
+    return fcode
+
+def get_datas_stat_by_userid(userid):
+    fcode = get_fcode_from_login()
     datas = get_sqlite_stat_by_fcode(fcode)
     return datas
+
+def get_oplogs_by_fcode_userid(fcode, userid):
+    if userid < 100 and fcode != userid:
+        return list()
+    return get_mysql_oplogs_by_fcode(fcode)

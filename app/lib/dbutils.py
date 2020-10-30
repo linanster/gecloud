@@ -5,7 +5,7 @@ import datetime
 import requests
 import os
 
-from sqlalchemy import or_
+from sqlalchemy import or_, desc
 from dateutil import tz
 
 from app.models.mysql import db_mysql, TestdataCloud, Factory, Device, Oplog
@@ -21,6 +21,13 @@ def get_user_permission(id):
 
 def get_sqlite_stat_all():
     datas = Stat.query.all()
+    return datas
+
+def get_mysql_oplogs_by_fcode(code):
+    if code == 0:
+        datas = Oplog.query.order_by(desc(Oplog.id)).all()
+    else:
+        datas = Oplog.query.filter_by(fcode=code).order_by(desc(Oplog.id)).all()
     return datas
 
 def get_sqlite_stat_by_fcode(code):

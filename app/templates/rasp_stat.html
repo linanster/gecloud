@@ -6,38 +6,49 @@
 
     <table border="1">
         <tr>
-            <th>工厂</th>
-            <th>测试总数</th>
-            <th>成功数量</th>
-            <th>失败数量</th>
-            <th>成功率</th>
-            <th>最近上传时间</th>
-            <th>最近更新时间</th>
-            <th>操作</th>
+            <th>&nbsp;工厂&nbsp;</th>
+            <th>&nbsp;测试总数&nbsp;</th>
+            <th>&nbsp;成功数量&nbsp;</th>
+            <th>&nbsp;失败数量&nbsp;</th>
+            <th>&nbsp;成功率&nbsp;</th>
+            <th>&nbsp;最近上传时间&nbsp;</th>
+            <th>&nbsp;最近更新时间&nbsp;</th>
+            <th>&nbsp;操作&nbsp;</th>
         </tr>
 
         {% for data in datas %}
             <tr>
-                <td>{{ data.fname }}</td>
-                <td>{{ data.total }}</td>
-                <td>{{ data.success }}</td>
-                <td>{{ data.failed }}</td>
-                <td>{{ data.srate }}</td>
-                <td>{{ data.last_upload_time }}</td>
-                <td>{{ data.last_update_time }}</td>
-                {# <td><a href="{{ url_for('blue_rasp.cmd_update_stat', fcode=data.fcode) }}">更新</a></td> #}
-                {% if need_update(data.fcode) %}
-                    <td><form style="display: inline" action="{{ url_for('blue_rasp.cmd_update_stat', fcode=data.fcode) }}" method="post"><button type="submit" style="color:green">更新</button></form></td>
-                {% else %}
-                    <td><form style="display: inline" action="{{ url_for('blue_rasp.cmd_update_stat', fcode=data.fcode) }}" method="post"><button type="submit" style="color:red">更新</button></form></td>
-                {% endif %}
+                <td>&nbsp;{{ data.fname }}&nbsp;</td>
+                <td>&nbsp;{{ data.total }}&nbsp;</td>
+                <td>&nbsp;{{ data.success }}&nbsp;</td>
+                <td>&nbsp;{{ data.failed }}&nbsp;</td>
+                <td>&nbsp;{{ data.srate }}&nbsp;</td>
+                <td>&nbsp;{{ data.last_upload_time }}&nbsp;</td>
+                <td>&nbsp;{{ data.last_update_time }}&nbsp;</td>
+                <td>
+                    &nbsp;
+                    <form style="display: inline" action="{{ url_for('blue_rasp.vf_oplog') }}" method="post">
+                        <input type="hidden" name="fcode" value={{data.fcode}}>
+                        <button type="submit">查看上传记录</button>
+                    </form>
+                    &nbsp;
+                    {% if need_update(data.fcode) %}
+                        <form style="display: inline" action="{{ url_for('blue_rasp.cmd_update_stat', fcode=data.fcode) }}" method="post"><button type="submit" style="color:green">更新</button></form>
+                    {% else %}
+                        <form style="display: inline" action="{{ url_for('blue_rasp.cmd_update_stat', fcode=data.fcode) }}" method="post"><button type="submit" style="color:red">更新</button></form>
+                    {% endif %}
+                    &nbsp;
+                </td>
             </tr>
         {% endfor %}
     </table>
     <br>
 
-    {# <a href="{{ url_for('blue_rasp.cmd_update_stat', fcode=0) }}">更新全部</a> | #}
     <form style="display: inline" action="{{ url_for('blue_rasp.cmd_update_stat', fcode=0) }}" method="post"><button type="submit">更新全部</button></form> |
+    <form style="display: inline" action="{{ url_for('blue_rasp.vf_oplog') }}" method="post">
+        <input type="hidden" name="fcode" value=0>
+        <button type="submit">查看全部上传记录</button>
+    </form> |
     <a href="{{ url_for('blue_rasp.vf_data') }}">刷新</a> |
     <a href="{{ url_for('blue_main.vf_index') }}">返回</a>
 
