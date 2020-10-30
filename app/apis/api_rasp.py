@@ -8,6 +8,9 @@ from app.lib.mydecorator import viewfunclog
 from app.lib.mylib import save_to_database, load_upgrade_pin
 from app.lib.mylogger import logger
 from app.lib.dbutils import get_datetime_now, update_sqlite_lastuploadtime, insert_operation_log
+from app.lib.myauth import my_permission_required
+
+from app.myglobals import PERMISSIONS
 
 api_rasp = Api(prefix='/api/rasp/')
 
@@ -53,6 +56,7 @@ class ResourceVerifyPin(Resource):
 
 class ResourceReceiveData(Resource):
     @http_basic_auth.login_required
+    @my_permission_required(PERMISSIONS.P5)
     @viewfunclog
     def put(self):
         # data =  json.loads(request.get_data())
@@ -100,7 +104,7 @@ class ResourceReceiveData(Resource):
             insert_operation_log(fcode, opcode, opcount, opmsg, timestamp)
 
             # 2.3 record log file
-            response_msg = {'errno':0, 'fcode':fcode, 'msg':'success', 'pin':pin, 'count':num_recv}
+            response_msg = {'errno':0, 'fcode':fcode, 'msg':'upload success', 'pin':pin, 'count':num_recv}
             logger.info('response_msg: {}'.format(response_msg))
         finally:
             return response_msg

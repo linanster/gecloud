@@ -42,7 +42,7 @@ def get_datas_by_userid(userid):
     # common userid is smaller than 100, and equal to fcode
     fcode = userid
     # admin userid is bigger than 100
-    if userid > 100:
+    if userid >= 100:
         fcode = 0
     datas = get_sqlite_stat_by_fcode(fcode)
     return datas

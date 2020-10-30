@@ -32,7 +32,7 @@ fields_users_response = {
 class ResourceUser(Resource):
     # @http_basic_auth.login_required
     @my_login_required
-    @my_permission_required(PERMISSIONS.P4)
+    @my_permission_required(PERMISSIONS.P6)
     @viewfunclog
     @marshal_with(fields_user_db)
     def get(self, id):
@@ -40,7 +40,7 @@ class ResourceUser(Resource):
 
 class ResourceResetPassword(Resource):
     @my_login_required
-    @my_permission_required(PERMISSIONS.P3)
+    @my_permission_required(PERMISSIONS.P6)
     @viewfunclog
     def get(self):
         newpassword = request.form.get('newpassword')
@@ -61,7 +61,7 @@ class ResourceResetPassword(Resource):
 class ResourceUsers(Resource):
     # @http_basic_auth.login_required
     @my_login_required
-    @my_permission_required(PERMISSIONS.P4)
+    @my_permission_required(PERMISSIONS.P6)
     @viewfunclog
     @marshal_with(fields_users_response)
     # 获取所有账号信息
@@ -76,7 +76,7 @@ class ResourceUsers(Resource):
 
     # @http_basic_auth.login_required
     @my_login_required
-    @my_permission_required(PERMISSIONS.P4)
+    @my_permission_required(PERMISSIONS.P6)
     @viewfunclog
     @marshal_with(fields_user_response)
     # 注册新用户
@@ -109,7 +109,7 @@ class ResourceUsers(Resource):
 class ResourceToken(Resource):
     # @http_basic_auth.login_required
     @my_login_required
-    # @my_permission_required(PERMISSIONS.P4)
+    @my_permission_required(PERMISSIONS.P6)
     @viewfunclog
     def get(self):
         token = g.user.generate_auth_token()
@@ -125,7 +125,7 @@ class ResourceToken(Resource):
 class ResourceLoginTest(Resource):
     # @http_basic_auth.login_required
     @my_login_required
-    # @my_permission_required(PERMISSIONS.P4)
+    @my_permission_required(PERMISSIONS.P6)
     @viewfunclog
     def get(self):
         return {

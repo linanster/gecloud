@@ -8,7 +8,7 @@ from flask_login import UserMixin
 import uuid
 
 from app.ext.cache import cache
-from app.myglobals import ROLES
+from app.myglobals import ROLES, PERMISSIONS
 
 db_sqlite = SQLAlchemy(use_native_unicode='utf8')
 
@@ -119,16 +119,21 @@ class User(UserMixin, MyBaseModel):
 
     @staticmethod
     def seed():
-        user1_leedarson = User(1, 'leedarson', '123456', ROLES.VIEW)
-        user2_innotech = User(2, 'innotech', '123456', ROLES.VIEW)
-        user3_tonly = User(3, 'tonly', '123456', ROLES.VIEW)
-        user4_changhong = User(4, 'changhong', '123456', ROLES.VIEW)
-        user5_test = User(5, 'test', '123456', ROLES.VIEW)
-        user6_topstar = User(6, 'topstar', '123456', ROLES.VIEW)
-        user100_user1 = User(100, 'user1', '123456', ROLES.VIEW)
-        user101_ge = User(101, 'ge', '123456', ROLES.VIEW)
-        user102_admin = User(102, 'admin', '9e1i9htin9sh!', ROLES.ADMIN)
-        seeds = [user1_leedarson, user2_innotech, user3_tonly, user4_changhong, user5_test, user6_topstar, user100_user1, user101_ge, user102_admin]
+        user_leedarson = User(1, 'leedarson', '123456', ROLES.VIEW)
+        user_innotech = User(2, 'innotech', '123456', ROLES.VIEW)
+        user_tonly = User(3, 'tonly', '123456', ROLES.VIEW)
+        user_changhong = User(4, 'changhong', '123456', ROLES.VIEW)
+        user_test = User(5, 'test', '123456', ROLES.VIEW)
+        user_topstar = User(6, 'topstar', '123456', ROLES.VIEW)
+        user_ge = User(100, 'ge', '123456', ROLES.VIEW)
+        user_admin = User(101, 'admin', '9e1i9htin9sh!', ROLES.ADMIN)
+        user_user1 = User(200, 'user1', '123456', ROLES.API_RASP)
+        user_user2 = User(201, 'user2', '123456', ROLES.API_AUTH)
+        seeds = [
+            user_leedarson, user_innotech, user_tonly, user_changhong, user_test, user_topstar,
+            user_ge, user_admin,
+            user_user1, user_user2,
+        ]
         db_sqlite.session.add_all(seeds)
         db_sqlite.session.commit()
 
