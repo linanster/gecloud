@@ -1,13 +1,17 @@
 {% extends '_mybase.html' %}
 
+{% block scripts %}
+    <script src="{{ url_for('static',filename='js/myvalidate.js') }}"></script>
+{% endblock scripts %}
+
 {% block body %}
     {{ super() }}
-    <form action="{{ url_for('blue_account.reset') }}" method="post">
-        旧密码:<input type="password" name="password_old" placeholder="">
+    <form action="{{ url_for('blue_account.reset') }}" method="post" onsubmit="return validate_form_reset(this)">
+        原密码:<input type="password" name="password_old" id="password_old" placeholder="">
         <br>
-        新密码:<input type="password" name="password_new_1" placeholder="">
+        新密码:<input type="password" name="password_new_1" id="password_new_1" placeholder="">
         <br>
-        新密码:<input type="password" name="password_new_2" placeholder="">
+        新密码:<input type="password" name="password_new_2" id="password_new_2" placeholder="">
         <input type="submit">
         <br>
     </form>

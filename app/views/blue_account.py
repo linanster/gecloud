@@ -23,13 +23,16 @@ def reset():
     password_old = request.form.get('password_old')
     password_new_1 = request.form.get('password_new_1')
     password_new_2 = request.form.get('password_new_2')
+    # validation step1: double check dual new passwords are equal
     # todo replace by js
     if password_new_1 != password_new_2:
          return render_template('account_reset.html', warning='Failed: dual new passwords not equal')
-    # todo replace by js
     password_new = password_new_1
+    # validation step2: double check new password length is bigger than 6
+    # todo replace by js
     if len(password_new) < 6:
          return render_template('account_reset.html', warning='Failed: new passwords format is not acceptable')
+    # validation step3: old password verification
     if not current_user.verify_password(password_old):
          return render_template('account_reset.html', warning='Failed: old password is incorrect')
     current_user.password = password_new
