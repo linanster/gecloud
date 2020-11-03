@@ -39,7 +39,9 @@ def vf_oplog():
     # type of fcode default is str, not int
     # fcode = request.args.get('fcode', type=int)
     fcode = request.form.get('fcode', type=int)
+    limit = request.form.get('limit', type=int) or 200
     if fcode not in [0, 1, 2, 3, 4, 5, 6]:
         return redirect(url_for('blue_rasp.vf_data'))
     datas = get_oplogs_by_fcode_userid(fcode, current_user.id)
-    return render_template('rasp_oplog.html', datas=datas, fcode=fcode)
+    datas = datas[0:limit]
+    return render_template('rasp_oplog.html', datas=datas, fcode=fcode, limit=limit)

@@ -29,7 +29,13 @@
 
     <form style="display: inline" action="{{ url_for('blue_rasp.vf_oplog') }}" method="post">
         <input type="hidden" name="fcode" value={{fcode}}>
+        <input type="hidden" name="limit" value={{ limit }}>
         <button type="submit">刷新</button>
+    </form> | 
+    <form style="display: inline" action="{{ url_for('blue_rasp.vf_oplog') }}" method="post">
+        <input type="hidden" name="fcode" value={{fcode}}>
+        <input type="hidden" name="limit" value=500>
+        <button type="submit">查看更多</button>
     </form> | 
     <a href="{{ url_for('blue_rasp.vf_data') }}">返回</a>
 
