@@ -18,8 +18,8 @@
 <body>
 {% block body %}
     <a href="{{ url_for('blue_main.vf_index') }}">Home</a> |
-    <a href="#">Contact</a> |
-    <a href="#">About</a>
+    <a href="{{ url_for('blue_contact.vf_index') }}">Contact</a> |
+    <a href="{{ url_for('blue_about.vf_index') }}">About</a>
     {% block login %}
         {% if current_user.is_authenticated %}
             {# | Welcome, {{ current_user.username }} | #}
