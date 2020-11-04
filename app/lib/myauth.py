@@ -1,4 +1,4 @@
-from flask import g, request
+from flask import g, request, url_for, redirect
 from flask_restful import abort
 from flask_httpauth import HTTPBasicAuth
 from flask_login import current_user
@@ -36,7 +36,8 @@ def my_login_required(func):
             # 2. try to authenticate with username/password
             user = User.query.filter_by(username = username).first()
             if not user or not user.verify_password(password):
-                abort(401, msg='authentication failed')
+                # abort(401, msg='authentication failed')
+                return "Forbidden!"
         g.user = user
         return func(*args, **kwargs)
     return inner
@@ -66,11 +67,8 @@ def my_page_permission_required(permission):
             #     abort(403, status=403, username=g.user.username, msg='authorization failed')
             if not current_user.check_permission(permission):
                 from flask import abort
-                # resp = Response()
-                # resp.data = 'Permission Required!'
-                # resp.status_code = 403
-                # abort(resp)
-                abort(403)
+                # abort(403)
+                return redirect(url_for('blue_error.vf_permission'))
             return func(*args, **kwargs)
         return inner2
     return inner1
