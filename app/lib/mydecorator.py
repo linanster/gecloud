@@ -38,7 +38,7 @@ def viewfuncloglegacy(func):
         return func(*args, **kargs)
     return inner
 
-def viewfunclog(func):
+def viewfunclog_legacy_20201109(func):
     @wraps(func)
     def inner(*args, **kargs):
         try:
@@ -46,5 +46,16 @@ def viewfunclog(func):
         except AttributeError:
             username = '-'
         logger.info('{} {} - FROM {} BY {}'.format(request.method, request.url, request.remote_addr, username))
+        return func(*args, **kargs)
+    return inner
+
+def viewfunclog(func):
+    @wraps(func)
+    def inner(*args, **kargs):
+        try:
+            username = current_user.username
+        except AttributeError:
+            username = '-'
+        logger.info('{} {} - FROM {} BY {}'.format(request.method, request.url, request.headers.get('X-Real-IP'), username))
         return func(*args, **kargs)
     return inner
