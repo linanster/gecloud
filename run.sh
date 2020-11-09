@@ -5,8 +5,8 @@
 # 1.variables definition
 
 usage=$"
-Usage: run.sh  --start [--ssl --nodaemon]
-               --stop
+Usage:(venv) run.sh  --start [--ssl --nodaemon]
+               --stop [--ssl]
                --status
                --init
 "
@@ -23,6 +23,11 @@ function activate_venv() {
         echo "==venv error=="
         exit 1
     fi
+}
+
+function get_pid(){
+    pid=$(ps -ef | fgrep "gunicorn" | grep "application_ge_cloud" | awk '{if($3==1) print $2}')
+    echo "$pid"
 }
 
 
@@ -46,26 +51,24 @@ function run_start(){
     activate_venv
     case "$1$2" in
         "")
-            gunicorn --daemon --workers ${workers} --bind 0.0.0.0:5100 --timeout 300 --worker-class eventlet wsgi:application_ge_cloud
-            echo 'gunicorn --daemon --workers ${workers} --bind 0.0.0.0:5100 --timeout 300 --worker-class eventlet wsgi:application_ge_cloud'
+            cmd="gunicorn --daemon --workers ${workers} --bind 0.0.0.0:5100 --timeout 300 --worker-class eventlet wsgi:application_ge_cloud"
             ;;
         "--nodaemon")
-            gunicorn --workers ${workers} --bind 0.0.0.0:5100 --timeout 300 --worker-class eventlet wsgi:application_ge_cloud
-            echo "gunicorn --workers ${workers} --bind 0.0.0.0:5100 --timeout 300 --worker-class eventlet wsgi:application_ge_cloud"
+            cmd="gunicorn --workers ${workers} --bind 0.0.0.0:5100 --timeout 300 --worker-class eventlet wsgi:application_ge_cloud"
             ;;
         "--ssl")
-            gunicorn --daemon --workers ${workers} --bind 0.0.0.0:5101 --keyfile ./cert/server.key --certfile ./cert/server.cert --timeout 300 --worker-class eventlet wsgi:application_ge_cloud
-            echo 'gunicorn --daemon --workers ${workers} --bind 0.0.0.0:5101 --keyfile ./cert/server.key --certfile ./cert/server.cert --timeout 300 --worker-class eventlet wsgi:application_ge_cloud'
+            cmd="gunicorn --daemon --workers ${workers} --bind 0.0.0.0:5101 --keyfile ./cert/server.key --certfile ./cert/server.cert --timeout 300 --worker-class eventlet wsgi:application_ge_cloud"
             ;;
         "--ssl--nodaemon"|"--nodaemon--ssl")
-            gunicorn --workers ${workers} --bind 0.0.0.0:5101 --keyfile ./cert/server.key --certfile ./cert/server.cert --timeout 300 --worker-class eventlet wsgi:application_ge_cloud
-            echo 'gunicorn --workers ${workers} --bind 0.0.0.0:5101 --keyfile ./cert/server.key --certfile ./cert/server.cert --timeout 300 --worker-class eventlet wsgi:application_ge_cloud'
+            cmd="gunicorn --workers ${workers} --bind 0.0.0.0:5101 --keyfile ./cert/server.key --certfile ./cert/server.cert --timeout 300 --worker-class eventlet wsgi:application_ge_cloud"
             ;;
         *)
-            echo '${usage}'
+            echo "${usage}"
             exit 1
     esac
-    pid=$(ps -ef | fgrep "gunicorn" | grep "application_ge_cloud" | awk '{if($3==1) print $2}')
+    echo "${cmd}"
+    eval "${cmd}"
+    pid=$(get_pid)
     echo "$pid"
     exit 0
 }
@@ -79,10 +82,13 @@ function run_status(){
 }
 
 function run_stop(){
-    if [ "$1" == "--ssl" ]; then
+    if [ "$1" == "" ];then
+        pid=$(ps -ef | fgrep "gunicorn" | grep "application_ge_cloud" | grep 5100 | awk '{if($3==1) print $2}')
+    elif [ "$1" == "--ssl" ]; then
         pid=$(ps -ef | fgrep "gunicorn" | grep "application_ge_cloud" | grep 5101 | awk '{if($3==1) print $2}')
     else
-        pid=$(ps -ef | fgrep "gunicorn" | grep "application_ge_cloud" | grep 5100 | awk '{if($3==1) print $2}')
+        echo "${usage}"
+        exit 1
     fi
     echo "$pid"
     if [ "$pid" == "" ]; then
