@@ -5,10 +5,11 @@
 # 1.variables definition
 
 usage=$"
-Usage:(venv) run.sh  --start [--ssl --nodaemon]
+Usage: run.sh  --start [--ssl --nodaemon]
                --stop [--ssl]
                --status
                --init
+               --requirements
 "
 workdir=$(cd "$(dirname $0)" && pwd)
 
@@ -42,6 +43,19 @@ function run_init(){
         exit 0
     else
         echo "==init config fail=="
+        exit 1
+    fi
+}
+
+function run_requirements(){
+    activate_venv
+    # pip3 install -r requirements.txt
+    pip3 install -r requirements.txt -i https://mirrors.aliyun.com/pypi/simple/
+    if [ $? -eq 0 ]; then
+        echo "==pip install requirements complete=="
+        exit 0
+    else
+        echo "==pip install requirements fail=="
         exit 1
     fi
 }
@@ -129,8 +143,8 @@ if [ $# -ge 1 ]; then
     --stop)
         run_stop $2
         ;;
-    --logmonitor)
-        run_logmonitor $2 $3
+    --requirements)
+        run_requirements
         ;;
     *)
         echo "$usage"
