@@ -56,7 +56,7 @@ def viewfunclog(func):
         try:
             request_username = current_user.username
         except AttributeError:
-            username = '-'
+            request_username = '-'
         logger.info('{} {} - FROM {} BY {}'.format(request.method, request.url, request_addr, request_username))
         return func(*args, **kargs)
     return inner

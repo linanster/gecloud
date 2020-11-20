@@ -15,6 +15,20 @@ from app.lib.mydecorator import processmaker, threadmaker
 
 from app.myglobals import PER_QUERY_COUNT
 
+def get_myquery_testdatas_by_fcode_userid(fcode, userid):
+    if fcode == 0:
+        myquery = TestdataCloud.query
+    else:
+        myquery = TestdataCloud.query.filter_by(factorycode=fcode)
+    return myquery
+
+def get_mysql_testdatascloud_by_fcode(fcode):
+    if fcode == 0:
+        datas = TestdataCloud.query.limit(1001).all()
+    else:
+        datas = TestdataCloud.query.filter_by(factorycode=fcode).limit(1001).all()
+    return datas
+
 def get_user_permission(id):
     user = User.query.get(id)
     return bin(user.permission)

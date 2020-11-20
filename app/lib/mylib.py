@@ -6,7 +6,7 @@ import requests
 import os
 
 from app.models.mysql import db_mysql, TestdataCloud
-from app.lib.dbutils import get_sqlite_stat_by_fcode, get_mysql_oplogs_by_fcode
+from app.lib.dbutils import get_sqlite_stat_by_fcode, get_mysql_oplogs_by_fcode, get_mysql_testdatascloud_by_fcode
 from flask_login import current_user
 
 from app.myglobals import upgradefolder
@@ -58,3 +58,8 @@ def get_oplogs_by_fcode_userid(fcode, userid):
     if userid < 100 and fcode != userid:
         return list()
     return get_mysql_oplogs_by_fcode(fcode)
+
+def get_testdatas_by_fcode_userid(fcode, userid):
+    if userid < 100 and fcode != userid:
+        return list()
+    return get_mysql_testdatascloud_by_fcode(fcode)

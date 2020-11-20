@@ -16,7 +16,7 @@
 {% block body %}
     {{ super() }}
 
-    <h3>树莓派测试数据</h3>
+    <h3>树莓派测试统计</h3>
 
     <table border="1">
         <tr>
@@ -47,6 +47,11 @@
                         <button type="submit">查看上传记录</button>
                     </form>
                     &nbsp;
+                    <form style="display: inline" action="{{ url_for('blue_rasp.vf_testdata') }}" method="post">
+                        <input type="hidden" name="fcode" value={{data.fcode}}>
+                        <button type="submit">查看历史数据</button>
+                    </form>
+                    &nbsp;
                     {# {% if need_update(data.fcode) %}
                         <form style="display: inline" action="{{ url_for('blue_rasp.cmd_update_stat', fcode=data.fcode) }}" method="post"><button id="update" type="submit" style="color:green">更新</button></form>
                     {% else %}
@@ -72,9 +77,13 @@
             <input type="hidden" name="limit" value=200>
             <button type="submit">查看全部厂家上传记录</button>
         </form> |
+        <form style="display: inline" action="{{ url_for('blue_rasp.vf_testdata') }}" method="post">
+            <input type="hidden" name="fcode" value=0>
+            <button type="submit">查看全部厂家历史数据</button>
+        </form> |
         <form style="display: inline" action="{{ url_for('blue_rasp.cmd_update_stat', fcode=0) }}" method="post"><button id="update" type="submit">更新全部厂家数据</button></form> |
     {% endif %}
-    <a href="{{ url_for('blue_rasp.vf_data') }}">刷新</a> |
+    <a href="{{ url_for('blue_rasp.vf_stat') }}">刷新</a> |
     <a href="{{ url_for('blue_main.vf_index') }}">返回</a>
 
     {% with messages = get_flashed_messages() %}

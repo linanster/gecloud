@@ -1,0 +1,85 @@
+{% extends '_mybase.html' %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{{ url_for('static',filename='css/mypagination.css') }}">
+{% endblock styles %}
+
+{% block scripts %}
+    <script src="{{ url_for('static',filename='js/jquery.min.js') }}"></script>
+    <script src="{{ url_for('static',filename='js/jquery-1.12.4.min.js') }}"></script>
+    <script type="text/javascript" charset="utf-8">
+        $(document).ready(function () {
+        });
+    </script>
+{% endblock scripts %}
+
+{% block body %}
+    {{ super() }}
+
+    <h3>测试数据查询({{ fcode }})</h3>
+
+    <a href="{{ url_for('blue_rasp.vf_stat') }}">返回</a>
+    <br>
+    <br>
+
+    <div class="pagination-sm">
+        <div style="display: inline">{{ pagination.info }}</div>
+        <div style="display: inline">{{ pagination.links }}</div>
+    </div>
+
+    <table border="1">
+        <thead>
+        <tr>
+            <th rowspan="2">&nbsp;#&nbsp;</th>
+            <th rowspan="2">&nbsp;设备类型&nbsp;</th>
+            <th rowspan="2">&nbsp;工厂&nbsp;</th>
+            <th rowspan="2">&nbsp;固件版本&nbsp;</th>
+            <th rowspan="2">&nbsp;RSSI_BLE&nbsp;</th>
+            <th rowspan="2">&nbsp;RSSI_WIFI&nbsp;</th>
+            <th rowspan="2">&nbsp;MAC_BLE&nbsp;</th>
+            <th rowspan="2">&nbsp;MAC_WIFI&nbsp;</th>
+            <th rowspan="2">&nbsp;MCU&nbsp;</th>
+            <th colspan="6">&nbsp;检测结果&nbsp;</th>
+            <th rowspan="2">&nbsp;时间&nbsp;</th>
+        </tr>
+        <tr>
+            <th>信号强度</th>
+            <th>组合指令</th>
+            <th>广播扫描</th>
+            <th>设备类型</th>
+            <th>版本检测</th>
+            <th>MAC检测</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        {% for data in datas %}
+            <tr>
+                <td>{{ loop.index + pagination.skip }}</td>
+                <td>{{ data.device.name }}</td>
+                <td>{{ data.factory.name }}</td>
+                <td>{{ data.fw_version }}</td>
+                <td>{{ data.rssi_ble1 }}</td>
+                <td>{{ data.rssi_wifi1|parse_rssi_wifi_na }}</td>
+                <td>{{ data.mac_ble }}</td>
+                <td>{{ data.mac_wifi }}</td>
+                <td>{{ data.reserve_str_1 }}</td>
+                <td {% if not data.bool_qualified_signal %} style="color:red" {% endif %} >{{ data.bool_qualified_signal|parse_is_qualified }}</td>
+                <td {% if not data.bool_qualified_check %} style="color:red" {% endif %} >{{ data.bool_qualified_check|parse_is_qualified }}({{data.status_cmd_check1}})</td>
+                <td {% if not data.bool_qualified_scan %} style="color:red" {% endif %} >{{ data.bool_qualified_scan|parse_is_qualified }}</td>
+                <td {% if not data.bool_qualified_deviceid %} style="color:red" {% endif %} >{{ data.bool_qualified_deviceid|parse_is_qualified }}</td>
+                <td {% if not data.reserve_bool_1 %} style="color:red" {% endif %} >{{ data.reserve_bool_1|parse_is_qualified }}</td>
+                <td {% if data.reserve_int_1 != 0 %} style="color:red" {% endif %} >{{ data.reserve_int_1|parse_mac_is_qualified }}({{data.reserve_int_1}})</td>
+                <td>{{ data.datetime }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <div style="display: inline">{{ pagination.links }}</div>
+
+    <br>
+    <a href="{{ url_for('blue_rasp.vf_stat') }}">返回</a>
+
+{% endblock body%}
+

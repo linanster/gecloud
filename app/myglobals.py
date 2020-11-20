@@ -12,7 +12,9 @@ upgradefolder = os.path.abspath(os.path.join(topdir, "files/upgrade"))
 
 class PERMISSIONS(object):
     # P1 required by:
-    # 1.1 blue_rasp.vf_data
+    # 1.1 blue_rasp.vf_stat
+    # 1.2 blue_rasp.vf_oplog
+    # 1.3 blue_rasp.vf_data
     P1 = 0b00000001 or 1
     # P2 required by:
     # 2.1 blue_rasp.cmd_update_stat

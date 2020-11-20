@@ -37,7 +37,7 @@
         <input type="hidden" name="limit" value=500>
         <button type="submit">查看更多</button>
     </form> | 
-    <a href="{{ url_for('blue_rasp.vf_data') }}">返回</a>
+    <a href="{{ url_for('blue_rasp.vf_stat') }}">返回</a>
 
     {% with messages = get_flashed_messages() %}
         {% if messages %}
