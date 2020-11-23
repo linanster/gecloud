@@ -15,6 +15,13 @@ from app.lib.mydecorator import processmaker, threadmaker
 
 from app.myglobals import PER_QUERY_COUNT
 
+def get_myquery_testdatas_by_search(query, search_devicecode, search_blemac):
+    myquery = query.filter(
+        TestdataCloud.devicecode.like("%"+search_devicecode+"%") if search_devicecode is not None else text(""),
+        TestdataCloud.mac_ble.like("%"+search_blemac+"%") if search_blemac is not None else text(""),
+    )
+    return myquery
+
 def get_myquery_testdatas_by_fcode_userid(fcode, userid):
     if fcode == 0:
         myquery = TestdataCloud.query

@@ -16,6 +16,13 @@ def get_permission(userid):
     from app.lib.dbutils import get_user_permission
     return get_user_permission(userid)
 
+@application_ge_cloud.template_global('get_devices')
+def get_devices():
+    from app.models.mysql import Device
+    devices = Device.query.all()
+    return devices
+
+
 @application_ge_cloud.template_filter('parse_is_qualified')
 def parseIsQualified(mybool):
     return '成功' if mybool else '失败'

@@ -7,9 +7,14 @@
 {% block scripts %}
     <script src="{{ url_for('static',filename='js/jquery.min.js') }}"></script>
     <script src="{{ url_for('static',filename='js/jquery-1.12.4.min.js') }}"></script>
+
     <script type="text/javascript" charset="utf-8">
         $(document).ready(function () {
         });
+        function myreset() {
+            $("#input_blemac").attr("value", "");
+            $("#select_devicecode option").removeAttr("selected");
+        }
     </script>
 {% endblock scripts %}
 
@@ -22,7 +27,26 @@
     <br>
     <br>
 
-    <div class="pagination-sm">
+    <div id="search" class="btn-group" style="display:inline">
+        <form id="searchfrom" action="{{url_for('blue_rasp.vf_testdata')}}" method="post">
+            Device Type:
+            <select id="select_devicecode" name="devicecode">
+                <option value="" style='display: none'>-</option>
+                {% for device in get_devices() %}
+                    <option value={{ device.code }} {% if search_devicecode and search_devicecode==device.code|string %}selected{% endif %}>{{ device.name }}({{device.code_hex}})</option>
+                {% endfor %}
+            </select>
+            Ble Mac: <input id="input_blemac" type="text" name="blemac" value="{% if search_blemac %}{{search_blemac}}{% endif %}">
+            <input type="submit" value="search">
+            <input type="reset" value="reset" onclick="myreset()">
+        </form>
+    <div>
+
+    <br>
+
+    <div>
+    <!-- <div class="pagination"> -->
+    <!-- <div class="pagination-sm"> -->
         <div style="display: inline">{{ pagination.info }}</div>
         <div style="display: inline">{{ pagination.links }}</div>
     </div>

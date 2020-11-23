@@ -1,10 +1,10 @@
 from flask import Blueprint, request, render_template, flash, redirect, url_for, g, session
-import os
+import os, json
 from flask_login import login_required, current_user
 from flask_paginate import Pagination, get_page_parameter
 
 from app.lib.mydecorator import viewfunclog
-from app.lib.dbutils import update_sqlite_stat, get_myquery_testdatas_by_fcode_userid
+from app.lib.dbutils import update_sqlite_stat, get_myquery_testdatas_by_fcode_userid, get_myquery_testdatas_by_search
 from app.lib.myauth import my_page_permission_required, load_datas_stat
 from app.lib.mylib import get_oplogs_by_fcode_userid, get_testdatas_by_fcode_userid
 
@@ -20,6 +20,12 @@ blue_rasp = Blueprint('blue_rasp', __name__, url_prefix='/rasp')
 @viewfunclog
 def vf_stat():
     return render_template('rasp_stat.html', datas=g.datas)
+
+@blue_rasp.route('/test')
+@load_datas_stat
+def test():
+    print('==g.datas==', g.datas)
+    return str(len(g.datas))
 
 @blue_rasp.route('/stat/update', methods=['POST'])
 @login_required
@@ -53,6 +59,13 @@ def vf_oplog():
 @load_datas_stat
 @viewfunclog
 def vf_testdata():
+    # search code
+    # if get no parameter from request.form, they will be None
+    search_devicecode = request.form.get('devicecode', type=str)
+    search_blemac = request.form.get('blemac', type=str)
+    search_kwargs = {'search_devicecode': search_devicecode, 'search_blemac': search_blemac}
+    search_args = list(search_kwargs.values())
+
     # type of fcode default is str, not int
     # fcode = request.args.get('fcode', type=int)
     # 1. fetch fcode
@@ -75,6 +88,10 @@ def vf_testdata():
     # datas = datas[0:1000]
     myquery = get_myquery_testdatas_by_fcode_userid(fcode, current_user.id)
 
+    # if any of search params is not None, filter further
+    if any(search_args):
+        myquery = get_myquery_testdatas_by_search(myquery, search_devicecode, search_blemac)
+
     # pagination code
     # total_count = len(datas)
     # total_count = len(myquery.all())
@@ -87,5 +104,4 @@ def vf_testdata():
     # ret = myquery.slice(start, end)
     # datas = datas[start:end]
     datas = myquery.slice(start, end)
-
-    return render_template('rasp_testdata.html', datas=datas, fcode=fcode, pagination=pagination)
+    return render_template('rasp_testdata.html', datas=datas, fcode=fcode, pagination=pagination, **search_kwargs)
