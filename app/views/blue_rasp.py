@@ -5,7 +5,7 @@ from flask_paginate import Pagination, get_page_parameter
 
 from app.lib.mydecorator import viewfunclog
 from app.lib.dbutils import update_sqlite_stat, get_myquery_testdatas_by_search, forge_myquery_mysql_testdatascloud_by_fcode
-from app.lib.myauth import my_page_permission_required, load_datas_stat, load_myquery_qualified
+from app.lib.myauth import my_page_permission_required, load_myquery_qualified
 from app.lib.mylib import get_oplogs_by_fcode_userid, get_testdatas_by_fcode_userid
 
 from app.myglobals import PERMISSIONS
@@ -16,17 +16,13 @@ blue_rasp = Blueprint('blue_rasp', __name__, url_prefix='/rasp')
 @blue_rasp.route('/stat')
 @login_required
 @my_page_permission_required(PERMISSIONS.P1)
-@load_datas_stat
+@load_myquery_qualified
 @viewfunclog
 def vf_stat():
-    return render_template('rasp_stat.html', datas=g.datas)
-
-# test
-@blue_rasp.route('/test')
-@load_datas_stat
-def test():
-    print('==g.datas==', g.datas)
-    return str(len(g.datas))
+    myquery_sqlite_stats = g.myquery_sqlite_stats
+    stats = myquery_sqlite_stats.all()
+    # return render_template('rasp_stat.html', datas=g.datas)
+    return render_template('rasp_stat.html', datas=stats)
 
 @blue_rasp.route('/stat/update', methods=['POST'])
 @login_required

@@ -6,11 +6,11 @@ from flask_login import current_user
 from functools import wraps
 
 from app.models.sqlite import User
-from app.lib.mylib import get_datas_stat_by_userid
 from app.lib.dbutils import initiate_myquery_mysql_factories_from_userid
 from app.lib.dbutils import initiate_myquery_mysql_devices_from_userid
 from app.lib.dbutils import initiate_myquery_mysql_oplogs_from_userid
 from app.lib.dbutils import initiate_myquery_mysql_testdatascloud_from_userid
+from app.lib.dbutils import initiate_myquery_sqlite_stats_from_userid
 
 http_basic_auth = HTTPBasicAuth()
 
@@ -79,18 +79,8 @@ def my_page_permission_required(permission):
 
 
 # 1. this is decorator
-# 2. query sqlite.stat datas by current_user.id, and assign result to g.datas
-# 3. call this decorator after flask_login.login_required
-# 4. g.datas is available in decorated func body
-def load_datas_stat(func):
-    @wraps(func)
-    def inner(*args, **kwargs):
-        userid = current_user.id
-        datas = get_datas_stat_by_userid(userid)
-        g.datas = datas
-        return func(*args, **kwargs)
-    return inner
-
+# 2. call this decorator after flask_login.login_required
+# 3. g.myquery_* is available in decorated func body
 def load_myquery_qualified(func):
     @wraps(func)
     def inner(*args, **kwargs):
@@ -99,9 +89,11 @@ def load_myquery_qualified(func):
         myquery_mysql_devices = initiate_myquery_mysql_devices_from_userid(userid)
         myquery_mysql_oplogs = initiate_myquery_mysql_oplogs_from_userid(userid)
         myquery_mysql_testdatascloud = initiate_myquery_mysql_testdatascloud_from_userid(userid)
+        myquery_sqlite_stats = initiate_myquery_sqlite_stats_from_userid(userid)
         g.myquery_mysql_factories = myquery_mysql_factories
         g.myquery_mysql_devices = myquery_mysql_devices
         g.myquery_mysql_oplogs = myquery_mysql_oplogs
         g.myquery_mysql_testdatascloud = myquery_mysql_testdatascloud
+        g.myquery_sqlite_stats = myquery_sqlite_stats
         return func(*args, **kwargs)
     return inner

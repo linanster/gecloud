@@ -24,6 +24,14 @@ def get_myquery_testdatas_by_search(query, search_devicecode, search_blemac, sea
     )
     return myquery
 
+def initiate_myquery_sqlite_stats_from_userid(userid):
+    if userid>=100:
+        myquery = Stat.query
+    else:
+        fcode = userid
+        myquery = Stat.query.filter(Stat.fcode==fcode)
+    return myquery
+
 def initiate_myquery_mysql_factories_from_userid(userid):
     if userid >= 100:
         myquery = Factory.query
@@ -79,14 +87,6 @@ def get_mysql_oplogs_by_fcode(code):
         datas = Oplog.query.order_by(desc(Oplog.id)).all()
     else:
         datas = Oplog.query.filter_by(fcode=code).order_by(desc(Oplog.id)).all()
-    return datas
-
-def get_sqlite_stat_by_fcode(code):
-    # data = Stat.query.filter_by(fcode=code).first()
-    if code == 0:
-        datas = Stat.query.all()
-    else:
-        datas = Stat.query.filter_by(fcode=code).all()
     return datas
 
 def get_mysql_testdatacloud_by_factorycode(code):
