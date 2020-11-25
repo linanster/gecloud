@@ -5,7 +5,7 @@ import datetime
 import requests
 import os
 
-from sqlalchemy import or_, desc
+from sqlalchemy import or_, desc, text
 from dateutil import tz
 
 from app.models.mysql import db_mysql, TestdataCloud, Factory, Device, Oplog
@@ -15,19 +15,49 @@ from app.lib.mydecorator import processmaker, threadmaker
 
 from app.myglobals import PER_QUERY_COUNT
 
-def get_myquery_testdatas_by_search(query, search_devicecode, search_blemac):
+def get_myquery_testdatas_by_search(query, search_devicecode, search_blemac, search_datetime_start, search_datetime_end, search_factorycode):
     myquery = query.filter(
-        TestdataCloud.devicecode.like("%"+search_devicecode+"%") if search_devicecode is not None else text(""),
+        TestdataCloud.devicecode.__eq__(search_devicecode) if search_devicecode != '0' else text(""),
         TestdataCloud.mac_ble.like("%"+search_blemac+"%") if search_blemac is not None else text(""),
+        TestdataCloud.datetime.between(search_datetime_start, search_datetime_end) if all([search_datetime_start, search_datetime_end]) else text(""),
+        TestdataCloud.factorycode.__eq__(search_factorycode) if search_factorycode != '0' else text(""),
     )
     return myquery
 
-def get_myquery_testdatas_by_fcode_userid(fcode, userid):
-    if fcode == 0:
+def initiate_myquery_mysql_factories_from_userid(userid):
+    if userid >= 100:
+        myquery = Factory.query
+    else:
+        fcode = userid
+        myquery = Factory.query.filter(Factory.code==fcode)
+    return myquery
+
+# for device list, there is no restriction from userid
+def initiate_myquery_mysql_devices_from_userid(userid):
+    myquery = Device.query
+    return myquery
+
+def initiate_myquery_mysql_oplogs_from_userid(userid):
+    if userid >= 100:
+        myquery = Oplog.query
+    else:
+        fcode = userid
+        myquery = Oplog.query.filter(Oplog.fcode==fcode)
+    return myquery
+
+def initiate_myquery_mysql_testdatascloud_from_userid(userid):
+    if userid >= 100:
         myquery = TestdataCloud.query
     else:
-        myquery = TestdataCloud.query.filter_by(factorycode=fcode)
+        fcode = userid
+        myquery = TestdataCloud.query.filter(TestdataCloud.factorycode==fcode)
     return myquery
+
+def forge_myquery_mysql_testdatascloud_by_fcode(myquery, fcode):
+    if fcode == 0:
+        return myquery
+    else:
+        return myquery.filter_by(factorycode=fcode)
 
 def get_mysql_testdatascloud_by_fcode(fcode):
     if fcode == 0:

@@ -13,7 +13,10 @@
         });
         function myreset() {
             $("#input_blemac").attr("value", "");
+            $("#input_date_start").attr("value", "");
+            $("#input_date_end").attr("value", "");
             $("#select_devicecode option").removeAttr("selected");
+            $("#select_factorycode option").removeAttr("selected");
         }
     </script>
 {% endblock scripts %}
@@ -29,14 +32,31 @@
 
     <div id="search" class="btn-group" style="display:inline">
         <form id="searchfrom" action="{{url_for('blue_rasp.vf_testdata')}}" method="post">
-            Device Type:
-            <select id="select_devicecode" name="devicecode">
-                <option value="" style='display: none'>-</option>
-                {% for device in get_devices() %}
+            <label>Device Type:</label>
+            <select id="select_devicecode" name="search_devicecode">
+                <!-- <option value="" style='display: none'>-</option> -->
+                <option value="0">All</option>
+                {% for device in devices %}
                     <option value={{ device.code }} {% if search_devicecode and search_devicecode==device.code|string %}selected{% endif %}>{{ device.name }}({{device.code_hex}})</option>
                 {% endfor %}
             </select>
-            Ble Mac: <input id="input_blemac" type="text" name="blemac" value="{% if search_blemac %}{{search_blemac}}{% endif %}">
+            {% if fcode == 0 %}
+            <label>Factory:</label>
+            <select id="select_factorycode" name="search_factorycode">
+                <option value="0">All</option>
+                {% for factory in factories %}
+                    <option value={{ factory.code }} {% if search_factorycode and search_factorycode==factory.code|string %}selected{% endif %}>{{ factory.name }}</option>
+                {% endfor %}
+            </select>
+            {% endif %}
+            <br>
+            <label>Ble Mac: </label>
+            <input id="input_blemac" type="text" name="search_blemac" value="{% if search_blemac %}{{search_blemac}}{% endif %}">
+            <label>Date start: </label>
+            <input id="input_date_start" type="date" name="search_date_start" value="{% if search_datetime_start %}{{search_datetime_start|get_date_from_datetime}}{% endif %}">
+            <label>Date end: </label>
+            <input id="input_date_end" type="date" name="search_date_end" value="{% if search_datetime_end %}{{search_datetime_end|get_date_from_datetime}}{% endif %}">
+            <br>
             <input type="submit" value="search">
             <input type="reset" value="reset" onclick="myreset()">
         </form>
@@ -77,24 +97,24 @@
         </thead>
 
         <tbody>
-        {% for data in datas %}
+        {% for testdatacloud in testdatascloud %}
             <tr>
                 <td>{{ loop.index + pagination.skip }}</td>
-                <td>{{ data.device.name }}</td>
-                <td>{{ data.factory.name }}</td>
-                <td>{{ data.fw_version }}</td>
-                <td>{{ data.rssi_ble1 }}</td>
-                <td>{{ data.rssi_wifi1|parse_rssi_wifi_na }}</td>
-                <td>{{ data.mac_ble }}</td>
-                <td>{{ data.mac_wifi }}</td>
-                <td>{{ data.reserve_str_1 }}</td>
-                <td {% if not data.bool_qualified_signal %} style="color:red" {% endif %} >{{ data.bool_qualified_signal|parse_is_qualified }}</td>
-                <td {% if not data.bool_qualified_check %} style="color:red" {% endif %} >{{ data.bool_qualified_check|parse_is_qualified }}({{data.status_cmd_check1}})</td>
-                <td {% if not data.bool_qualified_scan %} style="color:red" {% endif %} >{{ data.bool_qualified_scan|parse_is_qualified }}</td>
-                <td {% if not data.bool_qualified_deviceid %} style="color:red" {% endif %} >{{ data.bool_qualified_deviceid|parse_is_qualified }}</td>
-                <td {% if not data.reserve_bool_1 %} style="color:red" {% endif %} >{{ data.reserve_bool_1|parse_is_qualified }}</td>
-                <td {% if data.reserve_int_1 != 0 %} style="color:red" {% endif %} >{{ data.reserve_int_1|parse_mac_is_qualified }}({{data.reserve_int_1}})</td>
-                <td>{{ data.datetime }}</td>
+                <td>{{ testdatacloud.device.name }}</td>
+                <td>{{ testdatacloud.factory.name }}</td>
+                <td>{{ testdatacloud.fw_version }}</td>
+                <td>{{ testdatacloud.rssi_ble1 }}</td>
+                <td>{{ testdatacloud.rssi_wifi1|parse_rssi_wifi_na }}</td>
+                <td>{{ testdatacloud.mac_ble }}</td>
+                <td>{{ testdatacloud.mac_wifi }}</td>
+                <td>{{ testdatacloud.reserve_str_1 }}</td>
+                <td {% if not testdatacloud.bool_qualified_signal %} style="color:red" {% endif %} >{{ testdatacloud.bool_qualified_signal|parse_is_qualified }}</td>
+                <td {% if not testdatacloud.bool_qualified_check %} style="color:red" {% endif %} >{{ testdatacloud.bool_qualified_check|parse_is_qualified }}({{testdatacloud.status_cmd_check1}})</td>
+                <td {% if not testdatacloud.bool_qualified_scan %} style="color:red" {% endif %} >{{ testdatacloud.bool_qualified_scan|parse_is_qualified }}</td>
+                <td {% if not testdatacloud.bool_qualified_deviceid %} style="color:red" {% endif %} >{{ testdatacloud.bool_qualified_deviceid|parse_is_qualified }}</td>
+                <td {% if not testdatacloud.reserve_bool_1 %} style="color:red" {% endif %} >{{ testdatacloud.reserve_bool_1|parse_is_qualified }}</td>
+                <td {% if testdatacloud.reserve_int_1 != 0 %} style="color:red" {% endif %} >{{ testdatacloud.reserve_int_1|parse_mac_is_qualified }}({{testdatacloud.reserve_int_1}})</td>
+                <td>{{ testdatacloud.datetime }}</td>
             </tr>
         {% endfor %}
         </tbody>

@@ -7,6 +7,10 @@ from functools import wraps
 
 from app.models.sqlite import User
 from app.lib.mylib import get_datas_stat_by_userid
+from app.lib.dbutils import initiate_myquery_mysql_factories_from_userid
+from app.lib.dbutils import initiate_myquery_mysql_devices_from_userid
+from app.lib.dbutils import initiate_myquery_mysql_oplogs_from_userid
+from app.lib.dbutils import initiate_myquery_mysql_testdatascloud_from_userid
 
 http_basic_auth = HTTPBasicAuth()
 
@@ -84,5 +88,20 @@ def load_datas_stat(func):
         userid = current_user.id
         datas = get_datas_stat_by_userid(userid)
         g.datas = datas
+        return func(*args, **kwargs)
+    return inner
+
+def load_myquery_qualified(func):
+    @wraps(func)
+    def inner(*args, **kwargs):
+        userid = current_user.id
+        myquery_mysql_factories = initiate_myquery_mysql_factories_from_userid(userid)
+        myquery_mysql_devices = initiate_myquery_mysql_devices_from_userid(userid)
+        myquery_mysql_oplogs = initiate_myquery_mysql_oplogs_from_userid(userid)
+        myquery_mysql_testdatascloud = initiate_myquery_mysql_testdatascloud_from_userid(userid)
+        g.myquery_mysql_factories = myquery_mysql_factories
+        g.myquery_mysql_devices = myquery_mysql_devices
+        g.myquery_mysql_oplogs = myquery_mysql_oplogs
+        g.myquery_mysql_testdatascloud = myquery_mysql_testdatascloud
         return func(*args, **kwargs)
     return inner
