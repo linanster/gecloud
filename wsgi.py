@@ -41,6 +41,3 @@ def parseRssiWifiNa(rssiwifi):
     else:
         return rssiwifi
 
-@application_ge_cloud.template_filter('get_date_from_datetime')
-def get_date_from_datetime(s_datetime):
-    return s_datetime.split(' ')[0]

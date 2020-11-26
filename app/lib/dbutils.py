@@ -15,12 +15,56 @@ from app.lib.mydecorator import processmaker, threadmaker
 
 from app.myglobals import PER_QUERY_COUNT
 
-def get_myquery_testdatas_by_search(query, search_devicecode, search_blemac, search_datetime_start, search_datetime_end, search_factorycode):
+def get_myquery_testdatas_by_search(query, search_devicecode, search_factorycode, search_qualified, search_blemac, search_wifimac, search_fwversion, search_mcu, search_date_start, search_date_end):
+    # check original params and change them sqlalchemy query friendly
+    if search_devicecode == '0':
+        search_devicecode = None
+    if search_factorycode == '0':
+        search_factorycode = None
+    tab_qualified_code = {
+        '0': None,
+        '1': True,
+        '2': False,
+    }
+    search_qualified = tab_qualified_code.get(search_qualified)
+    if search_blemac == '':
+        search_blemac = None
+    if search_wifimac == '':
+        search_wifimac = None
+    if search_fwversion == '':
+        search_fwversion = None
+    if search_mcu == '':
+        search_mcu = None
+    if search_date_start is None or search_date_start == '':
+        search_date_start = None
+    else:
+        search_date_start = search_date_start + ' 00:00:00'
+    if search_date_end is None or search_date_end == '':
+        search_date_end = None
+    else:
+        search_date_end = search_date_end + ' 23:59:59'
+
+    print('--search_devicecode--', search_devicecode)
+    print('--search_factorycode--', search_factorycode)
+    print('--search_qualified--', search_qualified)
+    print('--search_blemac--', search_blemac)
+    print('--search_wifimac--', search_wifimac)
+    print('--search_fwversion--', search_fwversion)
+    print('--search_mcu--', search_mcu)
+    print('--search_date_start--', search_date_start)
+    print('--search_date_end--', search_date_end)
+
+
+    # assemble combined query
     myquery = query.filter(
-        TestdataCloud.devicecode.__eq__(search_devicecode) if search_devicecode != '0' else text(""),
+        TestdataCloud.devicecode.__eq__(search_devicecode) if search_devicecode is not None else text(""),
+        TestdataCloud.factorycode.__eq__(search_factorycode) if search_factorycode is not None else text(""),
+        TestdataCloud.bool_qualified_overall.__eq__(search_qualified) if search_qualified is not None else text(""),
         TestdataCloud.mac_ble.like("%"+search_blemac+"%") if search_blemac is not None else text(""),
-        TestdataCloud.datetime.between(search_datetime_start, search_datetime_end) if all([search_datetime_start, search_datetime_end]) else text(""),
-        TestdataCloud.factorycode.__eq__(search_factorycode) if search_factorycode != '0' else text(""),
+        TestdataCloud.mac_wifi.like("%"+search_wifimac+"%") if search_wifimac is not None else text(""),
+        TestdataCloud.fw_version.like("%"+search_fwversion+"%") if search_fwversion is not None else text(""),
+        TestdataCloud.reserve_str_1.like("%"+search_mcu+"%") if search_mcu is not None else text(""),
+        TestdataCloud.datetime.between(search_date_start, search_date_end) if all([search_date_start, search_date_end]) else text(""),
     )
     return myquery
 
@@ -66,6 +110,12 @@ def forge_myquery_mysql_testdatascloud_by_fcode(myquery, fcode):
         return myquery
     else:
         return myquery.filter_by(factorycode=fcode)
+
+def forge_myquery_mysql_factories_by_fcode(myquery, fcode):
+    if fcode == 0:
+        return myquery
+    else:
+        return myquery.filter(Factory.code==fcode)
 
 def get_mysql_testdatascloud_by_fcode(fcode):
     if fcode == 0:

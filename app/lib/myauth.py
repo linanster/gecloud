@@ -81,7 +81,7 @@ def my_page_permission_required(permission):
 # 1. this is decorator
 # 2. call this decorator after flask_login.login_required
 # 3. g.myquery_* is available in decorated func body
-def load_myquery_qualified(func):
+def load_myquery_authorized(func):
     @wraps(func)
     def inner(*args, **kwargs):
         userid = current_user.id
