@@ -10,6 +10,14 @@
 
     <script type="text/javascript" charset="utf-8">
         $(document).ready(function () {
+            $("#btn_download_csv").click(function(){
+                if(window.confirm("Confirm to download csv?")==false)
+                    return false;
+            });
+            $("#btn_download_xls").click(function(){
+                if(window.confirm("Confirm to download excel?")==false)
+                    return false;
+            });
         });
         function myreset() {
             $("#select_devicecode option").removeAttr("selected");
@@ -36,8 +44,8 @@
     <br>
 
     <div id="search" class="btn-group" style="display:inline">
-        <form id="searchfrom" action="{{url_for('blue_rasp.vf_testdata')}}" method="post">
-            <label>Device Type:</label>
+        <form id="searchfrom" action="{{url_for('blue_rasp.vf_testdata')}}" method="post" style="display: inline">
+            <label>device type:</label>
             <select id="select_devicecode" name="search_devicecode">
                 <!-- <option value="" style='display: none'>-</option> -->
                 <option value="0">All</option>
@@ -45,7 +53,7 @@
                     <option value={{ device.code }} {% if search_devicecode and search_devicecode==device.code|string %}selected{% endif %}>{{ device.name }}({{device.code_hex}})</option>
                 {% endfor %}
             </select>
-            <label>Factory:</label>
+            <label>vendor:</label>
             <select id="select_factorycode" name="search_factorycode">
                 {% if fcode == 0 %}
                     <option value="0">All</option>
@@ -54,31 +62,41 @@
                     <option value={{ factory.code }} {% if search_factorycode and search_factorycode==factory.code|string %}selected{% endif %}>{{ factory.name }}</option>
                 {% endfor %}
             </select>
-            <label>Qualified:</label>
+            <label>result qualified:</label>
             <select id="select_qualified" name="search_qualified">
                 <option value="0" {% if search_qualified and search_qualified=="0" %}selected{% endif %}>All</option>
                 <option value="1" {% if search_qualified and search_qualified=="1" %}selected{% endif %}>Success</option>
                 <option value="2" {% if search_qualified and search_qualified=="2" %}selected{% endif %}>Fail</option>
             </select>
             <br>
-            <label>Ble Mac: </label>
+            <label>ble mac: </label>
             <input id="input_blemac" type="text" name="search_blemac" value="{% if search_blemac %}{{search_blemac}}{% endif %}">
-            <label>Wifi Mac: </label>
+            <label>wifi mac: </label>
             <input id="input_wifimac" type="text" name="search_wifimac" value="{% if search_wifimac %}{{search_wifimac}}{% endif %}">
-            <label>FW Version: </label>
+            <label>firmware: </label>
             <input id="input_fwversion" type="text" name="search_fwversion" value="{% if search_fwversion %}{{search_fwversion}}{% endif %}">
-            <label>MCU: </label>
+            <label>mcu: </label>
             <input id="input_mcu" type="text" name="search_mcu" value="{% if search_mcu %}{{search_mcu}}{% endif %}">
             <br>
-            <label>Date start: </label>
+            <label>date start: </label>
             <input id="input_date_start" type="date" name="search_date_start" value="{% if search_date_start %}{{search_date_start}}{% endif %}">
-            <label>Date end: </label>
+            <label>date end: </label>
             <input id="input_date_end" type="date" name="search_date_end" value="{% if search_date_end %}{{search_date_end}}{% endif %}">
             <br>
             <input type="submit" value="search">
             <input type="reset" value="reset" onclick="myreset()">
         </form>
+        <form style="display: inline" action="{{ url_for('blue_rasp.cmd_download_testdata') }}" method="post">
+            <input type="hidden" name="download_type" value="csv">
+            <button type="submit" id="btn_download_csv" title="download what you search out">download csv</button>
+        </form>
+        <form style="display: inline" action="{{ url_for('blue_rasp.cmd_download_testdata') }}" method="post">
+            <input type="hidden" name="download_type" value="xls">
+            <button type="submit" id="btn_download_xls" title="download what you search out" disabled>download excel</button>
+        </form>
     <div>
+
+
 
     <br>
 
@@ -93,24 +111,30 @@
         <thead>
         <tr>
             <th rowspan="2">&nbsp;#&nbsp;</th>
-            <th rowspan="2">&nbsp;设备类型&nbsp;</th>
-            <th rowspan="2">&nbsp;工厂&nbsp;</th>
-            <th rowspan="2">&nbsp;固件版本&nbsp;</th>
-            <th rowspan="2">&nbsp;RSSI_BLE&nbsp;</th>
-            <th rowspan="2">&nbsp;RSSI_WIFI&nbsp;</th>
-            <th rowspan="2">&nbsp;MAC_BLE&nbsp;</th>
-            <th rowspan="2">&nbsp;MAC_WIFI&nbsp;</th>
-            <th rowspan="2">&nbsp;MCU&nbsp;</th>
-            <th colspan="6">&nbsp;检测结果&nbsp;</th>
-            <th rowspan="2">&nbsp;时间&nbsp;</th>
+            <th rowspan="2">&nbsp;device type&nbsp;</th>
+            <th rowspan="2">&nbsp;vendor&nbsp;</th>
+            <th rowspan="2">&nbsp;firmware&nbsp;</th>
+            <th rowspan="2">&nbsp;rssi_ble&nbsp;</th>
+            <th rowspan="2">&nbsp;rssi_wifi&nbsp;</th>
+            <th rowspan="2">&nbsp;mac_ble&nbsp;</th>
+            <th rowspan="2">&nbsp;mac_wifi&nbsp;</th>
+            <th rowspan="2">&nbsp;mcu&nbsp;</th>
+            <th colspan="6">&nbsp;result&nbsp;</th>
+            <th rowspan="2">&nbsp;datetime&nbsp;</th>
         </tr>
         <tr>
-            <th>信号强度</th>
+            <!-- <th>信号强度</th>
             <th>组合指令</th>
             <th>广播扫描</th>
             <th>设备类型</th>
             <th>版本检测</th>
-            <th>MAC检测</th>
+            <th>MAC检测</th> -->
+            <th>signal check</th>
+            <th>commands check</th>
+            <th>broadcast check</th>
+            <th>type check</th>
+            <th>version check</th>
+            <th>mac check</th>
         </tr>
         </thead>
 

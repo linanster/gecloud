@@ -188,8 +188,11 @@ class TestdataCloud(db_mysql.Model):
     # reserve_str_1 = db_mysql.Column(db_mysql.String(100), nullable=True, server_default=str(''))
     # reserve_bool_1 = db_mysql.Column(db_mysql.Boolean, nullable=True, server_default=str(0))
     datetime = db_mysql.Column(db_mysql.DateTime, default=datetime.datetime.now())
+    # occupied by mac check
     reserve_int_1 = db_mysql.Column(db_mysql.Integer, nullable=True, server_default=str(0))
+    # occupied by mcu
     reserve_str_1 = db_mysql.Column(db_mysql.String(100), nullable=True, server_default=str(''))
+    # occupied by version check
     reserve_bool_1 = db_mysql.Column(db_mysql.Boolean, nullable=True, server_default=str(0))
     bool_qualified_overall = db_mysql.Column(db_mysql.Boolean)
     def __init__(self, devicecode, factorycode, fw_version, rssi_ble1, rssi_ble2, rssi_wifi1, rssi_wifi2, mac_ble, mac_wifi, status_cmd_check1, status_cmd_check2, bool_uploaded, bool_qualified_signal, bool_qualified_check, bool_qualified_scan, bool_qualified_deviceid, datetime, reserve_int_1, reserve_str_1, reserve_bool_1, bool_qualified_overall):

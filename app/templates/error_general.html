@@ -1,0 +1,10 @@
+{% extends '_mybase.html' %}
+
+{% block body %}
+    {{ super() }}
+    <h1>{{ error_title }}</h1>
+    <p>{{ error_msg }}<p>
+    <br>
+    {% if addr_return %}<a href="{{ addr_return }}">return</a>{% endif %}
+
+{% endblock body %}

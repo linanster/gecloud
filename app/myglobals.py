@@ -1,5 +1,8 @@
 import os
 
+# debug
+DEBUG = False
+
 # folders path
 topdir = os.path.abspath(os.path.join(os.path.dirname(__file__),".."))
 appfolder = os.path.abspath(os.path.join(topdir, "app"))

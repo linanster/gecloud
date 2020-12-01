@@ -15,45 +15,8 @@ from app.lib.mydecorator import processmaker, threadmaker
 
 from app.myglobals import PER_QUERY_COUNT
 
-def get_myquery_testdatas_by_search(query, search_devicecode, search_factorycode, search_qualified, search_blemac, search_wifimac, search_fwversion, search_mcu, search_date_start, search_date_end):
-    # check original params and change them sqlalchemy query friendly
-    if search_devicecode == '0':
-        search_devicecode = None
-    if search_factorycode == '0':
-        search_factorycode = None
-    tab_qualified_code = {
-        '0': None,
-        '1': True,
-        '2': False,
-    }
-    search_qualified = tab_qualified_code.get(search_qualified)
-    if search_blemac == '':
-        search_blemac = None
-    if search_wifimac == '':
-        search_wifimac = None
-    if search_fwversion == '':
-        search_fwversion = None
-    if search_mcu == '':
-        search_mcu = None
-    if search_date_start is None or search_date_start == '':
-        search_date_start = None
-    else:
-        search_date_start = search_date_start + ' 00:00:00'
-    if search_date_end is None or search_date_end == '':
-        search_date_end = None
-    else:
-        search_date_end = search_date_end + ' 23:59:59'
 
-    print('--search_devicecode--', search_devicecode)
-    print('--search_factorycode--', search_factorycode)
-    print('--search_qualified--', search_qualified)
-    print('--search_blemac--', search_blemac)
-    print('--search_wifimac--', search_wifimac)
-    print('--search_fwversion--', search_fwversion)
-    print('--search_mcu--', search_mcu)
-    print('--search_date_start--', search_date_start)
-    print('--search_date_end--', search_date_end)
-
+def forge_myquery_mysql_testdatascloud_by_search(query, search_devicecode, search_factorycode, search_qualified, search_blemac, search_wifimac, search_fwversion, search_mcu, search_date_start, search_date_end):
 
     # assemble combined query
     myquery = query.filter(

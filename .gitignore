@@ -14,6 +14,8 @@ sqlite/*
 cache/*
 cert/*.key
 cert/*.cert
+pub/csv/*
+pub/xls/*
 
 # 3. exceptions that not ignore
 !log/.gitkeep
@@ -21,6 +23,9 @@ cert/*.cert
 !sqlite/.gitkeep
 !cache/.gitkeep
 !cert/.gitkeep
+!pub/.gitkeep
+!pub/xls/.gitkeep
+!pub/csv/.gitkeep
 
 # 4. ignore specified files
 files/upgrade/pin.txt.rc
