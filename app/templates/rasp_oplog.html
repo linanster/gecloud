@@ -1,41 +1,47 @@
 {% extends '_mybase.html' %}
 
+{% block styles %}
+    <link rel="stylesheet" href="{{ url_for('static',filename='css/mypagination.css') }}">
+{% endblock styles %}
+
 {% block body %}
     {{ super() }}
     <h3>树莓派数据上传记录</h3>
 
+    <div>
+        <div style="display: inline">{{ pagination.info }}</div>
+        <div style="display: inline">{{ pagination.links }}</div>
+    </div>
+
+
     <table border="1">
         <tr>
-            <th>&nbsp;index&nbsp;</th>
-            <th>&nbsp;fcode&nbsp;</th>
-            <th>&nbsp;opcode&nbsp;</th>
+            <th>&nbsp;#&nbsp;</th>
+            <th>&nbsp;vendor&nbsp;</th>
+            <th>&nbsp;operation&nbsp;</th>
             <th>&nbsp;opcount&nbsp;</th>
             <th>&nbsp;opmsg&nbsp;</th>
-            <th>&nbsp;timestamp&nbsp;</th>
+            <th>&nbsp;datetime&nbsp;</th>
         </tr>
 
         {% for data in datas %}
             <tr>
                 <td>&nbsp;{{ loop.index }}&nbsp;</td>
-                <td>&nbsp;{{ data.fcode }}&nbsp;</td>
-                <td>&nbsp;{{ data.opcode }}&nbsp;</td>
+                <td>&nbsp;{{ data.fcode | parse_oplog_fcode }}&nbsp;</td>
+                <td>&nbsp;{{ data.opcode | parse_oplog_opcode }}&nbsp;</td>
                 <td>&nbsp;{{ data.opcount }}&nbsp;</td>
                 <td>&nbsp;{{ data.opmsg }}&nbsp;</td>
                 <td>&nbsp;{{ data.timestamp }}&nbsp;</td>
             </tr>
         {% endfor %}
     </table>
+
+    <div style="display: inline">{{ pagination.links }}</div>
     <br>
 
     <form style="display: inline" action="{{ url_for('blue_rasp.vf_oplog') }}" method="post">
         <input type="hidden" name="fcode" value={{fcode}}>
-        <input type="hidden" name="limit" value={{ limit }}>
         <button type="submit">刷新</button>
-    </form> | 
-    <form style="display: inline" action="{{ url_for('blue_rasp.vf_oplog') }}" method="post">
-        <input type="hidden" name="fcode" value={{fcode}}>
-        <input type="hidden" name="limit" value=500>
-        <button type="submit">查看更多</button>
     </form> | 
     <a href="{{ url_for('blue_rasp.vf_stat') }}">返回</a>
 

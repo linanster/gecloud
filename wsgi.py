@@ -41,3 +41,21 @@ def parseRssiWifiNa(rssiwifi):
     else:
         return rssiwifi
 
+@application_ge_cloud.template_filter('parse_oplog_fcode')
+def parse_oplog_fcode(fcode):
+    tab_fcode = {
+        1: 'Leedarson',
+        2: 'Innotech',
+        3: 'Tonly',
+        4: 'Changhong',
+        5: 'TestFactory',
+        6: 'Topstar',
+    }
+    return tab_fcode.get(fcode)
+
+@application_ge_cloud.template_filter('parse_oplog_opcode')
+def parse_oplog_opcode(opcode):
+    tab_opcode = {
+        1: 'upload',
+    }
+    return tab_opcode.get(opcode)

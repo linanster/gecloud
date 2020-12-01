@@ -80,6 +80,12 @@ def forge_myquery_mysql_factories_by_fcode(myquery, fcode):
     else:
         return myquery.filter(Factory.code==fcode)
 
+def forge_myquery_mysql_oplogs_by_fcode(myquery, fcode):
+    if fcode == 0:
+        return myquery
+    else:
+        return myquery.filter(Oplog.fcode==fcode)
+
 def get_mysql_testdatascloud_by_fcode(fcode):
     if fcode == 0:
         datas = TestdataCloud.query.limit(1001).all()

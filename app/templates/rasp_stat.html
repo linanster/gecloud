@@ -43,7 +43,6 @@
                     &nbsp;
                     <form style="display: inline" action="{{ url_for('blue_rasp.vf_oplog') }}" method="post">
                         <input type="hidden" name="fcode" value={{data.fcode}}>
-                        <input type="hidden" name="limit" value=200>
                         <button type="submit">查看上传记录</button>
                     </form>
                     &nbsp;
@@ -69,7 +68,6 @@
     {% if current_user.id >= 100 %}
         <form style="display: inline" action="{{ url_for('blue_rasp.vf_oplog') }}" method="post">
             <input type="hidden" name="fcode" value=0>
-            <input type="hidden" name="limit" value=200>
             <button type="submit">查看全部厂家上传记录</button>
         </form> |
         <form style="display: inline" action="{{ url_for('blue_rasp.vf_testdata', clearsearchsession=1) }}" method="post">

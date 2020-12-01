@@ -5,9 +5,8 @@ from flask_paginate import Pagination, get_page_parameter
 import datetime
 
 from app.lib.mydecorator import viewfunclog
-from app.lib.dbutils import update_sqlite_stat, forge_myquery_mysql_testdatascloud_by_search, forge_myquery_mysql_testdatascloud_by_fcode, forge_myquery_mysql_factories_by_fcode
+from app.lib.dbutils import update_sqlite_stat, forge_myquery_mysql_testdatascloud_by_search, forge_myquery_mysql_testdatascloud_by_fcode, forge_myquery_mysql_factories_by_fcode, forge_myquery_mysql_oplogs_by_fcode
 from app.lib.myauth import my_page_permission_required, load_myquery_authorized
-from app.lib.mylib import get_oplogs_by_fcode_userid, get_testdatas_by_fcode_userid
 from app.lib.mylogger import logger
 from app.lib.myclass import FcodeNotSupportError
 from app.lib.myutils import empty_folder_filesonly, gen_csv_by_query
@@ -16,6 +15,29 @@ from app.myglobals import PERMISSIONS, topdir, DEBUG
 
 
 blue_rasp = Blueprint('blue_rasp', __name__, url_prefix='/rasp')
+
+def fetch_fcode():
+    # 3. fetch fcode from request.form and session
+    # type of fcode default is str, not int
+    # 3.1 try to get fcode from form data, this apply for click "view historical data" button from page
+    fcode = request.form.get('fcode', type=int)
+    # 3.2 try to get fcode from session, this apply for pagination
+    if fcode is None:
+        try:
+            fcode = session['fcode']
+        # if KeyError occur, this very likely happend when directly visit some specific page, so no fcode found at both form and session.
+        # for simply handle this situation, redirect it to start point.
+        except KeyError as e:
+            # return redirect(url_for('blue_rasp.vf_stat'))
+            raise(e)
+    # 3.3 save fcode to session
+    session['fcode'] = fcode
+    # print('==fcode==', fcode)
+    # 3.4 check fcode if located at right bucket
+    if fcode not in [0, 1, 2, 3, 4, 5, 6]:
+        # return redirect(url_for('blue_rasp.vf_stat'))
+        raise FcodeNotSupportError(fcode)
+    return fcode
 
 @blue_rasp.route('/')
 @blue_rasp.route('/stat')
@@ -40,20 +62,42 @@ def cmd_update_stat():
     flash('数据已开始后台更新，请稍后刷新查看')
     return redirect(url_for('blue_rasp.vf_stat'))
 
-@blue_rasp.route('/oplog', methods=['POST'])
+@blue_rasp.route('/oplog', methods=['GET', 'POST'])
 @login_required
 @my_page_permission_required(PERMISSIONS.P1)
+@load_myquery_authorized
 @viewfunclog
 def vf_oplog():
     # type of fcode default is str, not int
-    # fcode = request.args.get('fcode', type=int)
-    fcode = request.form.get('fcode', type=int)
-    limit = request.form.get('limit', type=int) or 200
-    if fcode not in [0, 1, 2, 3, 4, 5, 6]:
+    # fcode = request.form.get('fcode', type=int)
+    # if fcode not in [0, 1, 2, 3, 4, 5, 6]:
+    #     return redirect(url_for('blue_rasp.vf_stat'))
+    # 3. fetch fcode from request.form and session
+    try:
+        fcode = fetch_fcode()
+    except KeyError as e:
+        # logger.error(e)
+        logger.error('KeyError session["fcode"]')
         return redirect(url_for('blue_rasp.vf_stat'))
-    datas = get_oplogs_by_fcode_userid(fcode, current_user.id)
-    datas = datas[0:limit]
-    return render_template('rasp_oplog.html', datas=datas, fcode=fcode, limit=limit)
+    except FcodeNotSupportError as e:
+        logger.warn(str(e))
+        return redirect(url_for('blue_rasp.vf_stat'))
+
+
+    myquery_mysql_oplogs = forge_myquery_mysql_oplogs_by_fcode(g.myquery_mysql_oplogs, fcode)
+
+    # . pagination code
+    total_count = myquery_mysql_oplogs.count()
+    PER_PAGE = 3
+    page = request.args.get(get_page_parameter(), type=int, default=1) #获取页码，默认为第一页
+    start = (page-1)*PER_PAGE
+    end = page * PER_PAGE if total_count > page * PER_PAGE else total_count
+    pagination = Pagination(page=page, total=total_count, per_page=PER_PAGE, bs_version=3)
+    # datas = myquery_mysql_oplogs.all()
+    datas = myquery_mysql_oplogs.slice(start, end)
+
+    # return render_template('rasp_oplog.html', datas=datas, fcode=fcode)
+    return render_template('rasp_oplog.html', datas=datas, fcode=fcode, pagination=pagination)
 
 def fetch_search_param(param_name):
     # this argument is coming from:
@@ -76,29 +120,6 @@ def fetch_search_param(param_name):
         except KeyError:
             param_value = None
     return param_value
-
-def fetch_fcode():
-    # 3. fetch fcode from request.form and session
-    # type of fcode default is str, not int
-    # 3.1 try to get fcode from form data, this apply for click "view historical data" button from page
-    fcode = request.form.get('fcode', type=int)
-    # 3.2 try to get fcode from session, this apply for pagination
-    if fcode is None:
-        try:
-            fcode = session['fcode']
-        # if KeyError occur, this very likely happend when directly visit some specific page, so no fcode found at both form and session.
-        # for simply handle this situation, redirect it to start point.
-        except KeyError as e:
-            # return redirect(url_for('blue_rasp.vf_stat'))
-            raise(e)
-    # 3.3 save fcode to session
-    session['fcode'] = fcode
-    # print('==fcode==', fcode)
-    # 3.4 check fcode if located at right bucket
-    if fcode not in [0, 1, 2, 3, 4, 5, 6]:
-        # return redirect(url_for('blue_rasp.vf_stat'))
-        raise FcodeNotSupportError(fcode)
-    return fcode
 
 def fetch_search_kwargs():
     # 1.1 fetch search params from request.form and session

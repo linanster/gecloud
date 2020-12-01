@@ -49,12 +49,3 @@ def get_fcode_from_login():
         fcode = userid
     return fcode
 
-def get_oplogs_by_fcode_userid(fcode, userid):
-    if userid < 100 and fcode != userid:
-        return list()
-    return get_mysql_oplogs_by_fcode(fcode)
-
-def get_testdatas_by_fcode_userid(fcode, userid):
-    if userid < 100 and fcode != userid:
-        return list()
-    return get_mysql_testdatascloud_by_fcode(fcode)
