@@ -136,7 +136,18 @@ def update_sqlite_lastuploadtime(fcode, p_datetime):
     else:
         db_sqlite.session.commit()
 
-def insert_operation_log(fcode, opcode, opcount, opmsg, timestamp):
+def insert_operation_log(**kwargs):
+    try:
+        record = Oplog(**kwargs)
+        db_mysql.session.add(record)
+    except Exception as e:
+        db_mysql.session.rollback()
+        logger.error('insert_operation_log:')
+        logger.error(str(e))
+    else:
+        db_mysql.session.commit()
+
+def insert_operation_log_legacy(fcode, opcode, opcount, opmsg, timestamp):
     try:
         record = Oplog(fcode, opcode, opcount, opmsg, timestamp)
         db_mysql.session.add(record)

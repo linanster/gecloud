@@ -26,12 +26,23 @@ class Oplog(db_mysql.Model):
     opcount = db_mysql.Column(db_mysql.Integer)
     opmsg = db_mysql.Column(db_mysql.String(256))
     timestamp = db_mysql.Column(db_mysql.DateTime)
-    def __init__(self, fcode, opcode, opcount=0, opmsg='', timestamp=datetime.datetime.now(tz=tz.gettz('Asia/Shanghai')).replace(microsecond=0)):
+    def __init__(self, fcode, opcode, opcount, opmsg, timestamp):
         self.fcode = fcode
         self.opcode = opcode
         self.opcount = opcount
         self.opmsg = opmsg
         self.timestamp = timestamp
+    def __init__(self, fcode, opcode, opmsg, timestamp):
+        self.fcode = fcode
+        self.opcode = opcode
+        self.opmsg = opmsg
+        self.timestamp = timestamp
+    # def __init__(self, fcode, opcode, opcount=0, opmsg='', timestamp=datetime.datetime.now(tz=tz.gettz('Asia/Shanghai')).replace(microsecond=0)):
+    #     self.fcode = fcode
+    #     self.opcode = opcode
+    #     self.opcount = opcount
+    #     self.opmsg = opmsg
+    #     self.timestamp = timestamp
 
 
 class Factory(db_mysql.Model):

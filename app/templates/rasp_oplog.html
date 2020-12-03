@@ -26,10 +26,10 @@
 
         {% for data in datas %}
             <tr>
-                <td>&nbsp;{{ loop.index }}&nbsp;</td>
+                <td>{{ loop.index + pagination.skip }}</td>
                 <td>&nbsp;{{ data.fcode | parse_oplog_fcode }}&nbsp;</td>
                 <td>&nbsp;{{ data.opcode | parse_oplog_opcode }}&nbsp;</td>
-                <td>&nbsp;{{ data.opcount }}&nbsp;</td>
+                <td>&nbsp;{{ data.opcount | parse_oplog_opcount }}&nbsp;</td>
                 <td>&nbsp;{{ data.opmsg }}&nbsp;</td>
                 <td>&nbsp;{{ data.timestamp }}&nbsp;</td>
             </tr>

@@ -47,3 +47,22 @@ class ROLES(object):
 
 # massive query per count
 PER_QUERY_COUNT = 10000
+
+# fcode table
+tab_fcode = {
+    -1: 'Unknown',
+    0: 'All',
+    1: 'Leedarson',
+    2: 'Innotech',
+    3: 'Tonly',
+    4: 'Changhong',
+    5: 'TestFactory',
+    6: 'Topstar',
+}
+
+
+# opcode table
+tab_opcode = {
+    1: 'upload',
+}
+
