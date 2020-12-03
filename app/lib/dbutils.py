@@ -144,6 +144,7 @@ def insert_operation_log(**kwargs):
         db_mysql.session.rollback()
         logger.error('insert_operation_log:')
         logger.error(str(e))
+        raise(e)
     else:
         db_mysql.session.commit()
 

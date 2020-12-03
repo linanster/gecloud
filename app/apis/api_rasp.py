@@ -98,6 +98,7 @@ class ResourceReceiveData(Resource):
             kwargs_oplog = {
                 'fcode': fcode,
                 'opcode': 1,
+                'opcount': None,
                 'opmsg': 'error: count number mismatch',
                 'timestamp': cur_datetime,
             }
@@ -150,6 +151,44 @@ class ResourceReceiveData(Resource):
             logger.info('response_msg: {}'.format(response_msg))
             return response_msg
 
+class ResourceRaspUpgradeNotice(Resource):
+    @http_basic_auth.login_required
+    @my_permission_required(PERMISSIONS.P5)
+    @viewfunclog
+    def post(self):
+        try:
+            # method style 1
+            # data = json.loads(request.get_data(as_text=True))
+            # method style 2
+            data = request.get_json()
+            fcode = data.get('fcode')
+            opcode = data.get('opcode')
+            opcount = data.get('opcount')
+            opmsg = data.get('opmsg')
+            # timestamp = data.get('timestamp')
+            timestamp = get_datetime_now()
+            kwargs_oplog = {
+                'fcode': fcode,
+                'opcode': opcode,
+                'opcount': opcount,
+                'opmsg': opmsg,
+                'timestamp': timestamp,
+            }
+            # print('==kwargs_oplog==', kwargs_oplog)
+            insert_operation_log(**kwargs_oplog)
+            resp_obj = {
+                'errno':0,
+                'msg':'rasp upgrade notice success',
+            }
+        except Exception as e:
+            logger.error('rasp upgrade notice error')
+            logger.error(e)
+            resp_obj = {
+                'errno':1,
+                'msg':'rasp upgrade notice fail',
+            }
+        return resp_obj
+
 
 ##############################
 ### 4. Resourceful Routing ###
@@ -158,4 +197,5 @@ class ResourceReceiveData(Resource):
 api_rasp.add_resource(ResourceConnection, '/ping')
 api_rasp.add_resource(ResourceVerifyPin, '/verifypin')
 api_rasp.add_resource(ResourceReceiveData, '/upload')
+api_rasp.add_resource(ResourceRaspUpgradeNotice, '/upgradenotice')
 

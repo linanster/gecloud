@@ -26,6 +26,7 @@ class PERMISSIONS(object):
     P4 = 0b00001000 or 8
     # P5 required by:
     # 5.1 api_rasp:ResourceReceiveData.put
+    # 5.2 api_rasp:ResourceRaspUpgradeNotice.post
     P5 = 0b00010000 or 16
     # P6 required by:
     # 6.1 api_auth

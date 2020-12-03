@@ -88,7 +88,7 @@ def vf_oplog():
 
     # . pagination code
     total_count = myquery_mysql_oplogs.count()
-    PER_PAGE = 3
+    PER_PAGE = 30
     page = request.args.get(get_page_parameter(), type=int, default=1) #获取页码，默认为第一页
     start = (page-1)*PER_PAGE
     end = page * PER_PAGE if total_count > page * PER_PAGE else total_count
