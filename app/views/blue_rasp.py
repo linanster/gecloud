@@ -5,7 +5,10 @@ from flask_paginate import Pagination, get_page_parameter
 import datetime
 
 from app.lib.mydecorator import viewfunclog
-from app.lib.dbutils import update_sqlite_stat, forge_myquery_mysql_testdatascloud_by_search, forge_myquery_mysql_testdatascloud_by_fcode, forge_myquery_mysql_factories_by_fcode, forge_myquery_mysql_oplogs_by_fcode
+from app.lib.dbutils import update_sqlite_stat, forge_myquery_mysql_testdatascloud_by_search, forge_myquery_mysql_testdatascloud_by_fcode, forge_myquery_mysql_factories_by_fcode
+from app.lib.dbutils import forge_myquery_mysql_oplogs_by_fcode, forge_myquery_mysql_oplogs_by_fcode_opcode
+from app.lib.dbutils import insert_operation_log
+from app.lib.dbutils import get_datetime_now
 from app.lib.myauth import my_page_permission_required, load_myquery_authorized
 from app.lib.mylogger import logger
 from app.lib.myclass import FcodeNotSupportError
@@ -61,6 +64,38 @@ def cmd_update_stat():
     update_sqlite_stat(fcode)
     flash('数据已开始后台更新，请稍后刷新查看')
     return redirect(url_for('blue_rasp.vf_stat'))
+
+@blue_rasp.route('/uploadrecord', methods=['GET', 'POST'])
+@login_required
+@my_page_permission_required(PERMISSIONS.P1)
+@load_myquery_authorized
+@viewfunclog
+def vf_uploadrecord():
+    # 1. fetch fcode from request.form and session
+    try:
+        fcode = fetch_fcode()
+    except KeyError as e:
+        # logger.error(e)
+        logger.error('KeyError session["fcode"]')
+        return redirect(url_for('blue_rasp.vf_stat'))
+    except FcodeNotSupportError as e:
+        logger.warn(str(e))
+        return redirect(url_for('blue_rasp.vf_stat'))
+
+
+    myquery_mysql_uploadrecord = forge_myquery_mysql_oplogs_by_fcode_opcode(g.myquery_mysql_oplogs, fcode, 1)
+
+    # . pagination code
+    total_count = myquery_mysql_uploadrecord.count()
+    PER_PAGE = 30
+    page = request.args.get(get_page_parameter(), type=int, default=1) #获取页码，默认为第一页
+    start = (page-1)*PER_PAGE
+    end = page * PER_PAGE if total_count > page * PER_PAGE else total_count
+    pagination = Pagination(page=page, total=total_count, per_page=PER_PAGE, bs_version=3)
+    datas = myquery_mysql_uploadrecord.slice(start, end)
+
+    # return render_template('rasp_oplog.html', datas=datas, fcode=fcode)
+    return render_template('rasp_uploadrecord.html', datas=datas, fcode=fcode, pagination=pagination)
 
 @blue_rasp.route('/oplog', methods=['GET', 'POST'])
 @login_required
@@ -281,7 +316,9 @@ def cmd_download_testdata():
         return redirect(url_for('blue_error.vf_downloadoverflow'))
 
     # 4. gen csv/excel file and return
-    timestamp = datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
+    # timestamp = datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
+    datetime_obj = get_datetime_now()
+    timestamp = datetime_obj.strftime('%Y_%m_%d_%H_%M_%S')
     shortname = 'TestdataCloud-' + timestamp + '.' + download_type
     genfolder = os.path.join(topdir, 'pub', download_type)
     filename = os.path.join(genfolder, shortname)
@@ -298,5 +335,22 @@ def cmd_download_testdata():
     # 流式读取
     response = Response(send_file(filename), content_type='application/octet-stream')
     response.headers["Content-disposition"] = 'attachment; filename=%s' % shortname
+
+    # record oplog
+    # timestamp = get_datetime_now()
+    fcode = current_user.id
+    opcode = 3
+    opcount = total_count
+    opmsg = 'download csv'
+    kwargs_oplog = {
+        'fcode': fcode,
+        'opcode': opcode,
+        'opcount': opcount,
+        'opmsg': opmsg,
+        'timestamp': datetime_obj,
+    }
+    insert_operation_log(**kwargs_oplog)
+
+    # return
     return response
 

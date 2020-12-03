@@ -41,7 +41,7 @@
                 <td>&nbsp;{{ data.last_update_time }}&nbsp;</td>
                 <td>
                     &nbsp;
-                    <form style="display: inline" action="{{ url_for('blue_rasp.vf_oplog') }}" method="post">
+                    <form style="display: inline" action="{{ url_for('blue_rasp.vf_uploadrecord') }}" method="post">
                         <input type="hidden" name="fcode" value={{data.fcode}}>
                         <button type="submit">查看上传记录</button>
                     </form>
@@ -66,7 +66,7 @@
     <br>
 
     {% if current_user.id >= 100 %}
-        <form style="display: inline" action="{{ url_for('blue_rasp.vf_oplog') }}" method="post">
+        <form style="display: inline" action="{{ url_for('blue_rasp.vf_uploadrecord') }}" method="post">
             <input type="hidden" name="fcode" value=0>
             <button type="submit">查看全部厂家上传记录</button>
         </form> |

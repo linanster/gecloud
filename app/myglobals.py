@@ -18,6 +18,7 @@ class PERMISSIONS(object):
     # 1.1 blue_rasp.vf_stat
     # 1.2 blue_rasp.vf_oplog
     # 1.3 blue_rasp.vf_data
+    # 1.4 blue_rasp.vf_uploadrecord
     P1 = 0b00000001 or 1
     # P2 required by:
     # 2.1 blue_rasp.cmd_update_stat
@@ -50,6 +51,7 @@ class ROLES(object):
 PER_QUERY_COUNT = 10000
 
 # fcode table
+# todo
 tab_fcode = {
     -1: 'Unknown',
     0: 'All',
@@ -59,11 +61,17 @@ tab_fcode = {
     4: 'Changhong',
     5: 'TestFactory',
     6: 'Topstar',
+    100: 'ge',
+    101: 'admin',
+    200: 'user1',
+    201: 'user2',
 }
 
 
 # opcode table
 tab_opcode = {
     1: 'upload',
+    2: 'upgrade',
+    3: 'download',
 }
 

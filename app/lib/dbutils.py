@@ -82,9 +82,15 @@ def forge_myquery_mysql_factories_by_fcode(myquery, fcode):
 
 def forge_myquery_mysql_oplogs_by_fcode(myquery, fcode):
     if fcode == 0:
-        return myquery
+        return myquery.order_by(desc(Oplog.id))
     else:
-        return myquery.filter(Oplog.fcode==fcode)
+        return myquery.filter(Oplog.fcode==fcode).order_by(desc(Oplog.id))
+
+def forge_myquery_mysql_oplogs_by_fcode_opcode(myquery, fcode, opcode):
+    if fcode == 0:
+        return myquery.filter(Oplog.opcode==opcode).order_by(desc(Oplog.id))
+    else:
+        return myquery.filter(Oplog.fcode==fcode, Oplog.opcode==opcode).order_by(desc(Oplog.id))
 
 def get_mysql_testdatascloud_by_fcode(fcode):
     if fcode == 0:
@@ -99,13 +105,6 @@ def get_user_permission(id):
 
 def get_sqlite_stat_all():
     datas = Stat.query.all()
-    return datas
-
-def get_mysql_oplogs_by_fcode(code):
-    if code == 0:
-        datas = Oplog.query.order_by(desc(Oplog.id)).all()
-    else:
-        datas = Oplog.query.filter_by(fcode=code).order_by(desc(Oplog.id)).all()
     return datas
 
 def get_mysql_testdatacloud_by_factorycode(code):
