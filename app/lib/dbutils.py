@@ -56,6 +56,7 @@ def initiate_myquery_mysql_oplogs_from_userid(userid):
     if userid >= 100:
         myquery = Oplog.query
     else:
+        # todo: a little confused here
         fcode = userid
         myquery = Oplog.query.filter(Oplog.fcode==fcode)
     return myquery
@@ -86,11 +87,27 @@ def forge_myquery_mysql_oplogs_by_fcode(myquery, fcode):
     else:
         return myquery.filter(Oplog.fcode==fcode).order_by(desc(Oplog.id))
 
-def forge_myquery_mysql_oplogs_by_fcode_opcode(myquery, fcode, opcode):
-    if fcode == 0:
-        return myquery.filter(Oplog.opcode==opcode).order_by(desc(Oplog.id))
-    else:
-        return myquery.filter(Oplog.fcode==fcode, Oplog.opcode==opcode).order_by(desc(Oplog.id))
+
+def forge_myquery_mysql_oplogs_by_fcode_opcode(query, fcode, opcode):
+    myquery = query.filter(
+        Oplog.fcode == fcode if fcode is not None else text(""),
+        Oplog.opcode == opcode if opcode is not None else text(""),
+    ).order_by(desc(Oplog.id))
+    return myquery
+
+def forge_myquery_mysql_oplogs_by_params_legacy(query, userid, fcode, opcode):
+    myquery = query.filter(
+        or_(
+            # Oplog.userid == userid if userid is not None else text(""),
+            # Oplog.fcode == fcode if fcode is not None else text(""),
+            Oplog.userid == userid,
+            Oplog.fcode == fcode,
+        ),
+        Oplog.opcode == opcode if opcode is not None else text(""),
+    ).order_by(desc(Oplog.id))
+    return myquery
+
+
 
 def get_mysql_testdatascloud_by_fcode(fcode):
     if fcode == 0:

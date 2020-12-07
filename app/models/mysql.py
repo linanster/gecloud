@@ -17,17 +17,36 @@ db_mysql = SQLAlchemy(use_native_unicode='utf8')
 
 # 2. model definition
 
+#class Oplog(db_mysql.Model):
+#    __bind_key__ = 'mysql_gecloud'
+#    __tablename__ = 'oplogs'
+#    id = db_mysql.Column(db_mysql.Integer, nullable=False, autoincrement=True, primary_key = True)
+#    fcode = db_mysql.Column(db_mysql.Integer, nullable=False)
+#    opcode = db_mysql.Column(db_mysql.Integer, nullable=False)
+#    opcount = db_mysql.Column(db_mysql.Integer)
+#    opmsg = db_mysql.Column(db_mysql.String(256))
+#    timestamp = db_mysql.Column(db_mysql.DateTime)
+#    def __init__(self, fcode, opcode, opcount=0, opmsg='', timestamp=datetime.datetime.now(tz=tz.gettz('Asia/Shanghai')).replace(microsecond=0)):
+#        self.fcode = fcode
+#        self.opcode = opcode
+#        self.opcount = opcount
+#        self.opmsg = opmsg
+#        self.timestamp = timestamp
+
+
 class Oplog(db_mysql.Model):
     __bind_key__ = 'mysql_gecloud'
     __tablename__ = 'oplogs'
     id = db_mysql.Column(db_mysql.Integer, nullable=False, autoincrement=True, primary_key = True)
-    fcode = db_mysql.Column(db_mysql.Integer, nullable=False)
-    opcode = db_mysql.Column(db_mysql.Integer, nullable=False)
+    fcode = db_mysql.Column(db_mysql.Integer)
+    userid = db_mysql.Column(db_mysql.Integer)
+    opcode = db_mysql.Column(db_mysql.Integer)
     opcount = db_mysql.Column(db_mysql.Integer)
     opmsg = db_mysql.Column(db_mysql.String(256))
     timestamp = db_mysql.Column(db_mysql.DateTime)
-    def __init__(self, fcode, opcode, opcount=0, opmsg='', timestamp=datetime.datetime.now(tz=tz.gettz('Asia/Shanghai')).replace(microsecond=0)):
+    def __init__(self, fcode=None, userid=None, opcode=None, opcount=None, opmsg='', timestamp=datetime.datetime.now(tz=tz.gettz('Asia/Shanghai')).replace(microsecond=0)):
         self.fcode = fcode
+        self.userid = userid
         self.opcode = opcode
         self.opcount = opcount
         self.opmsg = opmsg

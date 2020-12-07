@@ -63,7 +63,7 @@ class Stat(MyBaseModel):
         s_f2 = Stat('Innotech', 2)
         s_f3 = Stat('Tonly', 3)
         s_f4 = Stat('Changhong', 4)
-        s_f5 = Stat('Test', 5)
+        s_f5 = Stat('TestFactory', 5)
         s_f6 = Stat('Topstar', 6)
         seeds = [s_f1, s_f2, s_f3, s_f4, s_f5, s_f6]
         db_sqlite.session.add_all(seeds)

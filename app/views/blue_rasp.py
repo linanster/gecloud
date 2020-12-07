@@ -11,36 +11,16 @@ from app.lib.dbutils import insert_operation_log
 from app.lib.dbutils import get_datetime_now
 from app.lib.myauth import my_page_permission_required, load_myquery_authorized
 from app.lib.mylogger import logger
-from app.lib.myclass import FcodeNotSupportError
+from app.lib.myclass import FcodeNotSupportError, OpcodeNotSupportError
 from app.lib.myutils import empty_folder_filesonly, gen_csv_by_query
 
-from app.myglobals import PERMISSIONS, topdir, DEBUG
+from app.lib.viewlib import fetch_fcode, fetch_opcode, fetch_search_kwargs, send_file
+
+from app.myglobals import PERMISSIONS, topdir, DEBUG, tab_opcode
 
 
 blue_rasp = Blueprint('blue_rasp', __name__, url_prefix='/rasp')
 
-def fetch_fcode():
-    # 3. fetch fcode from request.form and session
-    # type of fcode default is str, not int
-    # 3.1 try to get fcode from form data, this apply for click "view historical data" button from page
-    fcode = request.form.get('fcode', type=int)
-    # 3.2 try to get fcode from session, this apply for pagination
-    if fcode is None:
-        try:
-            fcode = session['fcode']
-        # if KeyError occur, this very likely happend when directly visit some specific page, so no fcode found at both form and session.
-        # for simply handle this situation, redirect it to start point.
-        except KeyError as e:
-            # return redirect(url_for('blue_rasp.vf_stat'))
-            raise(e)
-    # 3.3 save fcode to session
-    session['fcode'] = fcode
-    # print('==fcode==', fcode)
-    # 3.4 check fcode if located at right bucket
-    if fcode not in [0, 1, 2, 3, 4, 5, 6]:
-        # return redirect(url_for('blue_rasp.vf_stat'))
-        raise FcodeNotSupportError(fcode)
-    return fcode
 
 @blue_rasp.route('/')
 @blue_rasp.route('/stat')
@@ -64,152 +44,6 @@ def cmd_update_stat():
     update_sqlite_stat(fcode)
     flash('数据已开始后台更新，请稍后刷新查看')
     return redirect(url_for('blue_rasp.vf_stat'))
-
-@blue_rasp.route('/uploadrecord', methods=['GET', 'POST'])
-@login_required
-@my_page_permission_required(PERMISSIONS.P1)
-@load_myquery_authorized
-@viewfunclog
-def vf_uploadrecord():
-    # 1. fetch fcode from request.form and session
-    try:
-        fcode = fetch_fcode()
-    except KeyError as e:
-        # logger.error(e)
-        logger.error('KeyError session["fcode"]')
-        return redirect(url_for('blue_rasp.vf_stat'))
-    except FcodeNotSupportError as e:
-        logger.warn(str(e))
-        return redirect(url_for('blue_rasp.vf_stat'))
-
-
-    myquery_mysql_uploadrecord = forge_myquery_mysql_oplogs_by_fcode_opcode(g.myquery_mysql_oplogs, fcode, 1)
-
-    # . pagination code
-    total_count = myquery_mysql_uploadrecord.count()
-    PER_PAGE = 30
-    page = request.args.get(get_page_parameter(), type=int, default=1) #获取页码，默认为第一页
-    start = (page-1)*PER_PAGE
-    end = page * PER_PAGE if total_count > page * PER_PAGE else total_count
-    pagination = Pagination(page=page, total=total_count, per_page=PER_PAGE, bs_version=3)
-    datas = myquery_mysql_uploadrecord.slice(start, end)
-
-    # return render_template('rasp_oplog.html', datas=datas, fcode=fcode)
-    return render_template('rasp_uploadrecord.html', datas=datas, fcode=fcode, pagination=pagination)
-
-@blue_rasp.route('/oplog', methods=['GET', 'POST'])
-@login_required
-@my_page_permission_required(PERMISSIONS.P1)
-@load_myquery_authorized
-@viewfunclog
-def vf_oplog():
-    # type of fcode default is str, not int
-    # fcode = request.form.get('fcode', type=int)
-    # if fcode not in [0, 1, 2, 3, 4, 5, 6]:
-    #     return redirect(url_for('blue_rasp.vf_stat'))
-    # 3. fetch fcode from request.form and session
-    try:
-        fcode = fetch_fcode()
-    except KeyError as e:
-        # logger.error(e)
-        logger.error('KeyError session["fcode"]')
-        return redirect(url_for('blue_rasp.vf_stat'))
-    except FcodeNotSupportError as e:
-        logger.warn(str(e))
-        return redirect(url_for('blue_rasp.vf_stat'))
-
-
-    myquery_mysql_oplogs = forge_myquery_mysql_oplogs_by_fcode(g.myquery_mysql_oplogs, fcode)
-
-    # . pagination code
-    total_count = myquery_mysql_oplogs.count()
-    PER_PAGE = 30
-    page = request.args.get(get_page_parameter(), type=int, default=1) #获取页码，默认为第一页
-    start = (page-1)*PER_PAGE
-    end = page * PER_PAGE if total_count > page * PER_PAGE else total_count
-    pagination = Pagination(page=page, total=total_count, per_page=PER_PAGE, bs_version=3)
-    # datas = myquery_mysql_oplogs.all()
-    datas = myquery_mysql_oplogs.slice(start, end)
-
-    # return render_template('rasp_oplog.html', datas=datas, fcode=fcode)
-    return render_template('rasp_oplog.html', datas=datas, fcode=fcode, pagination=pagination)
-
-def fetch_search_param(param_name):
-    # this argument is coming from:
-    # 1. rasp_testdata.html: refresh
-    # 2. rasp_stat.html: view historical data
-    # 3. rasp_stat.html: view all historical data
-    if request.args.get('clearsearchsession'):
-        try:
-            session.pop(param_name)
-        except KeyError:
-            pass
-        finally:
-            return None
-    param_value = request.form.get(param_name)
-    if param_value is not None:
-        session[param_name] = param_value
-    else:
-        try:
-            param_value = session.get(param_name)
-        except KeyError:
-            param_value = None
-    return param_value
-
-def fetch_search_kwargs():
-    # 1.1 fetch search params from request.form and session
-    search_devicecode_page = fetch_search_param('search_devicecode')
-    search_factorycode_page = fetch_search_param('search_factorycode')
-    search_qualified_page = fetch_search_param('search_qualified')
-    search_blemac_page = fetch_search_param('search_blemac')
-    search_wifimac_page = fetch_search_param('search_wifimac')
-    search_fwversion_page = fetch_search_param('search_fwversion')
-    search_mcu_page = fetch_search_param('search_mcu')
-    search_date_start_page = fetch_search_param('search_date_start')
-    search_date_end_page = fetch_search_param('search_date_end')
-    search_kwargs_page = {
-        'search_devicecode': search_devicecode_page,
-        'search_factorycode': search_factorycode_page,
-        'search_qualified': search_qualified_page,
-        'search_blemac': search_blemac_page,
-        'search_wifimac': search_wifimac_page,
-        'search_fwversion': search_fwversion_page,
-        'search_mcu': search_mcu_page,
-        'search_date_start': search_date_start_page,
-        'search_date_end': search_date_end_page,
-    }
-    # 1.2 check original params and change them sqlalchemy query friendly
-    search_devicecode_db = None if search_devicecode_page == '0' else search_devicecode_page
-    search_factorycode_db = None if search_factorycode_page == '0' else search_factorycode_page
-    tab_qualified_code = {
-        '0': None,
-        '1': True,
-        '2': False,
-    }
-    search_qualified_db = tab_qualified_code.get(search_qualified_page)
-    search_blemac_db = None if search_blemac_page == '' else search_blemac_page
-    search_wifimac_db = None if search_wifimac_page == '' else search_wifimac_page
-    search_fwversion_db = None if search_fwversion_page == '' else search_fwversion_page
-    search_mcu_db = None if search_mcu_page == '' else search_mcu_page
-    search_date_start_db = None if search_date_start_page == '' or search_date_start_page is None else search_date_start_page + ' 00:00:00'
-    search_date_end_db = None if search_date_end_page == '' or search_date_end_page is None else search_date_end_page + ' 23:59:59'
-
-    # 1.3 assemble search_kwargs and search_args
-    search_kwargs_db = {
-        'search_devicecode': search_devicecode_db,
-        'search_factorycode': search_factorycode_db,
-        'search_qualified': search_qualified_db,
-        'search_blemac': search_blemac_db,
-        'search_wifimac': search_wifimac_db,
-        'search_fwversion': search_fwversion_db,
-        'search_mcu': search_mcu_db,
-        'search_date_start': search_date_start_db,
-        'search_date_end': search_date_end_db,
-    }
-    # 1.3 return kwargs
-    # print('==search_kwargs_page==', search_kwargs_page)
-    # print('==search_kwargs_db==', search_kwargs_db)
-    return search_kwargs_page, search_kwargs_db
 
 
 @blue_rasp.route('/testdata', methods=['GET', 'POST'])
@@ -271,13 +105,6 @@ def vf_testdata():
     # 7. return
     return render_template('rasp_testdata.html', **page_kwargs, **search_kwargs_page)
 
-def send_file(filename):
-    with open(filename, 'rb') as filestream:
-        while True:
-            data = filestream.read(1024*1024) # 每次读取1M大小
-            if not data:
-                break
-            yield data
 
 @blue_rasp.route('/download_testdata', methods=['POST'])
 @login_required
@@ -338,11 +165,13 @@ def cmd_download_testdata():
 
     # record oplog
     # timestamp = get_datetime_now()
-    fcode = current_user.id
+    userid = current_user.id
+    fcode = None
     opcode = 3
     opcount = total_count
     opmsg = 'download csv'
     kwargs_oplog = {
+        'userid': userid,
         'fcode': fcode,
         'opcode': opcode,
         'opcount': opcount,

@@ -1,0 +1,29 @@
+{% extends '_mybase.html' %}
+
+{% block body %}
+    {{ super() }}
+    <form style="display: inline" action="{{ url_for('blue_vendor.vf_oplog') }}" method="post">
+        <input type="hidden" name="fcode" value={{fcode}}>
+        <input type="hidden" name="opcode" value=1>
+        <button type="submit">查看设备上传数据记录</button>
+    </form>
+    <br>
+    <br>
+    <form style="display: inline" action="{{ url_for('blue_vendor.vf_oplog') }}" method="post">
+        <input type="hidden" name="fcode" value={{fcode}}>
+        <input type="hidden" name="opcode" value=2>
+        <button type="submit">查看设备升级记录</button>
+    </form>
+    <br>
+    <br>
+    <form style="display: inline" action="{{ url_for('blue_vendor.vf_oplog') }}" method="post">
+        <input type="hidden" name="fcode" value={{fcode}}>
+        <input type="hidden" name="opcode" value=0>
+        <button type="submit">查看设备所有记录</button>
+    </form>
+    <br>
+    <br>
+
+    <a href="{{ url_for('blue_rasp.vf_stat') }}">返回</a>
+
+{% endblock body %}

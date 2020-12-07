@@ -96,6 +96,7 @@ class ResourceReceiveData(Resource):
             logger.error('response_msg: {}'.format(response_msg))
             #record oplog
             kwargs_oplog = {
+                'userid': None,
                 'fcode': fcode,
                 'opcode': 1,
                 'opcount': None,
@@ -115,6 +116,7 @@ class ResourceReceiveData(Resource):
             logger.error('response_msg: {}'.format(response_msg))
             #record oplog
             kwargs_oplog = {
+                'userid': None,
                 'fcode': fcode,
                 'opcode': 1,
                 'opcount': num_recv,
@@ -138,6 +140,7 @@ class ResourceReceiveData(Resource):
             # timestamp = cur_datetime
             # insert_operation_log(fcode, opcode, opcount, opmsg, timestamp)
             kwargs_oplog = {
+                'userid': None,
                 'fcode': fcode,
                 'opcode': 1,
                 'opcount': num_recv,
@@ -162,12 +165,14 @@ class ResourceRaspUpgradeNotice(Resource):
             # method style 2
             data = request.get_json()
             fcode = data.get('fcode')
-            opcode = data.get('opcode')
+            # opcode = data.get('opcode')
+            opcode = 2
             opcount = data.get('opcount')
             opmsg = data.get('opmsg')
             # timestamp = data.get('timestamp')
             timestamp = get_datetime_now()
             kwargs_oplog = {
+                'userid': None,
                 'fcode': fcode,
                 'opcode': opcode,
                 'opcount': opcount,

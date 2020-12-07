@@ -73,5 +73,6 @@ tab_opcode = {
     1: 'upload',
     2: 'upgrade',
     3: 'download',
+    4: 'update',
 }
 

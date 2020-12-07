@@ -6,7 +6,7 @@
 
 {% block body %}
     {{ super() }}
-    <h3>操作日志</h3>
+    <h3>{{ query_desc }}</h3>
 
     <div>
         <div style="display: inline">{{ pagination.info }}</div>
@@ -39,11 +39,11 @@
     <div style="display: inline">{{ pagination.links }}</div>
     <br>
 
-    <form style="display: inline" action="{{ url_for('blue_rasp.vf_uploadrecord') }}" method="post">
-        <input type="hidden" name="fcode" value={{fcode}}>
-        <button type="submit">刷新</button>
+    <form style="display: inline" action="{{ url_for('blue_vendor.vf_oplog') }}" method="post">
+        <button type="submit" disabled>刷新</button>
     </form> | 
-    <a href="{{ url_for('blue_rasp.vf_stat') }}">返回</a>
+    <!-- <a href="{{ url_for('blue_vendor.vf_index') }}">返回</a> -->
+    <a href="{{ referrer }}">返回</a>
 
     {% with messages = get_flashed_messages() %}
         {% if messages %}
