@@ -17,7 +17,7 @@
     <table border="1">
         <tr>
             <th>&nbsp;#&nbsp;</th>
-            <th>&nbsp;vendor&nbsp;</th>
+            <th>&nbsp;user&nbsp;</th>
             <th>&nbsp;operation&nbsp;</th>
             <th>&nbsp;opcount&nbsp;</th>
             <th>&nbsp;opmsg&nbsp;</th>
@@ -27,7 +27,7 @@
         {% for data in datas %}
             <tr>
                 <td>{{ loop.index + pagination.skip }}</td>
-                <td>&nbsp;{{ data.fcode | parse_oplog_fcode }}&nbsp;</td>
+                <td>&nbsp;{{ data.userid | parse_oplog_userid }}&nbsp;</td>
                 <td>&nbsp;{{ data.opcode | parse_oplog_opcode }}&nbsp;</td>
                 <td>&nbsp;{{ data.opcount | parse_oplog_opcount }}&nbsp;</td>
                 <td>&nbsp;{{ data.opmsg }}&nbsp;</td>
@@ -39,10 +39,10 @@
     <div style="display: inline">{{ pagination.links }}</div>
     <br>
 
-    <form style="display: inline" action="{{ url_for('blue_vendor.vf_oplog') }}" method="post">
+    <form style="display: inline" action="{{ url_for('blue_account.vf_oplog') }}" method="post">
         <button type="submit">刷新</button>
     </form> | 
-    <a href="{{ url_for('blue_vendor.vf_index') }}">返回</a>
+    <a href="{{ url_for('blue_account.vf_index') }}">返回</a>
     <!-- <a href="{{ referrer }}">返回</a> -->
 
     {% with messages = get_flashed_messages() %}

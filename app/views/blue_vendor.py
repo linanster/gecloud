@@ -38,7 +38,7 @@ def vf_index():
 @load_myquery_authorized
 @viewfunclog
 def vf_oplog():
-    referrer = request.referrer
+    # referrer = request.referrer
     # 1. fetch fcode from request.form and session
     # fcode is not possibly None
     # 2. fetch opcode
@@ -85,4 +85,4 @@ def vf_oplog():
     # datas = myquery_mysql_oplogs.all()
     datas = myquery_mysql_oplogs.slice(start, end)
 
-    return render_template('vendor_oplog.html', datas=datas, pagination=pagination, referrer = referrer, query_desc = query_desc)
+    return render_template('vendor_oplog.html', datas=datas, pagination=pagination, query_desc = query_desc)

@@ -41,6 +41,11 @@ def parseRssiWifiNa(rssiwifi):
     else:
         return rssiwifi
 
+@application_ge_cloud.template_filter('parse_oplog_userid')
+def parse_oplog_userid(userid):
+    from app.lib.dbutils import get_username_by_userid
+    return get_username_by_userid(userid)
+
 @application_ge_cloud.template_filter('parse_oplog_fcode')
 def parse_oplog_fcode(fcode):
     from app.myglobals import tab_fcode

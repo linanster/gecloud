@@ -31,6 +31,13 @@ def forge_myquery_mysql_testdatascloud_by_search(query, search_devicecode, searc
     )
     return myquery
 
+def get_username_by_userid(id):
+    try:
+        return User.query.get(id).username
+    except Exception as e:
+        logger.error(str(e))
+        return None
+
 def initiate_myquery_sqlite_stats_from_userid(userid):
     if userid>=100:
         myquery = Stat.query
@@ -58,7 +65,7 @@ def initiate_myquery_mysql_oplogs_from_userid(userid):
     else:
         # todo: a little confused here
         fcode = userid
-        myquery = Oplog.query.filter(Oplog.fcode==fcode)
+        myquery = Oplog.query.filter(or_(Oplog.fcode==fcode, Oplog.userid==userid))
     return myquery
 
 def initiate_myquery_mysql_testdatascloud_from_userid(userid):
@@ -91,6 +98,14 @@ def forge_myquery_mysql_oplogs_by_fcode(myquery, fcode):
 def forge_myquery_mysql_oplogs_by_fcode_opcode(query, fcode, opcode):
     myquery = query.filter(
         Oplog.fcode == fcode if fcode is not None else text(""),
+        Oplog.opcode == opcode if opcode is not None else text(""),
+    ).order_by(desc(Oplog.id))
+    return myquery
+
+def forge_myquery_mysql_oplogs_by_userid_opcode(query, userid, opcode):
+    myquery = query.filter(
+        # Oplog.userid == userid if userid is not None else text(""),
+        Oplog.userid == userid,
         Oplog.opcode == opcode if opcode is not None else text(""),
     ).order_by(desc(Oplog.id))
     return myquery

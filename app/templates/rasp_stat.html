@@ -46,12 +46,12 @@
                 <td>&nbsp;{{ data.last_upload_time }}&nbsp;</td>
                 <td>&nbsp;{{ data.last_update_time }}&nbsp;</td>
                 <td>
-                    &nbsp;
+                    <!-- &nbsp;
                     <form style="display: inline" action="{{ url_for('blue_vendor.vf_oplog') }}" method="post">
                         <input type="hidden" name="fcode" value={{data.fcode}}>
                         <input type="hidden" name="opcode" value=1>
                         <button type="submit">查看上传记录</button>
-                    </form>
+                    </form> -->
                     &nbsp;
                     <form style="display: inline" action="{{ url_for('blue_rasp.vf_testdata', clearsearchsession=1) }}" method="post">
                         <input type="hidden" name="fcode" value={{data.fcode}}>
