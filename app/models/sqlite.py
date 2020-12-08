@@ -137,3 +137,27 @@ class User(UserMixin, MyBaseModel):
         db_sqlite.session.add_all(seeds)
         db_sqlite.session.commit()
 
+
+class RunningState(MyBaseModel):
+    __bind_key__ = 'sqlite_runningstates'
+    __tablename__ = 'runningstates'
+    key = db_sqlite.Column(db_sqlite.String(100), nullable=False)
+    value1 = db_sqlite.Column(db_sqlite.Boolean)
+    value2 = db_sqlite.Column(db_sqlite.Integer)
+    value3 = db_sqlite.Column(db_sqlite.String(100))
+    description = db_sqlite.Column(db_sqlite.String(100))
+    def __init__(self, key, value1=None, value2=None, value3=None, description=''):
+        self.key = key
+        self.value1 = value1
+        self.value2 = value2
+        self.value3 = value3
+        self.description = description
+    @staticmethod
+    def seed():
+        r_update_sqlite_stat_running = RunningState('r_update_sqlite_stat_running', value1=False, description='Indicate update_sqlite_stat done or not, default is False.')
+        seeds = [
+            r_update_sqlite_stat_running,
+        ]
+        db_sqlite.session.add_all(seeds)
+        db_sqlite.session.commit()
+

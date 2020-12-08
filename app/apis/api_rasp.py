@@ -7,7 +7,8 @@ from app.lib.myauth import http_basic_auth
 from app.lib.mydecorator import viewfunclog
 from app.lib.mylib import save_to_database, load_upgrade_pin
 from app.lib.mylogger import logger
-from app.lib.dbutils import get_datetime_now, update_sqlite_lastuploadtime, insert_operation_log
+from app.lib.dbutils import update_sqlite_lastuploadtime, insert_operation_log
+from app.lib.myutils import get_datetime_now_obj
 from app.lib.myauth import my_permission_required
 
 from app.myglobals import PERMISSIONS
@@ -60,7 +61,7 @@ class ResourceReceiveData(Resource):
     @viewfunclog
     def put(self):
         # get current datetime
-        cur_datetime = get_datetime_now()
+        cur_datetime = get_datetime_now_obj()
         try:
             # data =  json.loads(request.get_data())
             # data =  json.loads(request.get_data().decode('utf-8'))
@@ -170,7 +171,7 @@ class ResourceRaspUpgradeNotice(Resource):
             opcount = data.get('opcount')
             opmsg = data.get('opmsg')
             # timestamp = data.get('timestamp')
-            timestamp = get_datetime_now()
+            timestamp = get_datetime_now_obj()
             kwargs_oplog = {
                 'userid': None,
                 'fcode': fcode,

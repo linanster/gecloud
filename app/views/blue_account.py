@@ -19,6 +19,7 @@ blue_account = Blueprint('blue_account', __name__, url_prefix='/account')
 @login_required
 @viewfunclog
 def vf_index():
+    # referrer = request.referrer
     msg = request.args.get('msg')
     return render_template('account_index.html', msg=msg)
 

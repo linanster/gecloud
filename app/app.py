@@ -10,6 +10,8 @@ from app.ext import init_ext
 
 from app.myglobals import appfolder
 
+from app.lib.dbutils import reset_runningstates
+
 settingfile = os.path.join(appfolder, 'mysettings.py')
 
 def create_app():
@@ -19,7 +21,7 @@ def create_app():
     init_apis(app)
     init_models(app)
     init_ext(app)
-    
+
     return app
 
 def envinfo():
@@ -30,4 +32,6 @@ def envinfo():
 
 if __name__ == '__main__':
     app = create_app()
+    app.app_context().push()
+    reset_runningstates()
     app.run(host='0.0.0.0', port=5000, debug=True)

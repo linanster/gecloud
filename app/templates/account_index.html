@@ -10,12 +10,17 @@
     </form>
 
     <br>
+    <br>
+    <a href="{{ url_for('blue_rasp.vf_stat') }}">返回</a>
+    <br>
+    <br>
     {% with messages = get_flashed_messages() %}
         {% if messages %}
             {% for message in messages %}
-                <p style="color:green">{{ message }}</p>
+                <p style="color:red">{{ message }}</p>
             {% endfor %}
         {% endif %}
     {% endwith %}
+
 
 {% endblock body %}

@@ -40,9 +40,9 @@ def deletedb_mysql():
         print('==delete mysql tables==')
 
 @manager.command
-def createdb_sqlite(stat=False, auth=False):
-    "--stat --auth"
-    from app.models.sqlite import db_sqlite, Stat, User
+def createdb_sqlite(stat=False, auth=False, runningstates=False):
+    "--stat --auth --runningstates"
+    from app.models.sqlite import db_sqlite, Stat, User, RunningState
     if stat:
         db_sqlite.create_all(bind='sqlite_stat')
         Stat.seed()
@@ -51,10 +51,14 @@ def createdb_sqlite(stat=False, auth=False):
         db_sqlite.create_all(bind='sqlite_auth')
         User.seed()
         print('==create sqlite users table==')
+    if runningstates:
+        db_sqlite.create_all(bind='sqlite_runningstates')
+        RunningState.seed()
+        print('==create sqlite runningstates table==')
 
 @manager.command
-def deletedb_sqlite(stat=False, auth=False):
-    "--stat --auth"
+def deletedb_sqlite(stat=False, auth=False, runningstates=False):
+    "--stat --auth --runningstates"
     from app.models.sqlite import db_sqlite
     if stat:
         db_sqlite.drop_all(bind='sqlite_stat')
@@ -62,6 +66,9 @@ def deletedb_sqlite(stat=False, auth=False):
     if auth:
         db_sqlite.drop_all(bind='sqlite_auth')
         print('==delete sqlite users table==')
+    if runningstates:
+        db_sqlite.drop_all(bind='sqlite_runningstates')
+        print('==delete sqlite runningstates table==')
 
 @manager.command
 def fix_bool_overall():

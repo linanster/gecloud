@@ -8,5 +8,6 @@ SQLALCHEMY_BINDS = {
     'mysql_gecloud': 'mysql+pymysql://root1:123456@localhost:3306/gecloud',
     'sqlite_auth': 'sqlite:///../sqlite/auth.sqlite3',
     'sqlite_stat': 'sqlite:///../sqlite/stat.sqlite3',
+    'sqlite_runningstates': 'sqlite:///../sqlite/runningstates.sqlite3',
 }
 

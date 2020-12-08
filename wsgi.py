@@ -1,10 +1,18 @@
 # coding:utf8
 #
 from app.app import create_app, envinfo
+from app.lib.dbutils import reset_runningstates
 
 # envinfo()
 
+# 1. create app instance
 application_ge_cloud = create_app()
+
+# 2. push context
+application_ge_cloud.app_context().push()
+
+# 3. reset runningstates parameters
+reset_runningstates()
 
 @application_ge_cloud.template_global('need_update')
 def need_update(fcode):

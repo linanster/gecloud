@@ -7,8 +7,8 @@ import datetime
 from app.lib.mydecorator import viewfunclog
 from app.lib.dbutils import update_sqlite_stat, forge_myquery_mysql_testdatascloud_by_search, forge_myquery_mysql_testdatascloud_by_fcode, forge_myquery_mysql_factories_by_fcode
 from app.lib.dbutils import forge_myquery_mysql_oplogs_by_fcode, forge_myquery_mysql_oplogs_by_fcode_opcode
-from app.lib.dbutils import insert_operation_log
-from app.lib.dbutils import get_datetime_now
+from app.lib.dbutils import insert_operation_log, get_update_running_state_done
+from app.lib.myutils import get_datetime_now_obj
 from app.lib.myauth import my_page_permission_required, load_myquery_authorized
 from app.lib.mylogger import logger
 from app.lib.myclass import FcodeNotSupportError, OpcodeNotSupportError
@@ -39,10 +39,31 @@ def vf_stat():
 @my_page_permission_required(PERMISSIONS.P2)
 @viewfunclog
 def cmd_update_stat():
-    # type of fcode default is str, not int
-    fcode = request.args.get('fcode', type=int)
-    update_sqlite_stat(fcode)
-    flash('数据已开始后台更新，请稍后刷新查看')
+    if get_update_running_state_done():
+        flash('后台任务未结束，请稍后再试')
+    else:
+        # type of fcode default is str, not int
+        fcode = request.args.get('fcode', type=int)
+        update_sqlite_stat(fcode)
+        flash('数据已开始后台更新，请稍后刷新查看')
+
+        # record oplog
+        userid = current_user.id
+        fcode = None
+        opcode = 4
+        opcount = None
+        opmsg = 'update statistic data'
+        datetime_obj = get_datetime_now_obj()
+        kwargs_oplog = {
+            'userid': userid,
+            'fcode': fcode,
+            'opcode': opcode,
+            'opcount': opcount,
+            'opmsg': opmsg,
+            'timestamp': datetime_obj,
+        }
+        insert_operation_log(**kwargs_oplog)
+
     return redirect(url_for('blue_rasp.vf_stat'))
 
 
@@ -144,7 +165,7 @@ def cmd_download_testdata():
 
     # 4. gen csv/excel file and return
     # timestamp = datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
-    datetime_obj = get_datetime_now()
+    datetime_obj = get_datetime_now_obj()
     timestamp = datetime_obj.strftime('%Y_%m_%d_%H_%M_%S')
     shortname = 'TestdataCloud-' + timestamp + '.' + download_type
     genfolder = os.path.join(topdir, 'pub', download_type)
@@ -164,7 +185,7 @@ def cmd_download_testdata():
     response.headers["Content-disposition"] = 'attachment; filename=%s' % shortname
 
     # record oplog
-    # timestamp = get_datetime_now()
+    # timestamp = get_datetime_now_obj()
     userid = current_user.id
     fcode = None
     opcode = 3

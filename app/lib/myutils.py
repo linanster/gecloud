@@ -5,6 +5,7 @@ import datetime
 import shutil
 import json
 import csv
+from dateutil import tz
 
 from app.myglobals import logfolder, appfolder 
 
@@ -235,3 +236,12 @@ def read_textfile_oneline(filename):
     content = open(filename).readline()
     content = content.replace('\r', '').replace('\n','')
     return content
+
+def get_datetime_now_obj():
+    return datetime.datetime.now(tz=tz.gettz('Asia/Shanghai')).replace(microsecond=0)
+
+def get_datetime_now_str():
+    return datetime.datetime.now(tz=tz.gettz('Asia/Shanghai')).replace(microsecond=0).strftime('%Y-%m-%d %H:%M:%S')
+
+def get_localpath_from_fullurl(url):
+    return '/' + url.split('//', 1)[1].split('/', 1)[1]

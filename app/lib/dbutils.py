@@ -6,12 +6,12 @@ import requests
 import os
 
 from sqlalchemy import or_, desc, text
-from dateutil import tz
 
 from app.models.mysql import db_mysql, TestdataCloud, Factory, Device, Oplog
-from app.models.sqlite import db_sqlite, Stat, User
+from app.models.sqlite import db_sqlite, Stat, User, RunningState
 from app.lib.mylogger import logger
 from app.lib.mydecorator import processmaker, threadmaker
+from app.lib.myutils import get_datetime_now_obj
 
 from app.myglobals import PER_QUERY_COUNT
 
@@ -153,9 +153,6 @@ def compare_datetime_upload_update(fcode):
         print(e)
         return False
 
-def get_datetime_now():
-    return datetime.datetime.now(tz=tz.gettz('Asia/Shanghai')).replace(microsecond=0)
-
 def update_sqlite_lastuploadtime(fcode, p_datetime):
     try:
         stat = Stat.query.filter_by(fcode=fcode).first()
@@ -192,6 +189,7 @@ def insert_operation_log_legacy(fcode, opcode, opcount, opmsg, timestamp):
 
 @processmaker
 def update_sqlite_stat(fcode):
+    set_update_running_state_done()
     fcodes = list()
     fcodes_all = list(map(lambda x:x[0], Stat.query.with_entities(Stat.fcode).all()))
     if fcode == 0:
@@ -216,83 +214,19 @@ def update_sqlite_stat(fcode):
             stat.failed = num_failed
             stat.srate = num_srate
             # stat.last_update_time = datetime.datetime.now(tz=tz.gettz('Asia/Shanghai')).replace(microsecond=0)
-            stat.last_update_time = get_datetime_now()
+            stat.last_update_time = get_datetime_now_obj()
     except Exception as e:
         db_sqlite.session.rollback()
         logger.error('update_sqlite_stat:')
         logger.error(str(e))
+        errno = -1
     else:
         db_sqlite.session.commit()
+        errno = 0
+    finally:
+        reset_update_running_state_done()
+        return errno
 
-def update_sqlite_stat_legacy(fcode):
-
-    if fcode in [0, 1]:
-        num_f1_total = len(TestdataCloud.query.filter_by(factorycode=1).yield_per(PER_QUERY_COUNT).all())
-        num_f1_success = len(TestdataCloud.query.filter(TestdataCloud.factorycode==1, TestdataCloud.bool_qualified_overall==True).yield_per(PER_QUERY_COUNT).all())
-        num_f1_failed = len(TestdataCloud.query.filter(TestdataCloud.factorycode==1, TestdataCloud.bool_qualified_overall==False).yield_per(PER_QUERY_COUNT).all())
-        num_f1_srate = 0 if num_f1_total == 0 else round(num_f1_success/num_f1_total,4)
-        stat_f1 = Stat.query.filter_by(fcode=1).first()
-        stat_f1.total = num_f1_total
-        stat_f1.success = num_f1_success
-        stat_f1.failed = num_f1_failed
-        stat_f1.srate = num_f1_srate
-
-    if fcode in [0, 2]:
-        num_f2_total = len(TestdataCloud.query.filter_by(factorycode=2).yield_per(PER_QUERY_COUNT).all())
-        num_f2_success = len(TestdataCloud.query.filter(TestdataCloud.factorycode==2, TestdataCloud.bool_qualified_overall==True).yield_per(PER_QUERY_COUNT).all())
-        num_f2_failed = len(TestdataCloud.query.filter(TestdataCloud.factorycode==2, TestdataCloud.bool_qualified_overall==False).yield_per(PER_QUERY_COUNT).all())
-        num_f2_srate = 0 if num_f2_total == 0 else round(num_f2_success/num_f2_total,4)
-        stat_f2 = Stat.query.filter_by(fcode=2).first()
-        stat_f2.total = num_f2_total
-        stat_f2.success = num_f2_success
-        stat_f2.failed = num_f2_failed
-        stat_f2.srate = num_f2_srate
-
-    if fcode in [0, 3]:
-        num_f3_total = len(TestdataCloud.query.filter_by(factorycode=3).yield_per(PER_QUERY_COUNT).all())
-        num_f3_success = len(TestdataCloud.query.filter(TestdataCloud.factorycode==3, TestdataCloud.bool_qualified_overall==True).yield_per(PER_QUERY_COUNT).all())
-        num_f3_failed = len(TestdataCloud.query.filter(TestdataCloud.factorycode==3, TestdataCloud.bool_qualified_overall==False).yield_per(PER_QUERY_COUNT).all())
-        num_f3_srate = 0 if num_f3_total == 0 else round(num_f3_success/num_f3_total,4)
-        stat_f3 = Stat.query.filter_by(fcode=3).first()
-        stat_f3.total = num_f3_total
-        stat_f3.success = num_f3_success
-        stat_f3.failed = num_f3_failed
-        stat_f3.srate = num_f3_srate
-
-    if fcode in [0, 4]:
-        num_f4_total = len(TestdataCloud.query.filter_by(factorycode=4).yield_per(PER_QUERY_COUNT).all())
-        num_f4_success = len(TestdataCloud.query.filter(TestdataCloud.factorycode==4, TestdataCloud.bool_qualified_overall==True).yield_per(PER_QUERY_COUNT).all())
-        num_f4_failed = len(TestdataCloud.query.filter(TestdataCloud.factorycode==4, TestdataCloud.bool_qualified_overall==False).yield_per(PER_QUERY_COUNT).all())
-        num_f4_srate = 0 if num_f4_total == 0 else round(num_f4_success/num_f4_total,4)
-        stat_f4 = Stat.query.filter_by(fcode=4).first()
-        stat_f4.total = num_f4_total
-        stat_f4.success = num_f4_success
-        stat_f4.failed = num_f4_failed
-        stat_f4.srate = num_f4_srate
-
-    if fcode in [0, 5]:
-        num_f5_total = len(TestdataCloud.query.filter_by(factorycode=5).yield_per(PER_QUERY_COUNT).all())
-        num_f5_success = len(TestdataCloud.query.filter(TestdataCloud.factorycode==5, TestdataCloud.bool_qualified_overall==True).yield_per(PER_QUERY_COUNT).all())
-        num_f5_failed = len(TestdataCloud.query.filter(TestdataCloud.factorycode==5, TestdataCloud.bool_qualified_overall==False).yield_per(PER_QUERY_COUNT).all())
-        num_f5_srate = 0 if num_f5_total == 0 else round(num_f5_success/num_f5_total,4)
-        stat_f5 = Stat.query.filter_by(fcode=5).first()
-        stat_f5.total = num_f5_total
-        stat_f5.success = num_f5_success
-        stat_f5.failed = num_f5_failed
-        stat_f5.srate = num_f5_srate
-
-    if fcode in [0, 6]:
-        num_f6_total = len(TestdataCloud.query.filter_by(factorycode=6).yield_per(PER_QUERY_COUNT).all())
-        num_f6_success = len(TestdataCloud.query.filter(TestdataCloud.factorycode==6, TestdataCloud.bool_qualified_overall==True).yield_per(PER_QUERY_COUNT).all())
-        num_f6_failed = len(TestdataCloud.query.filter(TestdataCloud.factorycode==6, TestdataCloud.bool_qualified_overall==False).yield_per(PER_QUERY_COUNT).all())
-        num_f6_srate = 0 if num_f6_total == 0 else round(num_f6_success/num_f6_total,4)
-        stat_f6 = Stat.query.filter_by(fcode=6).first()
-        stat_f6.total = num_f6_total
-        stat_f6.success = num_f6_success
-        stat_f6.failed = num_f6_failed
-        stat_f6.srate = num_f6_srate
-
-    db_sqlite.session.commit()
 
 def fix_testdatascloud_bool_qualified_overall():
     try:
@@ -308,3 +242,47 @@ def fix_testdatascloud_bool_qualified_overall():
         logger.error(str(e))
     else:
         db_mysql.session.commit()
+
+
+
+
+##################################################
+# RunningStat getter and setter outter functions #
+##################################################
+
+def get_update_running_state_done():
+    return get_sqlite_runningstates('r_update_sqlite_stat_running', 1)
+
+def set_update_running_state_done():
+    set_sqlite_runningstates('r_update_sqlite_stat_running', 1, True)
+
+def reset_update_running_state_done():
+    set_sqlite_runningstates('r_update_sqlite_stat_running', 1, False)
+
+def reset_runningstates():
+    reset_update_running_state_done()
+
+##################################################
+# RunningStat getter and setter innner functions #
+##################################################
+
+def set_sqlite_runningstates(key, vpos, value):
+    r = RunningState.query.filter_by(key=key).first()
+    if vpos == 1:
+        r.value1 = value
+    elif vpos == 2:
+        r.value2 = value
+    elif vpos == 3:
+        r.value3 = value
+    else:
+        pass
+    db_sqlite.session.commit()
+
+def get_sqlite_runningstates(key, vpos):
+    r = RunningState.query.filter_by(key=key).first()
+    tab_values = {
+        1: r.value1, # value1
+        2: r.value2, # value2
+        3: r.value3, # value3
+    }
+    return tab_values.get(vpos)
