@@ -43,6 +43,8 @@ def cmd_update_stat():
         flash('后台任务未结束，请稍后再试')
     else:
         # type of fcode default is str, not int
+        # fcode = request.args.get('fcode', type=int) or request.form.get('fcode', type=int)
+        # fcode = request.form.get('fcode', type=int)
         fcode = request.args.get('fcode', type=int)
         update_sqlite_stat(fcode)
         flash('数据已开始后台更新，请稍后刷新查看')

@@ -55,17 +55,22 @@
                         <button type="submit" class="btn">查看历史数据</button>
                     </form>
                     &nbsp;
-                    <form style="display: inline" action="{{ url_for('blue_rasp.cmd_update_stat', fcode=data.fcode) }}" method="post"><button id="update" type="submit"
-                    {% if need_update(data.fcode) %}
-                        style="color:green"
-                    {% else %}
-                        style="color:red"
-                    {% endif %}
-                    >更新数据</button></form>
+                    <form style="display: inline" action="{{ url_for('blue_rasp.cmd_update_stat', fcode=data.fcode) }}" method="post">
+                        <!-- <input type="hidden" name="fcode" value={{data.fcode}}> -->
+                        <button id="update" type="submit"
+                            {% if need_update(data.fcode) %}
+                                style="color:green"
+                            {% else %}
+                                style="color:red"
+                            {% endif %}
+                            >更新数据
+                        </button>
+                    </form>
                     &nbsp;
                 </td>
             </tr>
         {% endfor %}
+<!--
         {% if current_user.id >= 100 %}
             <tr>
                  <td>&nbsp;
@@ -93,8 +98,8 @@
                     &nbsp;
                 </td>
             </tr>
-
         {%  endif %}
+-->
     </table>
     <br>
 

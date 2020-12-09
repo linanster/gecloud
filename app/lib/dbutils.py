@@ -5,6 +5,7 @@ import datetime
 import requests
 import os
 
+from functools import reduce
 from sqlalchemy import or_, desc, text
 
 from app.models.mysql import db_mysql, TestdataCloud, Factory, Device, Oplog
@@ -186,11 +187,19 @@ def insert_operation_log_legacy(fcode, opcode, opcount, opmsg, timestamp):
 @processmaker
 def update_sqlite_stat(fcode):
     set_update_running_state_done()
+
+    # 1. get fcodes list, two cases
+    # 1.1 fcode = 0, fcodes = [1, 2, 3, 4, 5]
+    # 1.2 fcode = 1/2/3/4/5, fcodes = [1, ] or [2, ] or [3, ] or [4, ] or [5, ]
     fcodes = list()
+    # fcodes_all is like [1, 2, 3, 4, 5, 6, 0]
     fcodes_all = list(map(lambda x:x[0], Stat.query.with_entities(Stat.fcode).all()))
     if fcode == 0:
         fcodes = fcodes_all
+        fcodes.remove(0)
     elif fcode != 0 and fcode in fcodes_all:
+        # fcodes = [fcode,]
+        # fcodes = list()
         fcodes.append(fcode)
     else:
         pass
@@ -198,6 +207,9 @@ def update_sqlite_stat(fcode):
     # mimic time consuming
     # time.sleep(20)
 
+    # 2. caculate data from mysql/testdatascloud
+    # this section will not affect all/fcode=0 row
+    cur_datetime = get_datetime_now_obj()
     try:
         for fcode in fcodes:
             num_total = len(TestdataCloud.query.filter_by(factorycode=fcode).yield_per(PER_QUERY_COUNT).all())
@@ -209,19 +221,58 @@ def update_sqlite_stat(fcode):
             stat.success = num_success
             stat.failed = num_failed
             stat.srate = num_srate
-            # stat.last_update_time = datetime.datetime.now(tz=tz.gettz('Asia/Shanghai')).replace(microsecond=0)
-            stat.last_update_time = get_datetime_now_obj()
+            stat.last_update_time = cur_datetime
+            # stat.save()
+        db_sqlite.session.commit()
     except Exception as e:
         db_sqlite.session.rollback()
-        logger.error('update_sqlite_stat:')
         logger.error(str(e))
-        errno = -1
-    else:
-        db_sqlite.session.commit()
-        errno = 0
-    finally:
         reset_update_running_state_done()
-        return errno
+        return -1
+        # errno = -1
+    # else:
+        # db_sqlite.session.commit()
+        # errno = 0
+    # finally:
+        # reset_update_running_state_done()
+        # return errno
+
+    # 3. caculate data from sqlite/stats itself
+    # this section only affect all/fcode=0 row
+    data_pack = Stat.query.filter(Stat.fcode>0).with_entities(Stat.total, Stat.success, Stat.failed, Stat.last_upload_time, Stat.last_update_time).all()
+    stat_total_list = list(map(lambda x:x[0], data_pack))
+    stat_success_list = list(map(lambda x:x[1], data_pack))
+    stat_failed_list = list(map(lambda x:x[2], data_pack))
+    # stat_upload_list = list(map(lambda x:x[3], data_pack))
+    # stat_update_list = list(map(lambda x:x[4], data_pack))
+
+    stat_total = reduce(lambda x,y:x+y, stat_total_list)
+    stat_success = reduce(lambda x,y:x+y, stat_success_list)
+    stat_failed = reduce(lambda x,y:x+y, stat_failed_list)
+    stat_srate = 0 if stat_total == 0 else round(stat_success/stat_total,4)
+    # stat_upload = reduce(lambda x,y: x if x >= y else y, list(filter(lambda x: x is not None, stat_upload_list)))
+    # stat_update = reduce(lambda x,y: x if x >= y else y, list(filter(lambda x: x is not None, stat_update_list)))
+    stat_update = cur_datetime
+    try:
+        stat_all = Stat.query.filter(Stat.fcode==0).first()
+        stat_all.total = stat_total
+        stat_all.success = stat_success
+        stat_all.failed = stat_failed
+        stat_all.srate = stat_srate
+        # stat_all.last_upload_time = stat_upload
+        stat_all.last_update_time = stat_update
+        stat_all.save()
+    except Exception as e:
+        db_sqlite.session.rollback()
+        logger.error(str(e))
+        reset_update_running_state_done()
+        return -2
+
+    # reset running parameter
+    reset_update_running_state_done()
+    return 0
+    
+    
 
 
 def fix_testdatascloud_bool_qualified_overall():
