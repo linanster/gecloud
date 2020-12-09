@@ -1,0 +1,36 @@
+/*1. pagination
+ *applid by rasp_testdata.html
+ * */
+.pagination {
+    list-style: none;
+    margin-top: 10;
+    margin-bottom: 10;
+    padding: 0;
+    display: flex;
+}
+        
+.pagination li {
+    margin: 0 3px;
+}
+
+/* 2. change button style to a style
+ * rasp_stat.html
+*/
+.btn {  
+    color: blue;      
+    background-color: #FFFFFF;  
+    border: 0px none;  //去边框  
+    font-family: "宋体";  
+    font-size: 15px;  
+    text-decoration:underline;  //加下划线  
+}  
+.btn:hover{  
+    color:red;  
+    border: none;  
+    cursor: hand;  
+    cursor: pointer;  
+    text-decoration:underline;  //加下划线  
+}  
+.btn:focus {   
+    outline: none;    //去边框  
+} 

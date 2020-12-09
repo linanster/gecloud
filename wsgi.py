@@ -56,6 +56,10 @@ def parse_oplog_userid(userid):
 
 @application_ge_cloud.template_filter('parse_oplog_fcode')
 def parse_oplog_fcode(fcode):
+    from app.lib.dbutils import get_name_by_fcode
+    return get_name_by_fcode(fcode)
+@application_ge_cloud.template_filter('parse_oplog_fcode_legacy')
+def parse_oplog_fcode_legacy(fcode):
     from app.myglobals import tab_fcode
     return tab_fcode.get(fcode)
 

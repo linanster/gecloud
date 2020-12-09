@@ -36,6 +36,7 @@
 
         {% for data in datas %}
             <tr>
+                <!-- <td>&nbsp;{{ data.fname }}&nbsp;</td> -->
                  <td>&nbsp;
                      <form style="display: inline" action="{{ url_for('blue_vendor.vf_index') }}" method="post">
                          <input type="hidden" name="fcode" value={{data.fcode}}>
@@ -52,7 +53,7 @@
                     &nbsp;
                     <form style="display: inline" action="{{ url_for('blue_rasp.vf_testdata', clearsearchsession=1) }}" method="post">
                         <input type="hidden" name="fcode" value={{data.fcode}}>
-                        <button type="submit" class="btn">查看历史数据</button>
+                        <button type="submit">查看历史数据</button>
                     </form>
                     &nbsp;
                     <form style="display: inline" action="{{ url_for('blue_rasp.cmd_update_stat', fcode=data.fcode) }}" method="post"><button id="update" type="submit"
@@ -66,38 +67,21 @@
                 </td>
             </tr>
         {% endfor %}
-        {% if current_user.id >= 100 %}
-            <tr>
-                 <td>&nbsp;
-                     <form style="display: inline" action="{{ url_for('blue_vendor.vf_index') }}" method="post">
-                         <input type="hidden" name="fcode" value=0>
-                         <button type="submit" class="btn">All</button>
-                      </form>
-                &nbsp;</td>
-                <td>&nbsp;&nbsp;</td>
-                <td>&nbsp;&nbsp;</td>
-                <td>&nbsp;&nbsp;</td>
-                <td>&nbsp;&nbsp;</td>
-                <td>&nbsp;&nbsp;</td>
-                <td>&nbsp;&nbsp;</td>
-                <td>
-                    &nbsp;
-                    <form style="display: inline" action="{{ url_for('blue_rasp.vf_testdata', clearsearchsession=1) }}" method="post">
-                        <input type="hidden" name="fcode" value=0>
-                        <button type="submit" class="btn">查看历史数据</button>
-                    </form>
-                    &nbsp;
-                    <form style="display: inline" action="{{ url_for('blue_rasp.cmd_update_stat', fcode=0) }}" method="post"><button id="update" type="submit"
-                        style="color:green"
-                    >更新数据</button></form>
-                    &nbsp;
-                </td>
-            </tr>
-
-        {%  endif %}
     </table>
     <br>
 
+    {% if current_user.id >= 100 %}
+        <form style="display: inline" action="{{ url_for('blue_vendor.vf_oplog') }}" method="post">
+            <input type="hidden" name="fcode" value=0>
+            <input type="hidden" name="opcode" value=1>
+            <button type="submit">查看全部厂家上传记录</button>
+        </form> |
+        <form style="display: inline" action="{{ url_for('blue_rasp.vf_testdata', clearsearchsession=1) }}" method="post">
+            <input type="hidden" name="fcode" value=0>
+            <button type="submit">查看全部厂家历史数据</button>
+        </form> |
+        <form style="display: inline" action="{{ url_for('blue_rasp.cmd_update_stat', fcode=0) }}" method="post"><button id="update" type="submit">更新全部厂家数据</button></form> |
+    {% endif %}
     <a href="{{ url_for('blue_rasp.vf_stat') }}">刷新</a> |
     <a href="{{ url_for('blue_main.vf_index') }}">返回</a>
 

@@ -46,6 +46,8 @@ def vf_oplog():
     try:
         fcode_page = fetch_fcode()
         opcode_page = fetch_opcode()
+        # print('==fcode_page==', fcode_page)
+        # print('==opcode_page==', opcode_page)
     except KeyError as e:
         # logger.error(e)
         logger.error('KeyError session["fcode"] or session["opcode"]')

@@ -37,6 +37,12 @@ def get_username_by_userid(id):
     except Exception as e:
         logger.error(str(e))
         return None
+def get_name_by_fcode(fcode):
+    try:
+        return Factory.query.filter(Factory.code==fcode).first().name
+    except Exception as e:
+        logger.error(str(e))
+        return None
 
 def initiate_myquery_sqlite_stats_from_userid(userid):
     if userid>=100:
@@ -94,34 +100,24 @@ def forge_myquery_mysql_oplogs_by_fcode(myquery, fcode):
     else:
         return myquery.filter(Oplog.fcode==fcode).order_by(desc(Oplog.id))
 
-
+# when query by fcode, the userid field should be None
 def forge_myquery_mysql_oplogs_by_fcode_opcode(query, fcode, opcode):
     myquery = query.filter(
+        Oplog.userid == None,
         Oplog.fcode == fcode if fcode is not None else text(""),
         Oplog.opcode == opcode if opcode is not None else text(""),
     ).order_by(desc(Oplog.id))
     return myquery
 
+# when query by userid, the fcode field should be None
 def forge_myquery_mysql_oplogs_by_userid_opcode(query, userid, opcode):
     myquery = query.filter(
-        # Oplog.userid == userid if userid is not None else text(""),
-        Oplog.userid == userid,
+        # Oplog.userid == userid,
+        Oplog.userid == userid if userid is not None else text(""),
+        Oplog.fcode == None,
         Oplog.opcode == opcode if opcode is not None else text(""),
     ).order_by(desc(Oplog.id))
     return myquery
-
-def forge_myquery_mysql_oplogs_by_params_legacy(query, userid, fcode, opcode):
-    myquery = query.filter(
-        or_(
-            # Oplog.userid == userid if userid is not None else text(""),
-            # Oplog.fcode == fcode if fcode is not None else text(""),
-            Oplog.userid == userid,
-            Oplog.fcode == fcode,
-        ),
-        Oplog.opcode == opcode if opcode is not None else text(""),
-    ).order_by(desc(Oplog.id))
-    return myquery
-
 
 
 def get_mysql_testdatascloud_by_fcode(fcode):

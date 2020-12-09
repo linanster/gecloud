@@ -53,18 +53,14 @@ PER_QUERY_COUNT = 10000
 # fcode table
 # todo
 tab_fcode = {
-    -1: 'Unknown',
-    0: 'All',
+    # -1: 'Unknown',
+    # 0: 'All',
     1: 'Leedarson',
     2: 'Innotech',
     3: 'Tonly',
     4: 'Changhong',
     5: 'TestFactory',
     6: 'Topstar',
-    100: 'ge',
-    101: 'admin',
-    200: 'user1',
-    201: 'user2',
 }
 
 
