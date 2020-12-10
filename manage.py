@@ -71,6 +71,31 @@ def deletedb_sqlite(stat=False, auth=False, runningstates=False):
         print('==delete sqlite runningstates table==')
 
 @manager.command
+def reset_password():
+    from app.models.sqlite import User
+    username = input('Username: ')
+    user = User.query.filter(User.username==username).first()
+    if user is None:
+        print(username + 'not exist in database, exit!')
+        return
+    info = {
+        'username': user.username,
+        'password': user._password_plain,
+        'permission': user.permission,
+        'desc': user.desc,
+    }
+    print(info)
+    newpassword = input('Newpassword (Enter for cancel): ')
+    if newpassword == '':
+        print('==cancelled==')
+    else:
+        user.password = newpassword
+        if user.save():
+            print('==new password saved==')
+        else:
+            print('==error==')
+
+@manager.command
 def fix_bool_overall():
     from app.lib.dbutils import fix_testdatascloud_bool_qualified_overall
     fix_testdatascloud_bool_qualified_overall()

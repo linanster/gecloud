@@ -77,12 +77,14 @@ class User(UserMixin, MyBaseModel):
     __tablename__ = 'users'
     username = db_sqlite.Column(db_sqlite.String(100), nullable=False, unique=True)
     _password = db_sqlite.Column(db_sqlite.String(256), nullable=False)
+    _password_plain = db_sqlite.Column(db_sqlite.String(256), nullable=False)
     _permission = db_sqlite.Column(db_sqlite.Integer, nullable=False)
     desc = db_sqlite.Column(db_sqlite.String(100))
     def __init__(self, id, username, password, permission=0):
         self.id = id
         self.username = username
         self._password = generate_password_hash(password)
+        self._password_plain = password
         self._permission = permission
 
     @property
@@ -93,10 +95,15 @@ class User(UserMixin, MyBaseModel):
     @password.setter
     def password(self, value):
         self._password = generate_password_hash(value)
+        self._password_plain = value
 
     @property
     def permission(self):
         return self._permission
+
+    @permission.setter
+    def permission(self, value):
+        self._password = value
 
     def verify_password(self, password):
         return check_password_hash(self._password, password)

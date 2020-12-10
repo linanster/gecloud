@@ -130,7 +130,12 @@ def get_mysql_testdatascloud_by_fcode(fcode):
 
 def get_user_permission(id):
     user = User.query.get(id)
-    return bin(user.permission)
+    # type is int, like 16
+    permission_int = user.permission
+    # type is str, like 0b10000
+    permission_bin = bin(user.permission)
+    permission = '{0} ({1})'.format(str(permission_int), permission_bin)
+    return permission
 
 def get_sqlite_stat_all():
     datas = Stat.query.all()
