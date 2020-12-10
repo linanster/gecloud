@@ -217,9 +217,12 @@ def update_sqlite_stat(fcode):
     cur_datetime = get_datetime_now_obj()
     try:
         for fcode in fcodes:
-            num_total = len(TestdataCloud.query.filter_by(factorycode=fcode).yield_per(PER_QUERY_COUNT).all())
-            num_success = len(TestdataCloud.query.filter(TestdataCloud.factorycode==fcode, TestdataCloud.bool_qualified_overall==True).yield_per(PER_QUERY_COUNT).all())
-            num_failed = len(TestdataCloud.query.filter(TestdataCloud.factorycode==fcode, TestdataCloud.bool_qualified_overall==False).yield_per(PER_QUERY_COUNT).all())
+            # num_total = len(TestdataCloud.query.filter_by(factorycode=fcode).yield_per(PER_QUERY_COUNT).all())
+            # num_success = len(TestdataCloud.query.filter(TestdataCloud.factorycode==fcode, TestdataCloud.bool_qualified_overall==True).yield_per(PER_QUERY_COUNT).all())
+            # num_failed = len(TestdataCloud.query.filter(TestdataCloud.factorycode==fcode, TestdataCloud.bool_qualified_overall==False).yield_per(PER_QUERY_COUNT).all())
+            num_total = TestdataCloud.query.filter_by(factorycode=fcode).yield_per(PER_QUERY_COUNT).count()
+            num_success = TestdataCloud.query.filter(TestdataCloud.factorycode==fcode, TestdataCloud.bool_qualified_overall==True).yield_per(PER_QUERY_COUNT).count()
+            num_failed = TestdataCloud.query.filter(TestdataCloud.factorycode==fcode, TestdataCloud.bool_qualified_overall==False).yield_per(PER_QUERY_COUNT).count()
             num_srate = 0 if num_total == 0 else round(num_success/num_total,4)
             stat = Stat.query.filter_by(fcode=fcode).first()
             stat.total = num_total
@@ -318,6 +321,7 @@ def reset_runningstates():
 # RunningStat getter and setter innner functions #
 ##################################################
 
+# todo: return to indicate success or not
 def set_sqlite_runningstates(key, vpos, value):
     r = RunningState.query.filter_by(key=key).first()
     if vpos == 1:

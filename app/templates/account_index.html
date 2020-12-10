@@ -1,15 +1,21 @@
 {% extends '_mybase.html' %}
 
+{% block styles %}
+    <link rel="stylesheet" href="{{ url_for('static',filename='css/my.css') }}">
+{% endblock styles %}
+
 {% block body %}
     {{ super() }}
-    <p>1. <a href="{{ url_for('blue_account.reset') }}">重置密码</a><p>
-    <p>2. <a href="{{ url_for('blue_account.permission') }}">查看权限</a><p>
+    <p>1. <a href="{{ url_for('blue_account.reset') }}">重置密码</a></p>
+    <p>2. <a href="{{ url_for('blue_account.permission') }}">查看权限</a></p>
+    <!-- 
     <form style="display: inline" action="{{ url_for('blue_account.vf_oplog') }}" method="post">
         <input type="hidden" name="opcode" value=0>
-        <button type="submit">查看操作日志</button>
+        <button type="submit" class="btn">查看操作日志</button>
     </form>
-
-    <br>
+    -->
+    <p>3. <a href="{{ url_for('blue_account.vf_oplog', opcode=0) }}">操作日志</a><p>
+    <p>4. <a href="{{ url_for('blue_account.admin') }}">管理台</a><p>
     <br>
     <a href="{{ url_for('blue_rasp.vf_stat') }}">返回</a>
     <br>

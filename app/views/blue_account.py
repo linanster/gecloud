@@ -6,8 +6,12 @@ from flask_paginate import Pagination, get_page_parameter
 from app.lib.mydecorator import viewfunclog
 from app.lib.viewlib import fetch_opcode
 from app.lib.dbutils import forge_myquery_mysql_oplogs_by_userid_opcode
+from app.lib.dbutils import reset_update_running_state_done, get_update_running_state_done
+from app.lib.dbutils import insert_operation_log
 from app.lib.myauth import my_page_permission_required, load_myquery_authorized
 from app.lib.mylogger import logger
+from app.lib.mylib import my_check_retcode
+from app.lib.myutils import get_datetime_now_obj
 
 
 from app.myglobals import PERMISSIONS
@@ -108,3 +112,66 @@ def reset():
 @viewfunclog
 def permission():
     return render_template('account_permission.html')
+
+@blue_account.route('/admin', methods=['GET'])
+@login_required
+@my_page_permission_required(PERMISSIONS.P2)
+@viewfunclog
+def admin():
+    info = request.args.get('info')
+    return render_template('account_admin.html', info=info)
+
+@blue_account.route('/reset_runningstates', methods=['POST'])
+@login_required
+@my_page_permission_required(PERMISSIONS.P2)
+@viewfunclog
+def cmd_reset_runningstates():
+    reset_update_running_state_done()
+    info = 'r_update_sqlite_stat_running: {}'.format(get_update_running_state_done())
+
+    # record oplog
+    userid = current_user.id
+    fcode = None
+    opcode = 101
+    opcount = None
+    opmsg = 'reset running parameters'
+    datetime_obj = get_datetime_now_obj()
+    kwargs_oplog = {
+        'userid': userid,
+        'fcode': fcode,
+        'opcode': opcode,
+        'opcount': opcount,
+        'opmsg': opmsg,
+        'timestamp': datetime_obj,
+    }
+    insert_operation_log(**kwargs_oplog)
+
+    return redirect(url_for('blue_account.admin', info=info))
+
+@blue_account.route('/restart', methods=['POST'])
+@login_required
+@my_page_permission_required(PERMISSIONS.P2)
+@viewfunclog
+def cmd_restart():
+
+    # record oplog
+    userid = current_user.id
+    fcode = None
+    opcode = 102
+    opcount = None
+    opmsg = 'restart gecloud service'
+    datetime_obj = get_datetime_now_obj()
+    kwargs_oplog = {
+        'userid': userid,
+        'fcode': fcode,
+        'opcode': opcode,
+        'opcount': opcount,
+        'opmsg': opmsg,
+        'timestamp': datetime_obj,
+    }
+    insert_operation_log(**kwargs_oplog)
+
+    cmd = 'systemctl restart gecloud.service'
+    ret = my_check_retcode(cmd)
+    return redirect(url_for('blue_account.admin', info=ret))
+

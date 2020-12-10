@@ -22,13 +22,15 @@ def vf_index():
 
     try:
         fcode_page = fetch_fcode()
+        # print('==fcode_page_index==', fcode_page)
     except KeyError as e:
-        logger.error('KeyError session["fcode"] or session["opcode"]')
+        logger.error('KeyError session["fcode"]')
         return redirect(url_for('blue_rasp.vf_stat'))
     except FcodeNotSupportError as e:
         logger.error(e.err_msg)
         return redirect(url_for('blue_rasp.vf_stat'))
-    return render_template('vendor_index.html', fcode = fcode_page)
+    # return render_template('vendor_index.html', fcode = fcode_page)
+    return render_template('vendor_index.html')
 
 
 
@@ -45,15 +47,19 @@ def vf_oplog():
     # opcode is not possibly None
     try:
         fcode_page = fetch_fcode()
-        opcode_page = fetch_opcode()
-        # print('==fcode_page==', fcode_page)
-        # print('==opcode_page==', opcode_page)
+        # print('==fcode_page_oplog==', fcode_page)
     except KeyError as e:
-        # logger.error(e)
-        logger.error('KeyError session["fcode"] or session["opcode"]')
+        logger.error('KeyError session["fcode"]')
         return redirect(url_for('blue_rasp.vf_stat'))
     except FcodeNotSupportError as e:
         logger.error(e.err_msg)
+        return redirect(url_for('blue_rasp.vf_stat'))
+    try:
+        opcode_page = fetch_opcode()
+        # print('==opcode_pag_oploge==', opcode_page)
+    except KeyError as e:
+        # logger.error(e)
+        logger.error('KeyError session["opcode"]')
         return redirect(url_for('blue_rasp.vf_stat'))
     except OpcodeNotSupportError as e:
         logger.error(e.err_msg)

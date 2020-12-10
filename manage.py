@@ -76,7 +76,7 @@ def reset_password():
     username = input('Username: ')
     user = User.query.filter(User.username==username).first()
     if user is None:
-        print(username + 'not exist in database, exit!')
+        print('not found')
         return
     info = {
         'username': user.username,
@@ -94,6 +94,14 @@ def reset_password():
             print('==new password saved==')
         else:
             print('==error==')
+
+@manager.command
+def reset_runningstates():
+    from app.lib.dbutils import reset_update_running_state_done
+    from app.lib.dbutils import get_update_running_state_done
+    reset_update_running_state_done()
+    print('==done==')
+    print('r_update_sqlite_stat_running: {}'.format(get_update_running_state_done()))
 
 @manager.command
 def fix_bool_overall():

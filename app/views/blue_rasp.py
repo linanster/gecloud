@@ -112,6 +112,7 @@ def vf_testdata():
     # todo: enlarge PER_PAGE
     PER_PAGE = 100
     page = request.args.get(get_page_parameter(), type=int, default=1) #获取页码，默认为第一页
+    # start/end is like 0/100, 100/200, .etc
     start = (page-1)*PER_PAGE
     end = page * PER_PAGE if total_count > page * PER_PAGE else total_count
     pagination = Pagination(page=page, total=total_count, per_page=PER_PAGE, bs_version=3)

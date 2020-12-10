@@ -1,0 +1,43 @@
+{% extends '_mybase.html' %}
+
+{% block scripts %}
+    <script src="{{ url_for('static',filename='js/myvalidate.js') }}"></script>
+    <script src="{{ url_for('static',filename='js/jquery.min.js') }}"></script>
+    <script src="{{ url_for('static',filename='js/jquery-1.12.4.min.js') }}"></script>
+    <script type="text/javascript" charset="utf-8">
+        $(document).ready(function () {
+            $("button#reset").click(function(){
+                if(window.confirm("确认重置吗?")==false)
+                    return false;
+            });
+            $("button#restart").click(function(){
+                if(window.confirm("确认重启吗?")==false)
+                    return false;
+            });
+        });
+    </script>
+{% endblock scripts %}
+
+{% block body %}
+    {{ super() }}
+
+    <form style="display: inline" action="{{ url_for('blue_account.cmd_reset_runningstates') }}" method="post">
+        <button type="submit" id="reset">重置系统运行参数</button>
+    </form>
+    <br>
+    <br>
+    <form style="display: inline" action="{{ url_for('blue_account.cmd_restart') }}" method="post">
+        <button type="submit" id="restart">重启系统</button>
+    </form>
+
+
+    <br>
+    <br>
+    <a href="{{ url_for('blue_account.admin') }}">刷新</a> | 
+    <a href="{{ url_for('blue_account.vf_index') }}">返回</a>
+    <br>
+    {% if info %}
+        <p style="color:red">{{ info }}</p>
+    {% endif %}
+
+{% endblock body %}

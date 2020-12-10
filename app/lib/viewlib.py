@@ -9,10 +9,9 @@ from flask import request, session
 from app.lib.myclass import FcodeNotSupportError, OpcodeNotSupportError
 
 def fetch_fcode():
-    # 3. fetch fcode from request.form and session
-    # type of fcode default is str, not int
-    # 3.1 try to get fcode from form data, this apply for click "view historical data" button from page
     fcode = request.form.get('fcode', type=int)
+    if fcode is None:
+        fcode = request.args.get('fcode', type=int)
     # 3.2 try to get fcode from session, this apply for pagination
     if fcode is None:
         try:
@@ -29,10 +28,13 @@ def fetch_fcode():
     if fcode not in [0, 1, 2, 3, 4, 5, 6]:
         # return redirect(url_for('blue_rasp.vf_stat'))
         raise FcodeNotSupportError(fcode)
+    # print('==fetch fcode==', fcode)
     return fcode
 
 def fetch_opcode():
     opcode = request.form.get('opcode', type=int)
+    if opcode is None:
+        opcode = request.args.get('opcode', type=int)
     if opcode is None:
         try:
             opcode = session['opcode']
@@ -41,8 +43,10 @@ def fetch_opcode():
     session['opcode'] = opcode
     # print('==session[fcode]==',session['fcode'])
     # todo, apply tab_optab
-    if opcode not in [0, 1, 2, 3, 4]:
-        raise OpcodeNotSupportError(fcode)
+    if opcode not in [0, 1, 2, 3, 4, 101, 102]:
+    # if opcode not in ['0', '1', '2', '3', '4', '101', '102']:
+        raise OpcodeNotSupportError(opfcode)
+    # print('==fetch opcode==', opcode)
     return opcode
 
 

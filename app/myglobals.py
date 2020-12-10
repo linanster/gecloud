@@ -22,6 +22,7 @@ class PERMISSIONS(object):
     P1 = 0b00000001 or 1
     # P2 required by:
     # 2.1 blue_rasp.cmd_update_stat
+    # 2.2 blue_account.admin
     P2 = 0b00000010 or 2
     P3 = 0b00000100 or 4
     P4 = 0b00001000 or 8
@@ -66,9 +67,13 @@ tab_fcode = {
 
 # opcode table
 tab_opcode = {
+    # vendor activities
     1: 'upload',
     2: 'upgrade',
+    # user activities
     3: 'download',
     4: 'update',
+    101: 'reset',
+    102: 'restart',
 }
 
