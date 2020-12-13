@@ -26,7 +26,7 @@ def createdb_mysql(table=False, data=False):
         print('==initialize mysql datas==')
 
 @manager.command
-def deletedb_mysql():
+def deletedb_mysql(table=False, data=False):
     "--table --data"
     from app.models.mysql import db_mysql, Factory, Device, TestdataCloud, Oplog
     if data:

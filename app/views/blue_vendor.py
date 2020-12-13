@@ -5,9 +5,11 @@ from flask_paginate import Pagination, get_page_parameter
 
 from app.lib.mydecorator import viewfunclog
 from app.views.blue_rasp import blue_rasp
-from app.lib.viewlib import fetch_fcode, fetch_opcode
+from app.lib.viewlib import fetch_fcode, fetch_opcode, fetch_search_kwargs_oplogs_vendor
 from app.lib.myclass import FcodeNotSupportError, OpcodeNotSupportError
-from app.lib.dbutils import forge_myquery_mysql_oplogs_by_fcode_opcode
+from app.lib.dbutils import forge_myquery_mysql_oplogs_by_fcode
+from app.lib.dbutils import forge_myquery_mysql_factories_by_fcode
+from app.lib.dbutils import forge_myquery_mysql_oplogs_by_search
 from app.lib.myauth import my_page_permission_required, load_myquery_authorized
 from app.lib.mylogger import logger
 
@@ -40,48 +42,37 @@ def vf_index():
 @load_myquery_authorized
 @viewfunclog
 def vf_oplog():
-    # referrer = request.referrer
-    # 1. fetch fcode from request.form and session
+    # 1. fetch fcode
     # fcode is not possibly None
-    # 2. fetch opcode
-    # opcode is not possibly None
     try:
         fcode_page = fetch_fcode()
-        # print('==fcode_page_oplog==', fcode_page)
     except KeyError as e:
         logger.error('KeyError session["fcode"]')
         return redirect(url_for('blue_rasp.vf_stat'))
     except FcodeNotSupportError as e:
         logger.error(e.err_msg)
         return redirect(url_for('blue_rasp.vf_stat'))
-    try:
-        opcode_page = fetch_opcode()
-        # print('==opcode_pag_oploge==', opcode_page)
-    except KeyError as e:
-        # logger.error(e)
-        logger.error('KeyError session["opcode"]')
-        return redirect(url_for('blue_rasp.vf_stat'))
-    except OpcodeNotSupportError as e:
-        logger.error(e.err_msg)
-        return redirect(url_for('blue_rasp.vf_stat'))
-
-    tab_query_desc = {
-        0: '设备所有活动记录',
-        1: '设备上传数据记录',
-        2: '设备升级记录',
-    }
-    query_desc = tab_query_desc.get(opcode_page)
 
     # transform parmas database query friendly
-    fcode_db = None if fcode_page == 0 else fcode_page
-    opcode_db = None if opcode_page == 0 else opcode_page
-    kwargs_query = {
-        'fcode': fcode_db,
-        'opcode': opcode_db,
-    }
+    # fcode_db = None if fcode_page == 0 else fcode_page
+    # opcode_db = None if opcode_page == 0 else opcode_page
 
-    # myquery_mysql_oplogs = forge_myquery_mysql_oplogs_by_fcode(g.myquery_mysql_oplogs, fcode)
-    myquery_mysql_oplogs = forge_myquery_mysql_oplogs_by_fcode_opcode(g.myquery_mysql_oplogs, **kwargs_query)
+    # 2. get vendor list from fcode
+    myquery_mysql_factories = forge_myquery_mysql_factories_by_fcode(g.myquery_mysql_factories, fcode_page)
+    factories = myquery_mysql_factories.all()
+
+    # 3. get operations list
+    from app.myglobals import operations_fcode
+    operations = operations_fcode
+
+    # 4. get myqury_mysql_oplogs
+    search_kwargs_page, search_kwargs_db = fetch_search_kwargs_oplogs_vendor()
+    # print('==search_kwargs_page==', search_kwargs_page)
+    # print('==search_kwargs_db==', search_kwargs_db)
+    search_args_db = list(search_kwargs_db.values())
+    myquery_mysql_oplogs = forge_myquery_mysql_oplogs_by_fcode(g.myquery_mysql_oplogs, fcode_page)
+    if len(list(filter(lambda x: x is not None, search_args_db))) > 0:
+        myquery_mysql_oplogs = forge_myquery_mysql_oplogs_by_search(myquery_mysql_oplogs, **search_kwargs_db)
 
     # . pagination code
     total_count = myquery_mysql_oplogs.count()
@@ -93,4 +84,13 @@ def vf_oplog():
     # datas = myquery_mysql_oplogs.all()
     datas = myquery_mysql_oplogs.slice(start, end)
 
-    return render_template('vendor_oplog.html', datas=datas, pagination=pagination, query_desc = query_desc)
+    page_kwargs = {
+        'fcode_page': fcode_page,
+        'datas': datas,
+        'pagination': pagination,
+        'factories': factories,
+        'operations': operations,
+    }
+
+    # return render_template('vendor_oplog.html', datas=datas, pagination=pagination)
+    return render_template('vendor_oplog.html', **page_kwargs, **search_kwargs_page)

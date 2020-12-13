@@ -34,7 +34,7 @@
             <th>&nbsp;操作&nbsp;</th>
         </tr>
 
-        {% for data in datas %}
+        {% for data in stats_vendor %}
             <tr>
                  <td>&nbsp;
                      <form style="display: inline" action="{{ url_for('blue_vendor.vf_index') }}" method="post">
@@ -70,6 +70,45 @@
                 </td>
             </tr>
         {% endfor %}
+
+
+        {% for data in stats_summary %}
+            <tr>
+                 <td>&nbsp;
+                     <form style="display: inline" action="{{ url_for('blue_vendor.vf_index') }}" method="post">
+                         <input type="hidden" name="fcode" value={{data.fcode}}>
+                         <button type="submit" class="btn">{{ data.fname }}</button>
+                      </form>
+                &nbsp;</td>
+                <td>&nbsp;{{ data.total }}&nbsp;</td>
+                <td>&nbsp;{{ data.success }}&nbsp;</td>
+                <td>&nbsp;{{ data.failed }}&nbsp;</td>
+                <td>&nbsp;{{ data.srate }}&nbsp;</td>
+                <td>&nbsp;{{ data.last_upload_time }}&nbsp;</td>
+                <td>&nbsp;{{ data.last_update_time }}&nbsp;</td>
+                <td>
+                    &nbsp;
+                    <form style="display: inline" action="{{ url_for('blue_rasp.vf_testdata', clearsearchsession=1) }}" method="post">
+                        <input type="hidden" name="fcode" value={{data.fcode}}>
+                        <button type="submit" class="btn">查看历史数据</button>
+                    </form>
+                    &nbsp;
+                    <form style="display: inline" action="{{ url_for('blue_rasp.cmd_update_stat', fcode=data.fcode) }}" method="post">
+                        <!-- <input type="hidden" name="fcode" value={{data.fcode}}> -->
+                        <button id="update" type="submit"
+                            {% if need_update(data.fcode) %}
+                                style="color:green"
+                            {% else %}
+                                style="color:red"
+                            {% endif %}
+                            >更新数据
+                        </button>
+                    </form>
+                    &nbsp;
+                </td>
+            </tr>
+        {% endfor %}
+
 <!--
         {% if current_user.id >= 100 %}
             <tr>

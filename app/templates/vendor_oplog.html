@@ -4,9 +4,63 @@
     <link rel="stylesheet" href="{{ url_for('static',filename='css/my.css') }}">
 {% endblock styles %}
 
+{% block scripts %}
+    <script src="{{ url_for('static',filename='js/jquery.min.js') }}"></script>
+    <script src="{{ url_for('static',filename='js/jquery-1.12.4.min.js') }}"></script>
+
+    <script type="text/javascript" charset="utf-8">
+        $(document).ready(function () {
+        });
+        function myreset() {
+            $("#select_factorycode option").removeAttr("selected");
+            $("#select_opcode option").removeAttr("selected");
+            $("#input_date_start").attr("value", "");
+            $("#input_date_end").attr("value", "");
+        }
+    </script>
+{% endblock scripts %}
+
+
 {% block body %}
     {{ super() }}
-    <h3>{{ query_desc }}</h3>
+    <h3>设备活动记录</h3>
+
+    <br>
+    <a href="{{ url_for('blue_vendor.vf_oplog') }}">refresh</a> | 
+    <a href="{{ url_for('blue_vendor.vf_oplog', clearsearchsession=1) }}">clear session and refresh</a> | 
+    <a href="{{ url_for('blue_vendor.vf_index') }}">return</a>
+    <br>
+    <br>
+
+    <div id="search" class="btn-group" style="display:inline">
+        <form id="searchfrom" action="{{url_for('blue_vendor.vf_oplog')}}" method="post" style="display: inline">
+            <label>vendor:</label>
+            <select id="select_factorycode" name="search_factorycode">
+                {% if fcode_page == 0 %}
+                    <option value="0">All</option>
+                {% endif %}
+                {% for factory in factories %}
+                    <option value={{ factory.code }} {% if search_factorycode and search_factorycode==factory.code|string %}selected{% endif %}>{{ factory.name }}</option>
+                {% endfor %}
+            </select>
+            <label>operation:</label>
+            <select id="select_opcode" name="search_opcode">
+                <option value="0">All</option>
+                {% for operation in operations %}
+                    <option value={{ operation.code }} {% if search_opcode and search_opcode==operation.code|string %}selected{% endif %}>{{ operation.name }}</option>
+                {% endfor %}
+            </select>
+            <label>date start: </label>
+            <input id="input_date_start" type="date" name="search_date_start" value="{% if search_date_start %}{{search_date_start}}{% endif %}">
+            <label>date end: </label>
+            <input id="input_date_end" type="date" name="search_date_end" value="{% if search_date_end %}{{search_date_end}}{% endif %}">
+            <br>
+            <input type="submit" value="search">
+            <input type="reset" value="reset" onclick="myreset()">
+        </form>
+    <div>
+
+    <br>
 
     <div>
         <div style="display: inline">{{ pagination.info }}</div>
@@ -39,11 +93,11 @@
     <div style="display: inline">{{ pagination.links }}</div>
     <br>
 
-    <form style="display: inline" action="{{ url_for('blue_vendor.vf_oplog') }}" method="post">
+
+    <!-- <form style="display: inline" action="{{ url_for('blue_vendor.vf_oplog') }}" method="post">
         <button type="submit">刷新</button>
-    </form> | 
+    </form> | -->
     <a href="{{ url_for('blue_vendor.vf_index') }}">返回</a>
-    <!-- <a href="{{ referrer }}">返回</a> -->
 
     {% with messages = get_flashed_messages() %}
         {% if messages %}

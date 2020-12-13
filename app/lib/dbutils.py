@@ -32,6 +32,16 @@ def forge_myquery_mysql_testdatascloud_by_search(query, search_devicecode, searc
     )
     return myquery
 
+def forge_myquery_mysql_oplogs_by_search(query, search_factorycode, search_opcode, search_date_start, search_date_end):
+
+    # assemble combined query
+    myquery = query.filter(
+        Oplog.fcode.__eq__(search_factorycode) if search_factorycode is not None else text(""),
+        Oplog.opcode.__eq__(search_opcode) if search_opcode is not None else text(""),
+        Oplog.timestamp.between(search_date_start, search_date_end) if all([search_date_start, search_date_end]) else text(""),
+    )
+    return myquery
+
 def get_username_by_userid(id):
     try:
         return User.query.get(id).username
@@ -96,29 +106,26 @@ def forge_myquery_mysql_factories_by_fcode(myquery, fcode):
         return myquery.filter(Factory.code==fcode)
 
 def forge_myquery_mysql_oplogs_by_fcode(myquery, fcode):
-    if fcode == 0:
-        return myquery.order_by(desc(Oplog.id))
-    else:
-        return myquery.filter(Oplog.fcode==fcode).order_by(desc(Oplog.id))
-
-# when query by fcode, the userid field should be None
-def forge_myquery_mysql_oplogs_by_fcode_opcode(query, fcode, opcode):
-    myquery = query.filter(
+    myquery = myquery.filter(
         Oplog.userid == None,
-        Oplog.fcode == fcode if fcode is not None else text(""),
-        Oplog.opcode == opcode if opcode is not None else text(""),
+        Oplog.fcode == fcode if fcode != 0 else text(""),
     ).order_by(desc(Oplog.id))
     return myquery
 
 # when query by userid, the fcode field should be None
 def forge_myquery_mysql_oplogs_by_userid_opcode(query, userid, opcode):
     myquery = query.filter(
-        # Oplog.userid == userid,
-        Oplog.userid == userid if userid is not None else text(""),
         Oplog.fcode == None,
+        Oplog.userid == userid if userid is not None else text(""),
         Oplog.opcode == opcode if opcode is not None else text(""),
     ).order_by(desc(Oplog.id))
     return myquery
+
+def forge_myquery_sqlite_stats_by_fcode_if_zero(myquery, ifzero):
+    if ifzero:
+        return myquery.filter(Stat.fcode==0)
+    else:
+        return myquery.filter(Stat.fcode!=0)
 
 
 def get_mysql_testdatascloud_by_fcode(fcode):

@@ -64,7 +64,6 @@ def vf_oplog():
     }
 
     # myquery_mysql_oplogs = forge_myquery_mysql_oplogs_by_fcode(g.myquery_mysql_oplogs, fcode)
-    # myquery_mysql_oplogs = forge_myquery_mysql_oplogs_by_fcode_opcode(g.myquery_mysql_oplogs, **kwargs_query)
     myquery_mysql_oplogs = forge_myquery_mysql_oplogs_by_userid_opcode(g.myquery_mysql_oplogs, **kwargs_query)
 
     # . pagination code

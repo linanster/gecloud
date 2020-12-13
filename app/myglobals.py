@@ -77,3 +77,12 @@ tab_opcode = {
     102: 'restart',
 }
 
+class Operation(object):
+    def __init__(self, code, name):
+        self.code = code
+        self.name = name
+
+operations_fcode = [
+    Operation(1, 'upload'),
+    Operation(2, 'upgrade'),
+]

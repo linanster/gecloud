@@ -6,8 +6,9 @@ import datetime
 
 from app.lib.mydecorator import viewfunclog
 from app.lib.dbutils import update_sqlite_stat, forge_myquery_mysql_testdatascloud_by_search, forge_myquery_mysql_testdatascloud_by_fcode, forge_myquery_mysql_factories_by_fcode
-from app.lib.dbutils import forge_myquery_mysql_oplogs_by_fcode, forge_myquery_mysql_oplogs_by_fcode_opcode
+from app.lib.dbutils import forge_myquery_mysql_oplogs_by_fcode
 from app.lib.dbutils import insert_operation_log, get_update_running_state_done
+from app.lib.dbutils import forge_myquery_sqlite_stats_by_fcode_if_zero
 from app.lib.myutils import get_datetime_now_obj
 from app.lib.myauth import my_page_permission_required, load_myquery_authorized
 from app.lib.mylogger import logger
@@ -29,10 +30,13 @@ blue_rasp = Blueprint('blue_rasp', __name__, url_prefix='/rasp')
 @load_myquery_authorized
 @viewfunclog
 def vf_stat():
-    myquery_sqlite_stats = g.myquery_sqlite_stats
-    stats = myquery_sqlite_stats.all()
-    # return render_template('rasp_stat.html', datas=g.datas)
-    return render_template('rasp_stat.html', datas=stats)
+    # totally 6 items list
+    stats_vendor = forge_myquery_sqlite_stats_by_fcode_if_zero(g.myquery_sqlite_stats, False).all()
+    # only 1 item list
+    stats_summary = forge_myquery_sqlite_stats_by_fcode_if_zero(g.myquery_sqlite_stats, True).all()
+    # print('==stats_vendor==', stats_vendor)
+    # print('==stats_summary==', stats_summary)
+    return render_template('rasp_stat.html', stats_vendor=stats_vendor, stats_summary=stats_summary)
 
 @blue_rasp.route('/stat/update', methods=['POST'])
 @login_required
@@ -91,7 +95,7 @@ def vf_testdata():
         logger.error('KeyError session["fcode"]')
         return redirect(url_for('blue_rasp.vf_stat'))
     except FcodeNotSupportError as e:
-        logger.warn(str(e))
+        logger.error(str(e))
         return redirect(url_for('blue_rasp.vf_stat'))
 
     # 4. get factory list from userid
