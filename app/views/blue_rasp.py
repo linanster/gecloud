@@ -15,7 +15,8 @@ from app.lib.mylogger import logger
 from app.lib.myclass import FcodeNotSupportError, OpcodeNotSupportError
 from app.lib.myutils import empty_folder_filesonly, gen_csv_by_query
 
-from app.lib.viewlib import fetch_fcode, fetch_opcode, fetch_search_kwargs, send_file
+from app.lib.viewlib import fetch_fcode, fetch_opcode, fetch_search_kwargs_testdatas, send_file
+from app.lib.viewlib import fetch_clearsearchsession
 
 from app.myglobals import PERMISSIONS, topdir, DEBUG, tab_opcode
 
@@ -79,15 +80,11 @@ def cmd_update_stat():
 @load_myquery_authorized
 @viewfunclog
 def vf_testdata():
-    # 1. search params code
-    search_kwargs_page, search_kwargs_db = fetch_search_kwargs()
-    search_args_db = list(search_kwargs_db.values())
-    # print('==search_args_db==', search_args_db)
 
-    # 2. get device list from userid
+    # 1. get device list from userid
     devices = g.myquery_mysql_devices.all()
 
-    # 3. fetch fcode from request.form and session
+    # 2. fetch fcode from request.form and session
     try:
         fcode = fetch_fcode()
     except KeyError as e:
@@ -98,20 +95,24 @@ def vf_testdata():
         logger.error(str(e))
         return redirect(url_for('blue_rasp.vf_stat'))
 
-    # 4. get factory list from userid
+    # 3. get factory list from userid
     myquery_mysql_factories = forge_myquery_mysql_factories_by_fcode(g.myquery_mysql_factories, fcode)
     factories = myquery_mysql_factories.all()
 
-    # 5. get testdatscloud basic query
+    # 4. get testdatscloud basic query
     myquery_mysql_testdatascloud = forge_myquery_mysql_testdatascloud_by_fcode(g.myquery_mysql_testdatascloud, fcode)
+
+    # search handling code
+    clearsearchsession = fetch_clearsearchsession()
+    search_kwargs_page, search_kwargs_db = fetch_search_kwargs_testdatas(clearsearchsession)
+    search_args_db = list(search_kwargs_db.values())
     # if any of search params is not None, filter further
-    # if any(search_args_db):
     if len(list(filter(lambda x: x is not None, search_args_db))) > 0:
         # myquery_mysql_testdatascloud = get_myquery_testdatas_by_search(myquery_mysql_testdatascloud, **search_kwargs_db)
         myquery_mysql_testdatascloud = forge_myquery_mysql_testdatascloud_by_search(myquery_mysql_testdatascloud, **search_kwargs_db)
 
 
-    # 6. pagination code
+    # 5. pagination code
     total_count = myquery_mysql_testdatascloud.count()
     # todo: enlarge PER_PAGE
     PER_PAGE = 100
@@ -130,7 +131,7 @@ def vf_testdata():
         'pagination': pagination,
     }
 
-    # 7. return
+    # 6. return
     return render_template('rasp_testdata.html', **page_kwargs, **search_kwargs_page)
 
 
@@ -140,14 +141,11 @@ def vf_testdata():
 @load_myquery_authorized
 @viewfunclog
 def cmd_download_testdata():
-    # 0. determine csv or excel
+
+    # 1. determine csv or excel
     download_type = request.form.get('download_type', type=str)
     if download_type not in ['csv', 'xls']:
         abort()
-
-    # 1. search params code
-    search_kwargs_page, search_kwargs_db = fetch_search_kwargs()
-    search_args_db = list(search_kwargs_db.values())
 
     # 2. fetch fcode from request.form and session
     try:
@@ -162,6 +160,13 @@ def cmd_download_testdata():
 
     # 3. get testdatscloud basic query
     myquery_mysql_testdatascloud = forge_myquery_mysql_testdatascloud_by_fcode(g.myquery_mysql_testdatascloud, fcode)
+
+    # 4. search handling code
+    # for download, fetch_clearsearchsession will always return False
+    # clearsearchsession = fetch_clearsearchsession()
+    clearsearchsession = None
+    search_kwargs_page, search_kwargs_db = fetch_search_kwargs_testdatas(clearsearchsession)
+    search_args_db = list(search_kwargs_db.values())
     # if any of search params is not None, filter further
     # if any(search_args):
     if len(list(filter(lambda x: x is not None, search_args_db))) > 0:
@@ -170,7 +175,7 @@ def cmd_download_testdata():
     if total_count >=65535:
         return redirect(url_for('blue_error.vf_downloadoverflow'))
 
-    # 4. gen csv/excel file and return
+    # 5. gen csv/excel file and return
     # timestamp = datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
     datetime_obj = get_datetime_now_obj()
     timestamp = datetime_obj.strftime('%Y_%m_%d_%H_%M_%S')
@@ -191,7 +196,7 @@ def cmd_download_testdata():
     response = Response(send_file(filename), content_type='application/octet-stream')
     response.headers["Content-disposition"] = 'attachment; filename=%s' % shortname
 
-    # record oplog
+    # 6. record oplog
     # timestamp = get_datetime_now_obj()
     userid = current_user.id
     fcode = None
@@ -208,6 +213,6 @@ def cmd_download_testdata():
     }
     insert_operation_log(**kwargs_oplog)
 
-    # return
+    # 7. return
     return response
 

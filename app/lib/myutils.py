@@ -244,4 +244,6 @@ def get_datetime_now_str():
     return datetime.datetime.now(tz=tz.gettz('Asia/Shanghai')).replace(microsecond=0).strftime('%Y-%m-%d %H:%M:%S')
 
 def get_localpath_from_fullurl(url):
-    return '/' + url.split('//', 1)[1].split('/', 1)[1]
+    # http://10.30.30.101:5000/rasp/testdata?clearsearchsession=1
+    # return '/' + url.split('//', 1)[1].split('/', 1)[1]
+    return '/' + url.split('//', 1)[1].split('/', 1)[1].split('?', 1)[0]

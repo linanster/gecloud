@@ -12,7 +12,7 @@
         $(document).ready(function () {
         });
         function myreset() {
-            $("#select_factorycode option").removeAttr("selected");
+            $("#select_userid option").removeAttr("selected");
             $("#select_opcode option").removeAttr("selected");
             $("#input_date_start").attr("value", "");
             $("#input_date_end").attr("value", "");
@@ -20,27 +20,24 @@
     </script>
 {% endblock scripts %}
 
-
 {% block body %}
     {{ super() }}
-    <h3>设备活动记录</h3>
+    <h3>用户操作日志</h3>
 
     <br>
-    <a href="{{ url_for('blue_vendor.vf_oplog') }}">refresh</a> | 
-    <a href="{{ url_for('blue_vendor.vf_oplog', clearsearchsession=1) }}">reload</a> | 
-    <a href="{{ url_for('blue_vendor.vf_index') }}">return</a>
+    <a href="{{ url_for('blue_account.vf_admin_oplog') }}">refresh</a> | 
+    <a href="{{ url_for('blue_account.vf_admin_oplog', clearsearchsession=1) }}">reload</a> | 
+    <a href="{{ url_for('blue_account.admin') }}">return</a>
     <br>
     <br>
 
     <div id="search" class="btn-group" style="display:inline">
-        <form id="searchfrom" action="{{url_for('blue_vendor.vf_oplog')}}" method="post" style="display: inline">
-            <label>vendor:</label>
-            <select id="select_factorycode" name="search_factorycode">
-                {% if fcode_page == 0 %}
-                    <option value="0">All</option>
-                {% endif %}
-                {% for factory in factories %}
-                    <option value={{ factory.code }} {% if search_factorycode and search_factorycode==factory.code|string %}selected{% endif %}>{{ factory.name }}</option>
+        <form id="searchfrom" action="{{url_for('blue_account.vf_admin_oplog')}}" method="post" style="display: inline">
+            <label>user:</label>
+            <select id="select_userid" name="search_userid">
+                <option value="0">All</option>
+                {% for user in users %}
+                    <option value={{ user.id }} {% if search_userid and search_userid==user.id|string %}selected{% endif %}>{{ user.username }}</option>
                 {% endfor %}
             </select>
             <label>operation:</label>
@@ -59,7 +56,6 @@
             <input type="reset" value="reset" onclick="myreset()">
         </form>
     <div>
-
     <br>
 
     <div>
@@ -71,7 +67,7 @@
     <table border="1">
         <tr>
             <th>&nbsp;#&nbsp;</th>
-            <th>&nbsp;vendor&nbsp;</th>
+            <th>&nbsp;user&nbsp;</th>
             <th>&nbsp;operation&nbsp;</th>
             <th>&nbsp;opcount&nbsp;</th>
             <th>&nbsp;opmsg&nbsp;</th>
@@ -81,7 +77,7 @@
         {% for data in datas %}
             <tr>
                 <td>{{ loop.index + pagination.skip }}</td>
-                <td>&nbsp;{{ data.fcode | parse_oplog_fcode }}&nbsp;</td>
+                <td>&nbsp;{{ data.userid | parse_oplog_userid }}&nbsp;</td>
                 <td>&nbsp;{{ data.opcode | parse_oplog_opcode }}&nbsp;</td>
                 <td>&nbsp;{{ data.opcount | parse_oplog_opcount }}&nbsp;</td>
                 <td>&nbsp;{{ data.opmsg }}&nbsp;</td>
@@ -93,11 +89,10 @@
     <div style="display: inline">{{ pagination.links }}</div>
     <br>
 
-
-    <!-- <form style="display: inline" action="{{ url_for('blue_vendor.vf_oplog') }}" method="post">
-        <button type="submit">刷新</button>
-    </form> | -->
-    <a href="{{ url_for('blue_vendor.vf_index') }}">返回</a>
+    <form style="display: inline" action="{{ url_for('blue_account.vf_admin_oplog') }}" method="post">
+        <button type="submit" class="btn">刷新</button>
+    </form> | 
+    <a href="{{ url_for('blue_account.admin') }}">返回</a>
 
     {% with messages = get_flashed_messages() %}
         {% if messages %}

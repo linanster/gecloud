@@ -40,9 +40,10 @@ def forge_myquery_mysql_oplogs_vendor_by_search(query, search_factorycode, searc
     )
     return myquery
 
-def forge_myquery_mysql_oplogs_account_by_search(query, search_opcode, search_date_start, search_date_end):
+def forge_myquery_mysql_oplogs_account_by_search(query, search_userid, search_opcode, search_date_start, search_date_end):
     # assemble combined query
     myquery = query.filter(
+        Oplog.userid.__eq__(search_userid) if search_userid is not None else text(""),
         Oplog.opcode.__eq__(search_opcode) if search_opcode is not None else text(""),
         Oplog.timestamp.between(search_date_start, search_date_end) if all([search_date_start, search_date_end]) else text(""),
     )
@@ -119,7 +120,15 @@ def forge_myquery_mysql_factories_by_fcode(myquery, fcode):
         return myquery.filter(Factory.code==fcode)
 
 # todo
-def forge_myquery_sqlite_users_by_referrer(myquery, userid, referrer):
+def forge_myquery_sqlite_users_by_userid_ifconsole(myquery, userid, ifconsole):
+    if ifconsole:
+        # return all web users(no api users user1/user2)
+        myquery = myquery.filter(User.id<200)
+    else:
+        # return the only one specific user
+        myquery = myquery.filter(User.id==userid)
+    return myquery
+def forge_myquery_sqlite_users_by_referrer_legacy(myquery, userid, referrer):
     myquery = myquery.filter(User.id==userid)
     return myquery
 
@@ -131,11 +140,17 @@ def forge_myquery_mysql_oplogs_by_fcode(myquery, fcode):
     return myquery
 
 # todo
-def forge_myquery_mysql_oplogs_by_userid(query, userid):
-    myquery = query.filter(
-        Oplog.fcode == None,
-        Oplog.userid == userid if userid is not None else text(""),
-    ).order_by(desc(Oplog.id))
+def forge_myquery_mysql_oplogs_by_userid_ifconsole(query, userid, ifconsole):
+    if ifconsole:
+        myquery = query.filter(
+            Oplog.fcode == None,
+            # Oplog.userid == userid if userid is not None else text(""),
+        ).order_by(desc(Oplog.id))
+    else:
+        myquery = query.filter(
+            Oplog.fcode == None,
+            Oplog.userid == userid if userid is not None else text(""),
+        ).order_by(desc(Oplog.id))
     return myquery
 
 def forge_myquery_sqlite_stats_by_fcode_if_zero(myquery, ifzero):

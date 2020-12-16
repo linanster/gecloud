@@ -7,6 +7,7 @@ import os
 
 from flask import request, session
 from app.lib.myclass import FcodeNotSupportError, OpcodeNotSupportError
+from app.lib.myutils import get_localpath_from_fullurl
 
 def fetch_fcode():
     fcode = request.form.get('fcode', type=int)
@@ -50,12 +51,13 @@ def fetch_opcode():
     return opcode
 
 
-def fetch_search_param(param_name):
+def fetch_search_param(param_name, clearsearchsession):
     # this argument is coming from:
     # 1. rasp_testdata.html: refresh
     # 2. rasp_stat.html: view historical data
     # 3. rasp_stat.html: view all historical data
-    if request.args.get('clearsearchsession'):
+    # if request.args.get('clearsearchsession'):
+    if clearsearchsession:
         try:
             session.pop(param_name)
         except KeyError:
@@ -73,23 +75,27 @@ def fetch_search_param(param_name):
     return param_value
 
 
-def fetch_search_kwargs_oplogs_account():
+def fetch_search_kwargs_oplogs_account(clearsearchsession):
     # 1.1 fetch search params from request.form and session
-    search_opcode_page = fetch_search_param('search_opcode')
-    search_date_start_page = fetch_search_param('search_date_start')
-    search_date_end_page = fetch_search_param('search_date_end')
+    search_userid_page = fetch_search_param('search_userid', clearsearchsession)
+    search_opcode_page = fetch_search_param('search_opcode', clearsearchsession)
+    search_date_start_page = fetch_search_param('search_date_start', clearsearchsession)
+    search_date_end_page = fetch_search_param('search_date_end', clearsearchsession)
     search_kwargs_page = {
+        'search_userid': search_userid_page,
         'search_opcode': search_opcode_page,
         'search_date_start': search_date_start_page,
         'search_date_end': search_date_end_page,
     }
     # 1.2 check original params and change them sqlalchemy query friendly
+    search_userid_db = None if search_userid_page == '0' else search_userid_page
     search_opcode_db = None if search_opcode_page == '0' else search_opcode_page
     search_date_start_db = None if search_date_start_page == '' or search_date_start_page is None else search_date_start_page + ' 00:00:00'
     search_date_end_db = None if search_date_end_page == '' or search_date_end_page is None else search_date_end_page + ' 23:59:59'
 
     # 1.3 assemble search_kwargs and search_args
     search_kwargs_db = {
+        'search_userid': search_userid_db,
         'search_opcode': search_opcode_db,
         'search_date_start': search_date_start_db,
         'search_date_end': search_date_end_db,
@@ -99,12 +105,12 @@ def fetch_search_kwargs_oplogs_account():
     # print('==search_kwargs_db==', search_kwargs_db)
     return search_kwargs_page, search_kwargs_db
 
-def fetch_search_kwargs_oplogs_vendor():
+def fetch_search_kwargs_oplogs_vendor(clearsearchsession):
     # 1.1 fetch search params from request.form and session
-    search_factorycode_page = fetch_search_param('search_factorycode')
-    search_opcode_page = fetch_search_param('search_opcode')
-    search_date_start_page = fetch_search_param('search_date_start')
-    search_date_end_page = fetch_search_param('search_date_end')
+    search_factorycode_page = fetch_search_param('search_factorycode', clearsearchsession)
+    search_opcode_page = fetch_search_param('search_opcode', clearsearchsession)
+    search_date_start_page = fetch_search_param('search_date_start', clearsearchsession)
+    search_date_end_page = fetch_search_param('search_date_end', clearsearchsession)
     search_kwargs_page = {
         'search_factorycode': search_factorycode_page,
         'search_opcode': search_opcode_page,
@@ -129,17 +135,17 @@ def fetch_search_kwargs_oplogs_vendor():
     # print('==search_kwargs_db==', search_kwargs_db)
     return search_kwargs_page, search_kwargs_db
 
-def fetch_search_kwargs():
+def fetch_search_kwargs_testdatas(clearsearchsession):
     # 1.1 fetch search params from request.form and session
-    search_devicecode_page = fetch_search_param('search_devicecode')
-    search_factorycode_page = fetch_search_param('search_factorycode')
-    search_qualified_page = fetch_search_param('search_qualified')
-    search_blemac_page = fetch_search_param('search_blemac')
-    search_wifimac_page = fetch_search_param('search_wifimac')
-    search_fwversion_page = fetch_search_param('search_fwversion')
-    search_mcu_page = fetch_search_param('search_mcu')
-    search_date_start_page = fetch_search_param('search_date_start')
-    search_date_end_page = fetch_search_param('search_date_end')
+    search_devicecode_page = fetch_search_param('search_devicecode', clearsearchsession)
+    search_factorycode_page = fetch_search_param('search_factorycode', clearsearchsession)
+    search_qualified_page = fetch_search_param('search_qualified', clearsearchsession)
+    search_blemac_page = fetch_search_param('search_blemac', clearsearchsession)
+    search_wifimac_page = fetch_search_param('search_wifimac', clearsearchsession)
+    search_fwversion_page = fetch_search_param('search_fwversion', clearsearchsession)
+    search_mcu_page = fetch_search_param('search_mcu', clearsearchsession)
+    search_date_start_page = fetch_search_param('search_date_start', clearsearchsession)
+    search_date_end_page = fetch_search_param('search_date_end', clearsearchsession)
     search_kwargs_page = {
         'search_devicecode': search_devicecode_page,
         'search_factorycode': search_factorycode_page,
@@ -193,3 +199,20 @@ def send_file(filename):
                 break
             yield data
 
+def fetch_clearsearchsession():
+    clearsearchsession = request.args.get('clearsearchsession')
+    # print('==1. clearsearchsession==', clearsearchsession)
+    if clearsearchsession is None:
+        requestpath = request.path
+        referrer = get_localpath_from_fullurl(request.referrer)
+        # if request.path == get_localpath_from_fullurl(request.referrer):
+        # print('==requestpath==', requestpath)
+        # print('==referrer==', referrer)
+        if requestpath == referrer:
+            clearsearchsession = False
+        else:
+            clearsearchsession = True
+    else:
+        clearsearchsession = True
+    # print('==2. clearsearchsession==', clearsearchsession)
+    return clearsearchsession

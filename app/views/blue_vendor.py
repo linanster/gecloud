@@ -12,6 +12,7 @@ from app.lib.dbutils import forge_myquery_mysql_factories_by_fcode
 from app.lib.dbutils import forge_myquery_mysql_oplogs_vendor_by_search
 from app.lib.myauth import my_page_permission_required, load_myquery_authorized
 from app.lib.mylogger import logger
+from app.lib.viewlib import fetch_clearsearchsession
 
 from app.myglobals import PERMISSIONS
 
@@ -42,6 +43,7 @@ def vf_index():
 @load_myquery_authorized
 @viewfunclog
 def vf_oplog():
+
     # 1. fetch fcode
     # fcode is not possibly None
     try:
@@ -65,7 +67,8 @@ def vf_oplog():
     myquery_mysql_oplogs = forge_myquery_mysql_oplogs_by_fcode(g.myquery_mysql_oplogs, fcode_page)
 
     # 5. search handling code
-    search_kwargs_page, search_kwargs_db = fetch_search_kwargs_oplogs_vendor()
+    clearsearchsession = fetch_clearsearchsession()
+    search_kwargs_page, search_kwargs_db = fetch_search_kwargs_oplogs_vendor(clearsearchsession)
     # print('==search_kwargs_page==', search_kwargs_page)
     # print('==search_kwargs_db==', search_kwargs_db)
     search_args_db = list(search_kwargs_db.values())

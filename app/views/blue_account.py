@@ -5,17 +5,17 @@ from flask_paginate import Pagination, get_page_parameter
 
 from app.lib.mydecorator import viewfunclog
 from app.lib.viewlib import fetch_search_kwargs_oplogs_account
-from app.lib.dbutils import forge_myquery_mysql_oplogs_by_userid
+from app.lib.dbutils import forge_myquery_mysql_oplogs_by_userid_ifconsole
 from app.lib.dbutils import forge_myquery_mysql_oplogs_account_by_search
 from app.lib.dbutils import reset_update_running_state_done, get_update_running_state_done
 from app.lib.dbutils import insert_operation_log
-from app.lib.dbutils import forge_myquery_sqlite_users_by_referrer
+from app.lib.dbutils import forge_myquery_sqlite_users_by_userid_ifconsole
 from app.lib.myauth import my_page_permission_required, load_myquery_authorized
 from app.lib.mylogger import logger
 from app.lib.mylib import my_check_retcode
 from app.lib.myutils import get_datetime_now_obj
 from app.lib.myutils import get_localpath_from_fullurl
-
+from app.lib.viewlib import fetch_clearsearchsession
 
 from app.myglobals import PERMISSIONS
 
@@ -36,12 +36,14 @@ def vf_index():
 @load_myquery_authorized
 @viewfunclog
 def vf_oplog():
+    # 0. fetch clearsearchsession
+    clearsearchsession = request.args.get('clearsearchsession')
+
     # 1. get userid
     userid = current_user.id
 
     # 2. get users list
-    referrer = get_localpath_from_fullurl(request.referrer)
-    myquery_sqlite_users = forge_myquery_sqlite_users_by_referrer(g.myquery_sqlite_users, userid, referrer)
+    myquery_sqlite_users = forge_myquery_sqlite_users_by_userid_ifconsole(g.myquery_sqlite_users, userid, False)
     users = myquery_sqlite_users.all()
 
     # 3. get operation list
@@ -49,10 +51,11 @@ def vf_oplog():
     operations = filter(lambda x: x.type == 2, operations_fcode)
 
     # 4. get myquery
-    myquery_mysql_oplogs = forge_myquery_mysql_oplogs_by_userid(g.myquery_mysql_oplogs, userid)
+    myquery_mysql_oplogs = forge_myquery_mysql_oplogs_by_userid_ifconsole(g.myquery_mysql_oplogs, userid, False)
 
     # 5. search handling code
-    search_kwargs_page, search_kwargs_db = fetch_search_kwargs_oplogs_account()
+    clearsearchsession = fetch_clearsearchsession()
+    search_kwargs_page, search_kwargs_db = fetch_search_kwargs_oplogs_account(clearsearchsession)
     # print('==search_kwargs_page==', search_kwargs_page)
     # print('==search_kwargs_db==', search_kwargs_db)
     search_args_db = list(search_kwargs_db.values())
@@ -78,7 +81,6 @@ def vf_oplog():
     }
 
     return render_template('account_oplog.html', **page_kwargs, **search_kwargs_page)
-
 
 
 @blue_account.route('/reset', methods=['GET', 'POST'])
@@ -115,11 +117,11 @@ def permission():
 
 @blue_account.route('/admin', methods=['GET'])
 @login_required
-@my_page_permission_required(PERMISSIONS.P4)
+@my_page_permission_required(PERMISSIONS.P3)
 @viewfunclog
 def admin():
     info = request.args.get('info')
-    return render_template('account_admin.html', info=info)
+    return render_template('account_admin_index.html', info=info)
 
 @blue_account.route('/reset_runningstates', methods=['POST'])
 @login_required
@@ -175,3 +177,54 @@ def cmd_restart():
     ret = my_check_retcode(cmd)
     return redirect(url_for('blue_account.admin', info=ret))
 
+@blue_account.route('/admin_oplog', methods=['GET', 'POST'])
+@login_required
+@my_page_permission_required(PERMISSIONS.P3)
+@load_myquery_authorized
+@viewfunclog
+def vf_admin_oplog():
+    # 0. fetch clearsearchsession
+    clearsearchsession = request.args.get('clearsearchsession')
+
+    # 1. get userid
+    userid = current_user.id
+
+    # 2. get users list
+    myquery_sqlite_users = forge_myquery_sqlite_users_by_userid_ifconsole(g.myquery_sqlite_users, userid, True)
+    users = myquery_sqlite_users.all()
+
+    # 3. get operation list
+    from app.myglobals import operations_fcode
+    operations = filter(lambda x: x.type == 2, operations_fcode)
+
+    # 4. get myquery
+    myquery_mysql_oplogs = forge_myquery_mysql_oplogs_by_userid_ifconsole(g.myquery_mysql_oplogs, userid, True)
+
+    # 5. search handling code
+    clearsearchsession = fetch_clearsearchsession()
+    search_kwargs_page, search_kwargs_db = fetch_search_kwargs_oplogs_account(clearsearchsession)
+    # print('==search_kwargs_page==', search_kwargs_page)
+    # print('==search_kwargs_db==', search_kwargs_db)
+    search_args_db = list(search_kwargs_db.values())
+    if len(list(filter(lambda x: x is not None, search_args_db))) > 0:
+        myquery_mysql_oplogs = forge_myquery_mysql_oplogs_account_by_search(myquery_mysql_oplogs, **search_kwargs_db)
+
+    # 6. pagination code
+    total_count = myquery_mysql_oplogs.count()
+    PER_PAGE = 10
+    page = request.args.get(get_page_parameter(), type=int, default=1) #获取页码，默认为第一页
+    start = (page-1)*PER_PAGE
+    end = page * PER_PAGE if total_count > page * PER_PAGE else total_count
+    pagination = Pagination(page=page, total=total_count, per_page=PER_PAGE, bs_version=3)
+    # datas = myquery_mysql_oplogs.all()
+    datas = myquery_mysql_oplogs.slice(start, end)
+
+    # 7. collect params and return
+    page_kwargs = {
+        'users': users,
+        'datas': datas,
+        'pagination': pagination,
+        'operations': operations,
+    }
+
+    return render_template('account_admin_oplog.html', **page_kwargs, **search_kwargs_page)

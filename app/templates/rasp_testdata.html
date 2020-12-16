@@ -38,7 +38,8 @@
 
     <h3>测试数据查询({{ fcode }})</h3>
 
-    <a href="{{ url_for('blue_rasp.vf_testdata', clearsearchsession=1) }}">refresh</a> | 
+    <a href="{{ url_for('blue_rasp.vf_testdata') }}">refresh</a> | 
+    <a href="{{ url_for('blue_rasp.vf_testdata', clearsearchsession=1) }}">reload</a> | 
     <a href="{{ url_for('blue_rasp.vf_stat') }}">return</a>
     <br>
     <br>
