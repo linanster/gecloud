@@ -72,6 +72,33 @@ def fetch_search_param(param_name):
             param_value = None
     return param_value
 
+
+def fetch_search_kwargs_oplogs_account():
+    # 1.1 fetch search params from request.form and session
+    search_opcode_page = fetch_search_param('search_opcode')
+    search_date_start_page = fetch_search_param('search_date_start')
+    search_date_end_page = fetch_search_param('search_date_end')
+    search_kwargs_page = {
+        'search_opcode': search_opcode_page,
+        'search_date_start': search_date_start_page,
+        'search_date_end': search_date_end_page,
+    }
+    # 1.2 check original params and change them sqlalchemy query friendly
+    search_opcode_db = None if search_opcode_page == '0' else search_opcode_page
+    search_date_start_db = None if search_date_start_page == '' or search_date_start_page is None else search_date_start_page + ' 00:00:00'
+    search_date_end_db = None if search_date_end_page == '' or search_date_end_page is None else search_date_end_page + ' 23:59:59'
+
+    # 1.3 assemble search_kwargs and search_args
+    search_kwargs_db = {
+        'search_opcode': search_opcode_db,
+        'search_date_start': search_date_start_db,
+        'search_date_end': search_date_end_db,
+    }
+    # 1.3 return kwargs
+    # print('==search_kwargs_page==', search_kwargs_page)
+    # print('==search_kwargs_db==', search_kwargs_db)
+    return search_kwargs_page, search_kwargs_db
+
 def fetch_search_kwargs_oplogs_vendor():
     # 1.1 fetch search params from request.form and session
     search_factorycode_page = fetch_search_param('search_factorycode')

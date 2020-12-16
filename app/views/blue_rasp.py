@@ -40,7 +40,7 @@ def vf_stat():
 
 @blue_rasp.route('/stat/update', methods=['POST'])
 @login_required
-@my_page_permission_required(PERMISSIONS.P2)
+@my_page_permission_required(PERMISSIONS.P4)
 @viewfunclog
 def cmd_update_stat():
     if get_update_running_state_done():

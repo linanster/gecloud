@@ -4,14 +4,17 @@ from flask_login import login_required, current_user
 from flask_paginate import Pagination, get_page_parameter
 
 from app.lib.mydecorator import viewfunclog
-from app.lib.viewlib import fetch_opcode
-from app.lib.dbutils import forge_myquery_mysql_oplogs_by_userid_opcode
+from app.lib.viewlib import fetch_search_kwargs_oplogs_account
+from app.lib.dbutils import forge_myquery_mysql_oplogs_by_userid
+from app.lib.dbutils import forge_myquery_mysql_oplogs_account_by_search
 from app.lib.dbutils import reset_update_running_state_done, get_update_running_state_done
 from app.lib.dbutils import insert_operation_log
+from app.lib.dbutils import forge_myquery_sqlite_users_by_referrer
 from app.lib.myauth import my_page_permission_required, load_myquery_authorized
 from app.lib.mylogger import logger
 from app.lib.mylib import my_check_retcode
 from app.lib.myutils import get_datetime_now_obj
+from app.lib.myutils import get_localpath_from_fullurl
 
 
 from app.myglobals import PERMISSIONS
@@ -33,40 +36,30 @@ def vf_index():
 @load_myquery_authorized
 @viewfunclog
 def vf_oplog():
-    # referrer = request.referrer
-    # 1. fetch fcode from request.form and session
-    # fcode is not possibly None
-    # 2. fetch opcode
-    # opcode is not possibly None
+    # 1. get userid
     userid = current_user.id
-    try:
-        opcode_page = fetch_opcode()
-    except KeyError as e:
-        # logger.error(e)
-        logger.error('KeyError session["opcode"]')
-        return redirect(url_for('blue_rasp.vf_stat'))
-    except OpcodeNotSupportError as e:
-        logger.error(e.err_msg)
-        return redirect(url_for('blue_rasp.vf_stat'))
 
-    tab_query_desc = {
-        0: '用户所有操作记录',
-        3: '用户下载记录',
-        4: '用户更新记录',
-    }
-    query_desc = tab_query_desc.get(opcode_page)
+    # 2. get users list
+    referrer = get_localpath_from_fullurl(request.referrer)
+    myquery_sqlite_users = forge_myquery_sqlite_users_by_referrer(g.myquery_sqlite_users, userid, referrer)
+    users = myquery_sqlite_users.all()
 
-    # transform parmas database query friendly
-    opcode_db = None if opcode_page == 0 else opcode_page
-    kwargs_query = {
-        'userid': userid,
-        'opcode': opcode_db,
-    }
+    # 3. get operation list
+    from app.myglobals import operations_fcode
+    operations = filter(lambda x: x.type == 2, operations_fcode)
 
-    # myquery_mysql_oplogs = forge_myquery_mysql_oplogs_by_fcode(g.myquery_mysql_oplogs, fcode)
-    myquery_mysql_oplogs = forge_myquery_mysql_oplogs_by_userid_opcode(g.myquery_mysql_oplogs, **kwargs_query)
+    # 4. get myquery
+    myquery_mysql_oplogs = forge_myquery_mysql_oplogs_by_userid(g.myquery_mysql_oplogs, userid)
 
-    # . pagination code
+    # 5. search handling code
+    search_kwargs_page, search_kwargs_db = fetch_search_kwargs_oplogs_account()
+    # print('==search_kwargs_page==', search_kwargs_page)
+    # print('==search_kwargs_db==', search_kwargs_db)
+    search_args_db = list(search_kwargs_db.values())
+    if len(list(filter(lambda x: x is not None, search_args_db))) > 0:
+        myquery_mysql_oplogs = forge_myquery_mysql_oplogs_account_by_search(myquery_mysql_oplogs, **search_kwargs_db)
+
+    # 6. pagination code
     total_count = myquery_mysql_oplogs.count()
     PER_PAGE = 10
     page = request.args.get(get_page_parameter(), type=int, default=1) #获取页码，默认为第一页
@@ -76,7 +69,15 @@ def vf_oplog():
     # datas = myquery_mysql_oplogs.all()
     datas = myquery_mysql_oplogs.slice(start, end)
 
-    return render_template('account_oplog.html', datas=datas, pagination=pagination, query_desc = query_desc)
+    # 7. collect params and return
+    page_kwargs = {
+        'users': users,
+        'datas': datas,
+        'pagination': pagination,
+        'operations': operations,
+    }
+
+    return render_template('account_oplog.html', **page_kwargs, **search_kwargs_page)
 
 
 
@@ -114,7 +115,7 @@ def permission():
 
 @blue_account.route('/admin', methods=['GET'])
 @login_required
-@my_page_permission_required(PERMISSIONS.P2)
+@my_page_permission_required(PERMISSIONS.P4)
 @viewfunclog
 def admin():
     info = request.args.get('info')
@@ -122,7 +123,7 @@ def admin():
 
 @blue_account.route('/reset_runningstates', methods=['POST'])
 @login_required
-@my_page_permission_required(PERMISSIONS.P2)
+@my_page_permission_required(PERMISSIONS.P4)
 @viewfunclog
 def cmd_reset_runningstates():
     reset_update_running_state_done()
@@ -149,7 +150,7 @@ def cmd_reset_runningstates():
 
 @blue_account.route('/restart', methods=['POST'])
 @login_required
-@my_page_permission_required(PERMISSIONS.P2)
+@my_page_permission_required(PERMISSIONS.P4)
 @viewfunclog
 def cmd_restart():
 

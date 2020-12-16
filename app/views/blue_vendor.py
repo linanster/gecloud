@@ -9,7 +9,7 @@ from app.lib.viewlib import fetch_fcode, fetch_opcode, fetch_search_kwargs_oplog
 from app.lib.myclass import FcodeNotSupportError, OpcodeNotSupportError
 from app.lib.dbutils import forge_myquery_mysql_oplogs_by_fcode
 from app.lib.dbutils import forge_myquery_mysql_factories_by_fcode
-from app.lib.dbutils import forge_myquery_mysql_oplogs_by_search
+from app.lib.dbutils import forge_myquery_mysql_oplogs_vendor_by_search
 from app.lib.myauth import my_page_permission_required, load_myquery_authorized
 from app.lib.mylogger import logger
 
@@ -53,28 +53,26 @@ def vf_oplog():
         logger.error(e.err_msg)
         return redirect(url_for('blue_rasp.vf_stat'))
 
-    # transform parmas database query friendly
-    # fcode_db = None if fcode_page == 0 else fcode_page
-    # opcode_db = None if opcode_page == 0 else opcode_page
-
     # 2. get vendor list from fcode
     myquery_mysql_factories = forge_myquery_mysql_factories_by_fcode(g.myquery_mysql_factories, fcode_page)
     factories = myquery_mysql_factories.all()
 
     # 3. get operations list
     from app.myglobals import operations_fcode
-    operations = operations_fcode
+    operations = filter(lambda x: x.type == 1, operations_fcode)
 
     # 4. get myqury_mysql_oplogs
+    myquery_mysql_oplogs = forge_myquery_mysql_oplogs_by_fcode(g.myquery_mysql_oplogs, fcode_page)
+
+    # 5. search handling code
     search_kwargs_page, search_kwargs_db = fetch_search_kwargs_oplogs_vendor()
     # print('==search_kwargs_page==', search_kwargs_page)
     # print('==search_kwargs_db==', search_kwargs_db)
     search_args_db = list(search_kwargs_db.values())
-    myquery_mysql_oplogs = forge_myquery_mysql_oplogs_by_fcode(g.myquery_mysql_oplogs, fcode_page)
     if len(list(filter(lambda x: x is not None, search_args_db))) > 0:
-        myquery_mysql_oplogs = forge_myquery_mysql_oplogs_by_search(myquery_mysql_oplogs, **search_kwargs_db)
+        myquery_mysql_oplogs = forge_myquery_mysql_oplogs_vendor_by_search(myquery_mysql_oplogs, **search_kwargs_db)
 
-    # . pagination code
+    # 7. pagination code
     total_count = myquery_mysql_oplogs.count()
     PER_PAGE = 10
     page = request.args.get(get_page_parameter(), type=int, default=1) #获取页码，默认为第一页
@@ -84,6 +82,7 @@ def vf_oplog():
     # datas = myquery_mysql_oplogs.all()
     datas = myquery_mysql_oplogs.slice(start, end)
 
+    # 8. collect params and return
     page_kwargs = {
         'fcode_page': fcode_page,
         'datas': datas,

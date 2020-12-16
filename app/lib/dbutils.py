@@ -18,7 +18,6 @@ from app.myglobals import PER_QUERY_COUNT
 
 
 def forge_myquery_mysql_testdatascloud_by_search(query, search_devicecode, search_factorycode, search_qualified, search_blemac, search_wifimac, search_fwversion, search_mcu, search_date_start, search_date_end):
-
     # assemble combined query
     myquery = query.filter(
         TestdataCloud.devicecode.__eq__(search_devicecode) if search_devicecode is not None else text(""),
@@ -32,11 +31,18 @@ def forge_myquery_mysql_testdatascloud_by_search(query, search_devicecode, searc
     )
     return myquery
 
-def forge_myquery_mysql_oplogs_by_search(query, search_factorycode, search_opcode, search_date_start, search_date_end):
-
+def forge_myquery_mysql_oplogs_vendor_by_search(query, search_factorycode, search_opcode, search_date_start, search_date_end):
     # assemble combined query
     myquery = query.filter(
         Oplog.fcode.__eq__(search_factorycode) if search_factorycode is not None else text(""),
+        Oplog.opcode.__eq__(search_opcode) if search_opcode is not None else text(""),
+        Oplog.timestamp.between(search_date_start, search_date_end) if all([search_date_start, search_date_end]) else text(""),
+    )
+    return myquery
+
+def forge_myquery_mysql_oplogs_account_by_search(query, search_opcode, search_date_start, search_date_end):
+    # assemble combined query
+    myquery = query.filter(
         Oplog.opcode.__eq__(search_opcode) if search_opcode is not None else text(""),
         Oplog.timestamp.between(search_date_start, search_date_end) if all([search_date_start, search_date_end]) else text(""),
     )
@@ -61,6 +67,13 @@ def initiate_myquery_sqlite_stats_from_userid(userid):
     else:
         fcode = userid
         myquery = Stat.query.filter(Stat.fcode==fcode)
+    return myquery
+
+def initiate_myquery_sqlite_users_from_userid(userid):
+    if userid>=100:
+        myquery = User.query
+    else:
+        myquery = User.query.filter(User.id==userid)
     return myquery
 
 def initiate_myquery_mysql_factories_from_userid(userid):
@@ -105,6 +118,11 @@ def forge_myquery_mysql_factories_by_fcode(myquery, fcode):
     else:
         return myquery.filter(Factory.code==fcode)
 
+# todo
+def forge_myquery_sqlite_users_by_referrer(myquery, userid, referrer):
+    myquery = myquery.filter(User.id==userid)
+    return myquery
+
 def forge_myquery_mysql_oplogs_by_fcode(myquery, fcode):
     myquery = myquery.filter(
         Oplog.userid == None,
@@ -112,12 +130,11 @@ def forge_myquery_mysql_oplogs_by_fcode(myquery, fcode):
     ).order_by(desc(Oplog.id))
     return myquery
 
-# when query by userid, the fcode field should be None
-def forge_myquery_mysql_oplogs_by_userid_opcode(query, userid, opcode):
+# todo
+def forge_myquery_mysql_oplogs_by_userid(query, userid):
     myquery = query.filter(
         Oplog.fcode == None,
         Oplog.userid == userid if userid is not None else text(""),
-        Oplog.opcode == opcode if opcode is not None else text(""),
     ).order_by(desc(Oplog.id))
     return myquery
 

@@ -11,6 +11,7 @@ from app.lib.dbutils import initiate_myquery_mysql_devices_from_userid
 from app.lib.dbutils import initiate_myquery_mysql_oplogs_from_userid
 from app.lib.dbutils import initiate_myquery_mysql_testdatascloud_from_userid
 from app.lib.dbutils import initiate_myquery_sqlite_stats_from_userid
+from app.lib.dbutils import initiate_myquery_sqlite_users_from_userid
 
 http_basic_auth = HTTPBasicAuth()
 
@@ -90,10 +91,12 @@ def load_myquery_authorized(func):
         myquery_mysql_oplogs = initiate_myquery_mysql_oplogs_from_userid(userid)
         myquery_mysql_testdatascloud = initiate_myquery_mysql_testdatascloud_from_userid(userid)
         myquery_sqlite_stats = initiate_myquery_sqlite_stats_from_userid(userid)
+        myquery_sqlite_users = initiate_myquery_sqlite_users_from_userid(userid)
         g.myquery_mysql_factories = myquery_mysql_factories
         g.myquery_mysql_devices = myquery_mysql_devices
         g.myquery_mysql_oplogs = myquery_mysql_oplogs
         g.myquery_mysql_testdatascloud = myquery_mysql_testdatascloud
         g.myquery_sqlite_stats = myquery_sqlite_stats
+        g.myquery_sqlite_users = myquery_sqlite_users
         return func(*args, **kwargs)
     return inner

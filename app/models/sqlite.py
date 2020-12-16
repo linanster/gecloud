@@ -127,14 +127,14 @@ class User(UserMixin, MyBaseModel):
 
     @staticmethod
     def seed():
-        user_leedarson = User(1, 'leedarson', '123456', ROLES.VIEW)
-        user_innotech = User(2, 'innotech', '123456', ROLES.VIEW)
-        user_tonly = User(3, 'tonly', '123456', ROLES.VIEW)
-        user_changhong = User(4, 'changhong', '123456', ROLES.VIEW)
-        user_test = User(5, 'test', '123456', ROLES.VIEW)
-        user_topstar = User(6, 'topstar', '123456', ROLES.VIEW)
-        user_ge = User(100, 'ge', '123456', ROLES.VIEW)
-        user_admin = User(101, 'admin', '9e1i9htin9sh!', ROLES.ADMIN)
+        user_leedarson = User(1, 'leedarson', '123456', ROLES.USERVIEW)
+        user_innotech = User(2, 'innotech', '123456', ROLES.USERVIEW)
+        user_tonly = User(3, 'tonly', '123456', ROLES.USERVIEW)
+        user_changhong = User(4, 'changhong', '123456', ROLES.USERVIEW)
+        user_test = User(5, 'test', '123456', ROLES.USERVIEW)
+        user_topstar = User(6, 'topstar', '123456', ROLES.USERVIEW)
+        user_ge = User(100, 'ge', '123456', ROLES.SUPERVIEW)
+        user_admin = User(101, 'admin', '9e1i9htin9sh!', ROLES.SUPERADMIN)
         user_user1 = User(200, 'user1', '123456', ROLES.API_RASP)
         user_user2 = User(201, 'user2', '123456', ROLES.API_AUTH)
         seeds = [

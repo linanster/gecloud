@@ -20,11 +20,11 @@ class PERMISSIONS(object):
     # 1.3 blue_rasp.vf_data
     # 1.4 blue_rasp.vf_uploadrecord
     P1 = 0b00000001 or 1
-    # P2 required by:
-    # 2.1 blue_rasp.cmd_update_stat
-    # 2.2 blue_account.admin
     P2 = 0b00000010 or 2
     P3 = 0b00000100 or 4
+    # P4 required by:
+    # 4.1 blue_rasp.cmd_update_stat
+    # 4.2 blue_account.admin
     P4 = 0b00001000 or 8
     # P5 required by:
     # 5.1 api_rasp:ResourceReceiveData.put
@@ -38,11 +38,12 @@ class PERMISSIONS(object):
 
 class ROLES(object):
     # role: blue view observers
-    # permission sum is 1
-    VIEW = PERMISSIONS.P1
+    USERVIEW = PERMISSIONS.P1
+    USERADMIN = PERMISSIONS.P1 + PERMISSIONS.P2
+    SUPERVIEW = PERMISSIONS.P1 + PERMISSIONS.P3
     # role: administrator with all permissions
     # permission sum is 1+2+4+8+16+32+64+128=255
-    ADMIN = PERMISSIONS.P1 + PERMISSIONS.P2 + PERMISSIONS.P3 + PERMISSIONS.P4 + PERMISSIONS.P5 + PERMISSIONS.P6 + PERMISSIONS.P7 + PERMISSIONS.P8
+    SUPERADMIN = PERMISSIONS.P1 + PERMISSIONS.P2 + PERMISSIONS.P3 + PERMISSIONS.P4 + PERMISSIONS.P5 + PERMISSIONS.P6 + PERMISSIONS.P7 + PERMISSIONS.P8
     # role: for api_rasp, especially upload data
     API_RASP = PERMISSIONS.P5
     # role: for api_auth
@@ -78,11 +79,19 @@ tab_opcode = {
 }
 
 class Operation(object):
-    def __init__(self, code, name):
+    def __init__(self, type, code, name):
+        # type 1 represents vendor activity
+        # type 2 represents users activity
+        self.type = type
         self.code = code
         self.name = name
 
 operations_fcode = [
-    Operation(1, 'upload'),
-    Operation(2, 'upgrade'),
+    Operation(1, 1, 'upload'),
+    Operation(1, 2, 'upgrade'),
+    Operation(2, 3, 'download'),
+    Operation(2, 4, 'update'),
+    Operation(2, 101, 'reset'),
+    Operation(2, 102, 'restart'),
 ]
+
