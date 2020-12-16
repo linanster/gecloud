@@ -15,6 +15,7 @@ from app.lib.mylogger import logger
 from app.lib.viewlib import fetch_clearsearchsession
 
 from app.myglobals import PERMISSIONS
+from app.myglobals import operations_fcode
 
 blue_vendor = Blueprint('blue_vendor', __name__, url_prefix='/vendor')
 
@@ -60,7 +61,6 @@ def vf_oplog():
     factories = myquery_mysql_factories.all()
 
     # 3. get operations list
-    from app.myglobals import operations_fcode
     operations = filter(lambda x: x.type == 1, operations_fcode)
 
     # 4. get myqury_mysql_oplogs

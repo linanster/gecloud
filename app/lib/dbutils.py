@@ -6,7 +6,7 @@ import requests
 import os
 
 from functools import reduce
-from sqlalchemy import or_, desc, text
+from sqlalchemy import or_, desc, text, asc
 
 from app.models.mysql import db_mysql, TestdataCloud, Factory, Device, Oplog
 from app.models.sqlite import db_sqlite, Stat, User, RunningState
@@ -87,7 +87,7 @@ def initiate_myquery_mysql_factories_from_userid(userid):
 
 # for device list, there is no restriction from userid
 def initiate_myquery_mysql_devices_from_userid(userid):
-    myquery = Device.query
+    myquery = Device.query.order_by(asc(Device.code))
     return myquery
 
 def initiate_myquery_mysql_oplogs_from_userid(userid):

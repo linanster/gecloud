@@ -18,7 +18,7 @@ from app.lib.myutils import empty_folder_filesonly, gen_csv_by_query
 from app.lib.viewlib import fetch_fcode, fetch_opcode, fetch_search_kwargs_testdatas, send_file
 from app.lib.viewlib import fetch_clearsearchsession
 
-from app.myglobals import PERMISSIONS, topdir, DEBUG, tab_opcode
+from app.myglobals import PERMISSIONS, topdir, DEBUG
 
 
 blue_rasp = Blueprint('blue_rasp', __name__, url_prefix='/rasp')
@@ -37,6 +37,8 @@ def vf_stat():
     stats_summary = forge_myquery_sqlite_stats_by_fcode_if_zero(g.myquery_sqlite_stats, True).all()
     # print('==stats_vendor==', stats_vendor)
     # print('==stats_summary==', stats_summary)
+    if get_update_running_state_done():
+        flash('后台更新任务运行中')
     return render_template('rasp_stat.html', stats_vendor=stats_vendor, stats_summary=stats_summary)
 
 @blue_rasp.route('/stat/update', methods=['POST'])
@@ -45,14 +47,15 @@ def vf_stat():
 @viewfunclog
 def cmd_update_stat():
     if get_update_running_state_done():
-        flash('后台任务未结束，请稍后再试')
+        # flash('后台任务未结束，请稍后再试')
+        pass
     else:
         # type of fcode default is str, not int
         # fcode = request.args.get('fcode', type=int) or request.form.get('fcode', type=int)
         # fcode = request.form.get('fcode', type=int)
         fcode = request.args.get('fcode', type=int)
         update_sqlite_stat(fcode)
-        flash('数据已开始后台更新，请稍后刷新查看')
+        # flash('数据已开始后台更新，请稍后刷新查看')
 
         # record oplog
         userid = current_user.id

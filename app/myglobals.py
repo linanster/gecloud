@@ -54,29 +54,29 @@ PER_QUERY_COUNT = 10000
 
 # fcode table
 # todo
-tab_fcode = {
-    # -1: 'Unknown',
-    # 0: 'All',
-    1: 'Leedarson',
-    2: 'Innotech',
-    3: 'Tonly',
-    4: 'Changhong',
-    5: 'TestFactory',
-    6: 'Topstar',
-}
+# tab_fcode = {
+#     # -1: 'Unknown',
+#     # 0: 'All',
+#     1: 'Leedarson',
+#     2: 'Innotech',
+#     3: 'Tonly',
+#     4: 'Changhong',
+#     5: 'TestFactory',
+#     6: 'Topstar',
+# }
 
 
 # opcode table
-tab_opcode = {
-    # vendor activities
-    1: 'upload',
-    2: 'upgrade',
-    # user activities
-    3: 'download',
-    4: 'update',
-    101: 'reset',
-    102: 'restart',
-}
+# tab_opcode = {
+#     # vendor activities
+#     1: 'upload',
+#     2: 'upgrade',
+#     # user activities
+#     3: 'download',
+#     4: 'update',
+#     101: 'reset',
+#     102: 'restart',
+# }
 
 class Operation(object):
     def __init__(self, type, code, name):
