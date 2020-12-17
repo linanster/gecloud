@@ -59,7 +59,7 @@ class Stat(MyBaseModel):
         self.last_update_time = last_update_time
     @staticmethod
     def seed():
-        s_f0 = Stat('All', 0)
+        s_f0 = Stat('Total', 0)
         s_f1 = Stat('Leedarson', 1)
         s_f2 = Stat('Innotech', 2)
         s_f3 = Stat('Tonly', 3)

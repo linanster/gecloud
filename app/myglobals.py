@@ -87,10 +87,14 @@ class Operation(object):
         self.name = name
 
 operations_opcode = [
+    # vendor activities
     Operation(1, 1, 'upload'),
     Operation(1, 2, 'upgrade'),
+    # user activities
     Operation(2, 3, 'download'),
     Operation(2, 4, 'update'),
+    Operation(2, 5, 'login'),
+    Operation(2, 6, 'logout'),
     Operation(2, 101, 'reset'),
     Operation(2, 102, 'restart'),
 ]

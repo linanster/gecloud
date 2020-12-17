@@ -6,6 +6,8 @@ from app.models.sqlite import User
 from app.lib.mydecorator import viewfunclog
 from app.lib.mylogger import logger
 from app.views.blue_main import blue_main
+from app.lib.dbutils import insert_operation_log
+from app.lib.myutils import get_datetime_now_obj
 
 
 blue_auth = Blueprint('blue_auth', __name__, url_prefix='/auth')
@@ -26,6 +28,24 @@ def login():
         return render_template('auth_login.html', warning="login failed!")
     login_user(user)
     logger.info('[login] {} login success'.format(username))
+
+    # record oplog
+    userid = current_user.id
+    fcode = None
+    opcode = 5
+    opcount = None
+    opmsg = ''
+    datetime_obj = get_datetime_now_obj()
+    kwargs_oplog = {
+        'userid': userid,
+        'fcode': fcode,
+        'opcode': opcode,
+        'opcount': opcount,
+        'opmsg': opmsg,
+        'timestamp': datetime_obj,
+    }
+    insert_operation_log(**kwargs_oplog)
+
     if next_page:
         return redirect(next_page)
     else:
@@ -34,6 +54,24 @@ def login():
 @blue_auth.route('/logout')
 @viewfunclog
 def logout():
+
+    # record oplog
+    userid = current_user.id
+    fcode = None
+    opcode = 6
+    opcount = None
+    opmsg = ''
+    datetime_obj = get_datetime_now_obj()
+    kwargs_oplog = {
+        'userid': userid,
+        'fcode': fcode,
+        'opcode': opcode,
+        'opcount': opcount,
+        'opmsg': opmsg,
+        'timestamp': datetime_obj,
+    }
+    insert_operation_log(**kwargs_oplog)
+
     logout_user()
     return redirect(url_for('blue_auth.login'))
 

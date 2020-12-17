@@ -77,7 +77,7 @@
                  <td>&nbsp;
                      <form style="display: inline" action="{{ url_for('blue_vendor.vf_index') }}" method="post">
                          <input type="hidden" name="fcode" value={{data.fcode}}>
-                         <button type="submit" class="btn">{{ data.fname }}</button>
+                         <button type="submit" class="btn" style="font-weight:600">{{ data.fname }}</button>
                       </form>
                 &nbsp;</td>
                 <td>&nbsp;{{ data.total }}&nbsp;</td>
@@ -94,7 +94,6 @@
                     </form>
                     &nbsp;
                     <form style="display: inline" action="{{ url_for('blue_rasp.cmd_update_stat', fcode=data.fcode) }}" method="post">
-                        <!-- <input type="hidden" name="fcode" value={{data.fcode}}> -->
                         <button id="update" type="submit"
                             {% if need_update(data.fcode) %}
                                 style="color:green"
