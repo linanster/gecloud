@@ -2,12 +2,18 @@
 
 {% block body %}
     {{ super() }}
-    <form style="display: inline" action="{{ url_for('blue_vendor.vf_oplog') }}" method="post">
-        <!-- <input type="hidden" name="fcode" value={{fcode}}> -->
-        <!-- <input type="hidden" name="opcode" value=0> -->
-        <button type="submit">查看设备活动记录</button>
-    </form>
-    <br>
+
+    <table border="0" class="table1">
+        <tr>
+            <td>1.</td>
+            <td>
+                <form style="display: inline" action="{{ url_for('blue_vendor.vf_oplog') }}" method="post">
+                    <button type="submit" class="btn">查看设备活动记录</button>
+                </form>
+            </td>
+        </tr>
+    </table>
+
     <br>
 
     <a href="{{ url_for('blue_rasp.vf_stat') }}">返回</a>

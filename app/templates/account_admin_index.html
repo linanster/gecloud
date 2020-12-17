@@ -6,12 +6,12 @@
     <script src="{{ url_for('static',filename='js/jquery-1.12.4.min.js') }}"></script>
     <script type="text/javascript" charset="utf-8">
         $(document).ready(function () {
-            $("button#reset").click(function(){
-                if(window.confirm("确认重置吗?")==false)
+            $("button#reset").click(function () {
+                if (window.confirm("确认重置吗?") == false)
                     return false;
             });
-            $("button#restart").click(function(){
-                if(window.confirm("确认重启吗?")==false)
+            $("button#restart").click(function () {
+                if (window.confirm("确认重启吗?") == false)
                     return false;
             });
         });
@@ -21,25 +21,47 @@
 {% block body %}
     {{ super() }}
 
-    <form style="display: inline" action="{{ url_for('blue_account.cmd_reset_runningstates') }}" method="post">
-        <button type="submit" id="reset">重置系统运行参数</button>
-    </form>
-    <br>
-    <br>
-    <form style="display: inline" action="{{ url_for('blue_account.cmd_restart') }}" method="post">
-        <button type="submit" id="restart">重启系统</button>
-    </form>
-
-    <br>
-    <a href="{{ url_for('blue_account.vf_admin_oplog') }}">查看所有用户操作日志</a> | 
+    <table border="0" class="table1">
+        <tr>
+            <td>
+                1.
+            </td>
+            <td>
+                <a href="{{ url_for('blue_account.vf_admin_oplog') }}">查看所有用户操作日志</a>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                2.
+            </td>
+            <td>
+                <form style="display: inline" action="{{ url_for('blue_account.cmd_reset_runningstates') }}"
+                      method="post">
+                    <button type="submit" id="reset">重置系统运行参数</button>
+                </form>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                3.
+            </td>
+            <td>
+                <form style="display: inline" action="{{ url_for('blue_account.cmd_restart') }}" method="post">
+                    <button type="submit" id="restart">重启系统</button>
+                </form>
+            </td>
+        </tr>
+    </table>
 
     <br>
     <br>
     <a href="{{ url_for('blue_account.admin') }}">刷新</a> | 
     <a href="{{ url_for('blue_account.vf_index') }}">返回</a>
     <br>
+
     {% if info %}
         <p style="color:red">{{ info }}</p>
     {% endif %}
 
 {% endblock body %}
+

@@ -23,6 +23,11 @@
     font-family: "宋体";  
     font-size: 15px;  
     text-decoration:underline;  //加下划线  
+    // padding-top: 8px;
+    // padding-right: 8px;
+    // padding-bottom: 8px;
+    padding-left: 0;
+
 }  
 .btn:hover{  
     color:red;  
@@ -34,3 +39,16 @@
 .btn:focus {   
     outline: none;    //去边框  
 } 
+
+
+/*
+ * 3. apply table(no border) to format listed items
+ * account_admin_index.html
+ * vendor_index.html
+ */
+.table1 td {
+  padding-top: 8px;
+  padding-right: 8px;
+  padding-bottom: 8px;
+  padding-left: 0;
+  }

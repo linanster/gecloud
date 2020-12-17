@@ -6,16 +6,27 @@
 
 {% block body %}
     {{ super() }}
-    <p>1. <a href="{{ url_for('blue_account.reset') }}">重置密码</a></p>
-    <p>2. <a href="{{ url_for('blue_account.permission') }}">查看权限</a></p>
-    <!-- 
-    <form style="display: inline" action="{{ url_for('blue_account.vf_oplog') }}" method="post">
-        <input type="hidden" name="opcode" value=0>
-        <button type="submit" class="btn">查看操作日志</button>
-    </form>
-    -->
-    <p>3. <a href="{{ url_for('blue_account.vf_oplog', opcode=0) }}">操作日志</a><p>
-    <p>4. <a href="{{ url_for('blue_account.admin') }}">管理台</a><p>
+
+    <table border="0" class="table1">
+        <tr>
+            <td>1.</td>
+            <td><a href="{{ url_for('blue_account.reset') }}">重置密码</a></td>
+        </tr>
+        <tr>
+            <td>2.</td>
+            <td><a href="{{ url_for('blue_account.permission') }}">查看权限</a></td>
+        </tr>
+        <tr>
+            <td>3.</td>
+            <td><a href="{{ url_for('blue_account.vf_oplog', opcode=0) }}">操作日志</a></td>
+        </tr>
+        <tr>
+            <td>4.</td>
+            <td><a href="{{ url_for('blue_account.admin') }}">管理台</a></td>
+        </tr>
+    </table>
+
+
     <br>
     <a href="{{ url_for('blue_rasp.vf_stat') }}">返回</a>
     <br>
