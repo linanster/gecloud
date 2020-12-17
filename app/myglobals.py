@@ -86,7 +86,7 @@ class Operation(object):
         self.code = code
         self.name = name
 
-operations_fcode = [
+operations_opcode = [
     Operation(1, 1, 'upload'),
     Operation(1, 2, 'upgrade'),
     Operation(2, 3, 'download'),

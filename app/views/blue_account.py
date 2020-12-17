@@ -18,7 +18,7 @@ from app.lib.myutils import get_localpath_from_fullurl
 from app.lib.viewlib import fetch_clearsearchsession
 
 from app.myglobals import PERMISSIONS
-from app.myglobals import operations_fcode
+from app.myglobals import operations_opcode
 
 blue_account = Blueprint('blue_account', __name__, url_prefix='/account')
 
@@ -48,7 +48,7 @@ def vf_oplog():
     users = myquery_sqlite_users.all()
 
     # 3. get operation list
-    operations = filter(lambda x: x.type == 2, operations_fcode)
+    operations = filter(lambda x: x.type == 2, operations_opcode)
 
     # 4. get myquery
     myquery_mysql_oplogs = forge_myquery_mysql_oplogs_by_userid_ifconsole(g.myquery_mysql_oplogs, userid, False)
@@ -194,7 +194,7 @@ def vf_admin_oplog():
     users = myquery_sqlite_users.all()
 
     # 3. get operation list
-    operations = filter(lambda x: x.type == 2, operations_fcode)
+    operations = filter(lambda x: x.type == 2, operations_opcode)
 
     # 4. get myquery
     myquery_mysql_oplogs = forge_myquery_mysql_oplogs_by_userid_ifconsole(g.myquery_mysql_oplogs, userid, True)

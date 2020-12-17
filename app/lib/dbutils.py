@@ -62,6 +62,14 @@ def get_name_by_fcode(fcode):
         logger.error(str(e))
         return None
 
+def get_name_by_opcode(opcode):
+    from app.myglobals import operations_opcode
+    l1 = list(filter(lambda x: x.code==opcode, operations_opcode))
+    if len(l1) == 1:
+        return l1[0].name
+    else:
+        return None
+
 def initiate_myquery_sqlite_stats_from_userid(userid):
     if userid>=100:
         myquery = Stat.query
