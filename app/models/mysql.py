@@ -43,7 +43,7 @@ class Factory(db_mysql.Model):
     code = db_mysql.Column(db_mysql.Integer, nullable=False, unique=True)
     name = db_mysql.Column(db_mysql.String(100), unique=True, nullable=False)
     description = db_mysql.Column(db_mysql.Text)
-    devices = db_mysql.relationship('Device', backref='factory')
+    # devices = db_mysql.relationship('Device', backref='factory')
     testdatascloud = db_mysql.relationship('TestdataCloud', backref='factory')
     def __init__(self, code, name, description=''):
         self.code = code
@@ -66,16 +66,17 @@ class Device(db_mysql.Model):
     __tablename__ = 'devices'
     id = db_mysql.Column(db_mysql.Integer, nullable=False, autoincrement=True, primary_key = True)
     code = db_mysql.Column(db_mysql.Integer, nullable=False, unique=True)
-    name = db_mysql.Column('name', db_mysql.String(100), nullable=False)
     code_hex = db_mysql.Column(db_mysql.String(10), nullable=False, unique=True)
+    name = db_mysql.Column('name', db_mysql.String(100), nullable=False)
     # factorycode = db_mysql.Column(db_mysql.Integer, db_mysql.ForeignKey('factories.code'), nullable=False) 
-    factorycode = db_mysql.Column(db_mysql.Integer, db_mysql.ForeignKey(Factory.code), nullable=False) 
+    # factorycode = db_mysql.Column(db_mysql.Integer, db_mysql.ForeignKey(Factory.code), nullable=False)
     description = db_mysql.Column(db_mysql.Text, nullable=True)
     testdatascloud = db_mysql.relationship('TestdataCloud', backref='device')
-    def __init__(self, code, code_hex, factorycode, name, description=''):
+    # def __init__(self, code, code_hex, factorycode, name, description=''):
+    def __init__(self, code, code_hex, name, description=''):
         self.code = code
         self.code_hex = code_hex
-        self.factorycode = factorycode
+        # self.factorycode = factorycode
         self.name = name
         self.description = description
     @staticmethod
@@ -154,7 +155,6 @@ class Device(db_mysql.Model):
             d_innotech_131,
             d_innotech_132,
             d_innotech_133,
-            d_innotech_48,
             d_innotech_49,
             d_innotech_51,
             d_innotech_52,
