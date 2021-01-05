@@ -27,7 +27,8 @@ logger = logging.getLogger(__name__)
 logger.setLevel(level = logging.INFO)
 formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
 
-handler = RotatingFileHandler(logfile, maxBytes = 1*1024*1024, backupCount=3)
+# log file limitation is 10M
+handler = RotatingFileHandler(logfile, maxBytes = 10*1024*1024, backupCount=3)
 handler.setLevel(logging.INFO)
 handler.setFormatter(formatter)
 
@@ -50,7 +51,7 @@ from app.models.mysql import TestdataCloud
 # remove mac replicas from basequery bucket
 # param1: mac
 # param2: basequery
-def process_replicas_basic(mac, basequery, do_delete=False):
+def process_replicas_basic(mac, basequery, do_delete):
     q = basequery.filter(TestdataCloud.mac_ble == mac)
     replica = q.count()
     if replica <= 1:
@@ -80,7 +81,7 @@ def process_replicas_basic(mac, basequery, do_delete=False):
 # fetch replicas mac list from basequery
 # process replicas mac one by one, by calling process_replicas_basic function
 # param1: basequery
-def process_replicas_wrapper(basequery, do_delete=False):
+def process_replicas_wrapper(basequery, do_delete, shortquery):
     # 1. get total count
     total = basequery.count()
     logger.info('number of total: {}'.format(total))
@@ -92,18 +93,20 @@ def process_replicas_wrapper(basequery, do_delete=False):
     q1 = basequery.with_entities(TestdataCloud.mac_ble, func.count(TestdataCloud.mac_ble)).group_by(TestdataCloud.mac_ble)
     macs = list(map(lambda data: data[0], filter(lambda data: data[1]>1, q1)))
     logger.info('number of replica macs: {}'.format(len(macs)))
+    if shortquery:
+        sys.exit()
     logger.info('macs: {}'.format(macs))
 
     # 3. process replicas within macs list and within datetime range
     for mac in macs:
         process_replicas_basic(mac, basequery, do_delete)
 
-def process_replicas_by_raw_params(datetime_start, datetime_end, mac, do_delete=False):
+def process_replicas_by_raw_params(datetime_start, datetime_end, mac, do_delete, shortquery):
     basequery = TestdataCloud.query.filter(
         TestdataCloud.mac_ble.__eq__(mac) if mac is not None else text(""),
         TestdataCloud.datetime.between(datetime_start, datetime_end) if all([datetime_start, datetime_end]) else text(""),
     )
-    process_replicas_wrapper(basequery, do_delete)
+    process_replicas_wrapper(basequery, do_delete, shortquery)
 
 
 if __name__ == '__main__':
@@ -111,7 +114,7 @@ if __name__ == '__main__':
 
     usage = """
 usage: dereplicas.py [-h] [--mac MAC] [--datetime_start DATETIME_START]
-                     [--datetime_end DATETIME_END]
+                     [--datetime_end DATETIME_END] [--shortquery]
                      mode
 """
 
@@ -121,6 +124,7 @@ usage: dereplicas.py [-h] [--mac MAC] [--datetime_start DATETIME_START]
         parser.add_argument("--mac", type=str, help='ble mac address')
         parser.add_argument("--datetime_start", type=str, help='start datetime, ep "2020-09-23 12:00:00"')
         parser.add_argument("--datetime_end", type=str, help='end datetime, ep "2020-09-23 12:00:00"')
+        parser.add_argument("--shortquery", help="just query total info, dont further break down", action="store_true")
         args = parser.parse_args()
         # datetime_start = '2020-09-23 12:00:00'
         # datetime_end = '2020-09-23 23:59:59'
@@ -129,10 +133,12 @@ usage: dereplicas.py [-h] [--mac MAC] [--datetime_start DATETIME_START]
         datetime_start = args.datetime_start
         datetime_end = args.datetime_end
         mac = args.mac
+        shortquery = args.shortquery
         # print('==mode==', mode)
         # print('==datetime_start==', datetime_start)
         # print('==datetime_end==', datetime_end)
         # print('==mac==', mac)
+        # print('==shortquery==', shortquery)
 
         if mode == 'auto':
             datetime_start = (datetime.datetime.now()-datetime.timedelta(days=1)).strftime("%Y-%m-%d 00:00:00")
@@ -149,7 +155,7 @@ usage: dereplicas.py [-h] [--mac MAC] [--datetime_start DATETIME_START]
             sys.exit()
 
         logger.info('==start de replicas ({0} - {1} - {2} - {3})=='.format(mode, datetime_start, datetime_end, mac))
-        process_replicas_by_raw_params(datetime_start, datetime_end, mac, do_delete)
+        process_replicas_by_raw_params(datetime_start, datetime_end, mac, do_delete, shortquery)
 
         logger.info('==end==')
 
