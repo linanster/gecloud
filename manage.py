@@ -30,10 +30,11 @@ def deletedb_mysql(table=False, data=False):
     "--table --data"
     from app.models.mysql import db_mysql, Factory, Device, TestdataCloud, Oplog
     if data:
-        TestdataCloud.query.delete()
-        DeviceCloud.query.delete()
-        Factory.query.delete()
         Oplog.query.delete()
+        TestdataCloud.query.delete()
+        Device.query.delete()
+        Factory.query.delete()
+        db_mysql.session.commit()
         print('==delete mysql datas==')
     if table:
         db_mysql.drop_all(bind='mysql_gecloud')

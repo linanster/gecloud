@@ -10,6 +10,7 @@ Usage: run.sh  --start [--ssl --nodaemon]
                --status
                --init
                --requirements
+               --dereplicas
 "
 workdir=$(cd "$(dirname $0)" && pwd)
 
@@ -115,6 +116,11 @@ function run_stop(){
 
 }
 
+function run_dereplicas(){
+    activate_venv
+    python3 ./scripts/dereplicas.py auto
+}
+
 
 # 3.start code
 
@@ -145,6 +151,9 @@ if [ $# -ge 1 ]; then
         ;;
     --requirements)
         run_requirements
+        ;;
+    --dereplicas)
+        run_dereplicas
         ;;
     *)
         echo "$usage"

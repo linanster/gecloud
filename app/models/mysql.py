@@ -17,6 +17,27 @@ db_mysql = SQLAlchemy(use_native_unicode='utf8')
 
 # 2. model definition
 
+class MyBaseModel(db_mysql.Model):
+    __abstract__ = True
+    id = db_mysql.Column(db_mysql.Integer, nullable=False, autoincrement=True, primary_key=True)
+    def save(self):
+        try:
+            db_mysql.session.add(self)
+            db_mysql.session.commit()
+            return True
+        except Exception as e:
+            print(e)
+            return False
+    def delete(self):
+        try:
+            db_mysql.session.delete(self)
+            db_mysql.session.commit()
+            return True
+        except Exception as e:
+            print(e)
+            return False
+
+
 class Oplog(db_mysql.Model):
     __bind_key__ = 'mysql_gecloud'
     __tablename__ = 'oplogs'
@@ -186,10 +207,11 @@ class Device(db_mysql.Model):
 
 
 
-class TestdataCloud(db_mysql.Model):
+# class TestdataCloud(db_mysql.Model):
+class TestdataCloud(MyBaseModel):
     __bind_key__ = 'mysql_gecloud'
     __tablename__ = 'testdatascloud'
-    id = db_mysql.Column(db_mysql.Integer, nullable=False, autoincrement=True, primary_key = True)
+    # id = db_mysql.Column(db_mysql.Integer, nullable=False, autoincrement=True, primary_key = True)
     devicecode = db_mysql.Column(db_mysql.Integer, db_mysql.ForeignKey(Device.code), nullable=False)
     factorycode = db_mysql.Column(db_mysql.Integer, db_mysql.ForeignKey(Factory.code), nullable=True) 
     fw_version = db_mysql.Column(db_mysql.String(20))
