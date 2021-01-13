@@ -4,7 +4,7 @@ from flask import request
 
 from app.models.mysql import Factory, Device, TestdataCloud
 from app.lib.myauth import http_basic_auth
-from app.lib.mydecorator import viewfunclog
+from app.lib.mydecorator import apifunclog
 from app.lib.mylib import save_to_database, load_upgrade_pin
 from app.lib.mylogger import logger
 from app.lib.dbutils import update_sqlite_lastuploadtime, insert_operation_log
@@ -34,12 +34,12 @@ parser.add_argument('pin', type=str, location=['args', 'form'])
 ####################################
 
 class ResourceConnection(Resource):
-    @viewfunclog
+    @apifunclog
     def get(self):
         return {'msg':'pong'}
 
 class ResourceVerifyPin(Resource):
-    @viewfunclog
+    @apifunclog
     def post(self):
         args = parser.parse_args()
         pin_client = args.get('pin')
@@ -58,7 +58,7 @@ class ResourceVerifyPin(Resource):
 class ResourceReceiveData(Resource):
     @http_basic_auth.login_required
     @my_permission_required(PERMISSIONS.P5)
-    @viewfunclog
+    @apifunclog
     def put(self):
         # get current datetime
         cur_datetime = get_datetime_now_obj()
@@ -158,7 +158,7 @@ class ResourceReceiveData(Resource):
 class ResourceRaspUpgradeNotice(Resource):
     @http_basic_auth.login_required
     @my_permission_required(PERMISSIONS.P5)
-    @viewfunclog
+    @apifunclog
     def post(self):
         try:
             # method style 1
