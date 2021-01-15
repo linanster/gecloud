@@ -11,6 +11,7 @@ Usage: run.sh  --start [--ssl --nodaemon]
                --init
                --requirements
                --dereplicas
+               --backupdb
 "
 workdir=$(cd "$(dirname $0)" && pwd)
 
@@ -121,6 +122,9 @@ function run_dereplicas(){
     python3 ./scripts/dereplicas.py auto
 }
 
+function run_backupdb(){
+    ./scripts/save_database.sh
+}
 
 # 3.start code
 
@@ -154,6 +158,9 @@ if [ $# -ge 1 ]; then
         ;;
     --dereplicas)
         run_dereplicas
+        ;;
+    --backupdb)
+        run_backupdb
         ;;
     *)
         echo "$usage"
