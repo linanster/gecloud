@@ -6,18 +6,26 @@ __pycache__/
 *.py[cod]
 *$py.class
 
-# 2. igore folder
+# 2.1 ignore sorted files
+cert/*.key
+cert/*.cert
+
+# 2.2 ignore specified files
+files/upgrade/pin.txt.rc
+files/upgrade/pin.txt
+
+# 3.1 ignore folders without exception
 venv/
+
+# 3.2 ignore folders with exception
 log/*
 scripts/ignore/*
 sqlite/*
 cache/*
-cert/*.key
-cert/*.cert
 pub/csv/*
 pub/xls/*
 
-# 3. exceptions that not ignore
+# 4. exceptions that not ignore
 !log/.gitkeep
 !scripts/ignore/.gitkeep
 !sqlite/.gitkeep
@@ -27,7 +35,4 @@ pub/xls/*
 !pub/xls/.gitkeep
 !pub/csv/.gitkeep
 
-# 4. ignore specified files
-files/upgrade/pin.txt.rc
-files/upgrade/pin.txt
 

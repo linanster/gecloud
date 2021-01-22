@@ -151,7 +151,7 @@ optional arguments:
 
     try:
         parser = argparse.ArgumentParser()
-        parser.add_argument("mode", type=str, help="auto, query, delete")
+        parser.add_argument("mode", metavar='mode', type=str, choices=['auto', 'query','delete'], help="auto, query, delete")
         parser.add_argument("--mac", type=str, help='ble mac address')
         parser.add_argument("--datetime_start", type=str, help='start datetime, ep "2020-09-23 12:00:00"')
         parser.add_argument("--datetime_end", type=str, help='end datetime, ep "2020-09-23 12:00:00"')
