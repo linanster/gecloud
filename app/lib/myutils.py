@@ -77,7 +77,8 @@ def gen_csv_by_query(myquery, filename):
             if item == 'factorycode':
                 data_item = data.factory.name
             if item == 'reserve_int_1':
-                data_item = True if data_item == 1 else False
+                # data_item = True if data_item == 1 else False
+                data_item = True if data_item == 0 else False
             if item == 'bool_qualified_check':
                 data_bool_qualified_check = data_item
                 continue
