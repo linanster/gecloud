@@ -221,23 +221,24 @@ class TestdataCloud(MyBaseModel):
     rssi_wifi2 = db_mysql.Column(db_mysql.Integer)
     mac_ble = db_mysql.Column(db_mysql.String(18))
     mac_wifi = db_mysql.Column(db_mysql.String(18))
+    # 2.2 组合指令详情 commands check detail
     status_cmd_check1 = db_mysql.Column(db_mysql.Integer)
     status_cmd_check2 = db_mysql.Column(db_mysql.Integer)
     bool_uploaded = db_mysql.Column(db_mysql.Boolean)
+    # 1.信号强度结果 signal check
     bool_qualified_signal = db_mysql.Column(db_mysql.Boolean)
+    # 2.1 组合指令结果 commands check
     bool_qualified_check = db_mysql.Column(db_mysql.Boolean)
+    # 3 广播扫描结果 broadcast check
     bool_qualified_scan = db_mysql.Column(db_mysql.Boolean)
+    # 4.设备类型 type check
     bool_qualified_deviceid = db_mysql.Column(db_mysql.Boolean)
-    # datetime = db_mysql.Column(db_mysql.DateTime, default=datetime.datetime.now())
-    # reserve_int_1 = db_mysql.Column(db_mysql.Integer, nullable=True, server_default=str(0))
-    # reserve_str_1 = db_mysql.Column(db_mysql.String(100), nullable=True, server_default=str(''))
-    # reserve_bool_1 = db_mysql.Column(db_mysql.Boolean, nullable=True, server_default=str(0))
     datetime = db_mysql.Column(db_mysql.DateTime, default=datetime.datetime.now())
-    # occupied by mac check
+    # 6.mac检测 mac check
     reserve_int_1 = db_mysql.Column(db_mysql.Integer, nullable=True, server_default=str(0))
-    # occupied by mcu
+    # occupied by MCU
     reserve_str_1 = db_mysql.Column(db_mysql.String(100), nullable=True, server_default=str(''))
-    # occupied by version check
+    # 5.版本检测 version check
     reserve_bool_1 = db_mysql.Column(db_mysql.Boolean, nullable=True, server_default=str(0))
     bool_qualified_overall = db_mysql.Column(db_mysql.Boolean)
     def __init__(self, devicecode, factorycode, fw_version, rssi_ble1, rssi_ble2, rssi_wifi1, rssi_wifi2, mac_ble, mac_wifi, status_cmd_check1, status_cmd_check2, bool_uploaded, bool_qualified_signal, bool_qualified_check, bool_qualified_scan, bool_qualified_deviceid, datetime, reserve_int_1, reserve_str_1, reserve_bool_1, bool_qualified_overall):

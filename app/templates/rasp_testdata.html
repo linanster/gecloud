@@ -82,7 +82,9 @@
             <label>date start: </label>
             <input id="input_date_start" type="date" name="search_date_start" value="{% if search_date_start %}{{search_date_start}}{% endif %}">
             <label>date end: </label>
-            <input id="input_date_end" type="date" name="search_date_end" value="{% if search_date_end %}{{search_date_end}}{% endif %}">
+            <input id="input_date_end" type="date" name="search_date_end" value="{% if search_date_end %}{{search_date_end}}{% endif %}">     |    
+            <label>id: </label>
+            <input id="input_id" type="text" name="search_id" value="{% if search_id %}{{search_id}}{% endif %}">
             <br>
             <input type="submit" value="search">
             <input type="reset" value="reset" onclick="myreset()">
@@ -112,6 +114,7 @@
         <thead>
         <tr>
             <th rowspan="2">&nbsp;#&nbsp;</th>
+            <th rowspan="2">&nbsp;id&nbsp;</th>
             <th rowspan="2">&nbsp;device type&nbsp;</th>
             <th rowspan="2">&nbsp;vendor&nbsp;</th>
             <th rowspan="2">&nbsp;firmware&nbsp;</th>
@@ -142,7 +145,8 @@
         <tbody>
         {% for testdatacloud in testdatascloud %}
             <tr>
-                <td>{{ loop.index + pagination.skip }}</td>
+                <td title="id:{{testdatacloud.id}}">{{ loop.index + pagination.skip }}</td>
+                <td>{{ testdatacloud.id }}</td>
                 <td>{{ testdatacloud.device.name }}</td>
                 <td>{{ testdatacloud.factory.name }}</td>
                 <td>{{ testdatacloud.fw_version }}</td>

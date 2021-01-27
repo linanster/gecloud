@@ -137,6 +137,7 @@ def fetch_search_kwargs_oplogs_vendor(clearsearchsession):
 
 def fetch_search_kwargs_testdatas(clearsearchsession):
     # 1.1 fetch search params from request.form and session
+    search_id_page = fetch_search_param('search_id', clearsearchsession)
     search_devicecode_page = fetch_search_param('search_devicecode', clearsearchsession)
     search_factorycode_page = fetch_search_param('search_factorycode', clearsearchsession)
     search_qualified_page = fetch_search_param('search_qualified', clearsearchsession)
@@ -147,6 +148,7 @@ def fetch_search_kwargs_testdatas(clearsearchsession):
     search_date_start_page = fetch_search_param('search_date_start', clearsearchsession)
     search_date_end_page = fetch_search_param('search_date_end', clearsearchsession)
     search_kwargs_page = {
+        'search_id': search_id_page,
         'search_devicecode': search_devicecode_page,
         'search_factorycode': search_factorycode_page,
         'search_qualified': search_qualified_page,
@@ -158,6 +160,7 @@ def fetch_search_kwargs_testdatas(clearsearchsession):
         'search_date_end': search_date_end_page,
     }
     # 1.2 check original params and change them sqlalchemy query friendly
+    search_id_db = None if search_id_page == '' else search_id_page
     search_devicecode_db = None if search_devicecode_page == '0' else search_devicecode_page
     search_factorycode_db = None if search_factorycode_page == '0' else search_factorycode_page
     tab_qualified_code = {
@@ -175,6 +178,7 @@ def fetch_search_kwargs_testdatas(clearsearchsession):
 
     # 1.3 assemble search_kwargs and search_args
     search_kwargs_db = {
+        'search_id': search_id_db,
         'search_devicecode': search_devicecode_db,
         'search_factorycode': search_factorycode_db,
         'search_qualified': search_qualified_db,

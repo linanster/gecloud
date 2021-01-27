@@ -17,9 +17,10 @@ from app.lib.myutils import get_datetime_now_obj
 from app.myglobals import PER_QUERY_COUNT
 
 
-def forge_myquery_mysql_testdatascloud_by_search(query, search_devicecode, search_factorycode, search_qualified, search_blemac, search_wifimac, search_fwversion, search_mcu, search_date_start, search_date_end):
+def forge_myquery_mysql_testdatascloud_by_search(query, search_id, search_devicecode, search_factorycode, search_qualified, search_blemac, search_wifimac, search_fwversion, search_mcu, search_date_start, search_date_end):
     # assemble combined query
     myquery = query.filter(
+        TestdataCloud.id.__eq__(search_id) if search_id is not None else text(""),
         TestdataCloud.devicecode.__eq__(search_devicecode) if search_devicecode is not None else text(""),
         TestdataCloud.factorycode.__eq__(search_factorycode) if search_factorycode is not None else text(""),
         TestdataCloud.bool_qualified_overall.__eq__(search_qualified) if search_qualified is not None else text(""),
