@@ -149,6 +149,16 @@ class Device(db_mysql.Model):
         d_25 = Device(25, '0x19', 'Gen2 Tier C-Sleep, Made for Google')
         d_26 = Device(26, '0x1A', 'Gen2 Tier Sleep-BR30, Made for Google')
 
+        # add 2021.02.01 as Yolanda asked
+        # leedarson
+        d_135 = Device(135, '0x87', 'Tunable white A19')
+        d_136 = Device(136, '0x88', 'Tunable white BR30')
+        d_137 = Device(137, '0x89', 'Full color A19')
+        d_138 = Device(138, '0x8A', 'Full color BR30')
+        # topstar
+        d_134 = Device(134, '0x86', 'Soft white A19')
+        # changhong
+        d_68 = Device(68, '0x44', 'Plug')
 
         # todo
         d_test_255 = Device(255, '0xFF', 'TestDevice')
@@ -197,6 +207,12 @@ class Device(db_mysql.Model):
             d_10,
             d_25,
             d_26,
+            d_135,
+            d_136,
+            d_137,
+            d_138,
+            d_134,
+            d_68,
         ]
 
         devices_test = [d_test_255,]
